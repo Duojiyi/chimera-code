@@ -26,3 +26,47 @@
   background-image: none;
   filter: brightness(0.96);
 }
+
+/* ===== S1 会话界面（对齐设计稿 s1-session-main-*.png）===== */
+
+/* 用户消息：右侧气泡改为全宽安静卡片 */
+[data-component="user-message"] [data-slot="user-message-body"],
+[data-component="user-message"] [data-component="user-message-body"] {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  background: var(--v2-background-bg-layer-01);
+  border: 0.5px solid var(--v2-border-border-muted);
+  border-radius: 8px;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+[data-component="user-message"] [data-slot="user-message-text"],
+[data-component="user-message"] [data-component="user-message-text"] {
+  text-align: left;
+  margin-left: 0;
+}
+
+/* 活动行：动作名 13px 次级色，文件名/参数等宽（设计稿活动卡的行语法） */
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-title"] {
+  font-size: 13px;
+  color: var(--v2-text-text-muted);
+}
+
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-subtitle"],
+[data-component="tool-trigger"] [data-slot="basic-tool-tool-arg"],
+[data-slot="message-part-title-filename"] {
+  font-family: var(--font-family-mono);
+  font-size: 12.5px;
+}
+
+/* 工具状态色语义：完成=青金，运行中=熔金（奇美拉状态语义） */
+[data-slot="basic-tool-tool-indicator"] {
+  color: var(--v2-state-fg-success);
+}
+
+[data-slot="basic-tool-tool-spinner"] {
+  color: var(--v2-state-fg-warning);
+}

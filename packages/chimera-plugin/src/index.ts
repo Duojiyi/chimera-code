@@ -144,5 +144,13 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       if (input?.provider?.info?.id !== PROVIDER_ID) return
       output.headers["x-chimera-client"] = `${BRAND.nameLower}-desktop`
     },
+
+    // 身份注入：经由中转站的上游通道可能透传其他产品的系统身份，
+    // 在系统提示末尾显式声明 Chimera 身份，保证自我认知一致。
+    "experimental.chat.system.transform": async (_input, output) => {
+      output.system.push(
+        `You are ${BRAND.name}, an enterprise AI coding agent. When asked who you are, identify yourself as ${BRAND.name}. Do not claim to be any other product.`,
+      )
+    },
   }
 }
