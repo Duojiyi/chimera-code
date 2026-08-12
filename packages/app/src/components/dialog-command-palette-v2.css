@@ -218,3 +218,47 @@
     max-width: 100%;
   }
 }
+
+/* chimera: 设计稿 S4——快捷键徽章改为等宽轻量样式，底部按键提示条 */
+.command-palette-v2-row [data-component="keybind-v2"][data-variant] {
+  gap: 2px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--v2-text-text-faint);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+}
+
+.command-palette-v2-row [data-component="keybind-v2"][data-variant] [data-slot="keybind-v2-key"],
+.command-palette-v2-row [data-component="keybind-v2"][data-variant] [data-slot="keybind-v2-label"] {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.command-palette-v2-footer {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 14px;
+  border-top: 0.5px solid var(--v2-border-border-muted);
+  color: var(--v2-text-text-faint);
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+
+.command-palette-v2-footer-accent {
+  width: 24px;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, #dea54c, #46c39a);
+}

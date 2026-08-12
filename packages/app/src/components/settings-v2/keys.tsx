@@ -170,9 +170,8 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
       {/* 密钥表（设计稿 S6）：名称 / 密钥 / 本月用量 / 操作 */}
       <div class="flex w-full flex-col overflow-hidden rounded-[10px] border-[0.5px] border-v2-border-border-muted">
         <div class="flex h-10 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-4">
-          <span class="w-[190px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">名称</span>
-          <span class="w-[220px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">密钥</span>
-          <span class="w-[110px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">本月用量</span>
+          <span class="w-[210px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">名称</span>
+          <span class="w-[260px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">密钥</span>
           <div class="flex-1" />
           <span class="font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">操作</span>
         </div>
@@ -192,7 +191,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                   class="group flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4"
                   classList={{ "border-t-[0.5px] border-v2-border-border-muted": index() > 0 }}
                 >
-                  <span class="flex w-[190px] shrink-0 items-center gap-2 truncate">
+                  <span class="flex w-[210px] shrink-0 items-center gap-2 truncate">
                     <span class="truncate text-[13px] font-[560] text-v2-text-text-base">{entry.name}</span>
                     <Show when={active()}>
                       <span
@@ -206,7 +205,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                       </span>
                     </Show>
                   </span>
-                  <span class="flex w-[220px] shrink-0 items-center gap-1.5">
+                  <span class="flex w-[260px] shrink-0 items-center gap-1.5">
                     <span class="truncate font-mono text-[11.5px] text-v2-text-text-muted">{mask(entry.key)}</span>
                     <button
                       type="button"
@@ -220,9 +219,6 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                       </svg>
                     </button>
-                  </span>
-                  <span class="w-[110px] shrink-0 font-mono text-[11.5px] text-v2-text-text-faint" title="用量统计待网关接口">
-                    —
                   </span>
                   <div class="flex-1" />
                   <div class="flex shrink-0 items-center gap-1.5">
@@ -274,7 +270,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
       </div>
 
       <p class="font-mono text-[11px] leading-4 tracking-[0.2px] text-v2-text-text-faint">
-        同一中转站可保存多条密钥 · 任意界面 Ctrl+Shift+K 快速切换 · 用量按密钥独立统计
+        同一中转站可保存多条密钥 · 任意界面 Ctrl+Shift+K 快速切换
       </p>
     </div>
   )
