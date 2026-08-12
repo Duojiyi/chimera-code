@@ -121,7 +121,12 @@
   opacity: 1;
 }
 
-/* AI 回复头部：奇美拉渐变标 + Chimera 名（设计稿 S1 的 AI 消息头） */
+/* AI 回复头部：奇美拉渐变标 + Chimera 名（设计稿 S1 的 AI 消息头）。
+   app 时间线按部件组分行渲染，仅轮首行（data-turn-first）出头像，避免一轮多头。 */
+[data-timeline-row="AssistantPart"]:not([data-turn-first]) [data-slot="session-turn-assistant-content"]::before {
+  content: none;
+}
+
 [data-component="assistant-message"]::before,
 [data-component="session-turn-assistant-content"]::before,
 [data-slot="session-turn-assistant-content"]::before {
