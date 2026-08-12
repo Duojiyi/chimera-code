@@ -47,6 +47,12 @@ export const ChimeraRail: Component = () => {
     })
   }
 
+  const openKeysPage = () => {
+    void import("./settings-v2").then((x) => {
+      void dialog.show(() => <x.DialogSettings defaultValue="keys" />)
+    })
+  }
+
   // ⌘⇧K / Ctrl+Shift+K：任意界面快速切换密钥（设计稿 S6）
   const command = useCommand()
   command.register(() => [
@@ -104,7 +110,7 @@ export const ChimeraRail: Component = () => {
           aria-label="账户与密钥"
           class="flex size-[26px] items-center justify-center rounded-full text-[11px] font-bold hover:brightness-105"
           style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)", color: "#10231D" }}
-          onClick={openKeys}
+          onClick={openKeysPage}
         >
           多
         </button>
