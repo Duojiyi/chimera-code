@@ -6,6 +6,7 @@ import { For, Show, createEffect, createMemo, createSignal, onCleanup, type Comp
 import { ChimeraAvatar } from "@/components/chimera-avatar"
 import { activeChimeraKeyName } from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
+import { useLanguage } from "@/context/language"
 import { useLayout } from "@/context/layout"
 import { useModels } from "@/context/models"
 import { usePlatform } from "@/context/platform"
@@ -39,6 +40,7 @@ export const ChimeraRail: Component = () => {
   const dialog = useDialog()
   const navigate = useNavigate()
   const location = useLocation()
+  const language = useLanguage()
 
   const onHome = createMemo(() => location.pathname === "/" || location.pathname === "")
 
@@ -65,8 +67,8 @@ export const ChimeraRail: Component = () => {
   command.register(() => [
     {
       id: "chimera.keys.switch",
-      title: "切换密钥",
-      description: "在中转站的多条密钥间切换",
+      title: language.t("chimera.command.switchKey.title"),
+      description: language.t("chimera.command.switchKey.description"),
       keybind: "ctrl+shift+k,meta+shift+k",
       onSelect: openKeys,
     },
@@ -77,20 +79,21 @@ export const ChimeraRail: Component = () => {
 
   const top: Array<{
     id: string
-    label: string
+    label: () => string
     onClick?: () => void
     active?: () => boolean
     command?: string
   }> = [
-    { id: "chat", label: "会话", onClick: () => navigate("/"), active: onHome },
-    { id: "files", label: "文件树", command: "fileTree.toggle" },
-    { id: "git", label: "代码审查", command: "review.toggle" },
-    { id: "terminal", label: "终端", command: "terminal.toggle" },
+    { id: "chat", label: () => language.t("chimera.nav.sessions"), onClick: () => navigate("/"), active: onHome },
+    { id: "files", label: () => language.t("chimera.nav.fileTree"), command: "fileTree.toggle" },
+    { id: "git", label: () => language.t("chimera.nav.review"), command: "review.toggle" },
+    { id: "terminal", label: () => language.t("chimera.nav.terminal"), command: "terminal.toggle" },
   ]
 
   const item = (entry: (typeof top)[number]) => {
     const disabled = () => (entry.command ? !hasCommand(entry.command) : false)
-    const label = () => (disabled() ? `${entry.label}（会话内可用）` : entry.label)
+    const label = () =>
+      disabled() ? language.t("chimera.nav.sessionOnly", { label: entry.label() }) : entry.label()
     const onClick = () => {
       if (entry.command) {
         command.trigger(entry.command)
@@ -102,7 +105,7 @@ export const ChimeraRail: Component = () => {
       <TooltipV2 placement="right" value={label()}>
         <button
           type="button"
-          aria-label={entry.label}
+          aria-label={entry.label()}
           disabled={disabled()}
           class="flex size-8 items-center justify-center rounded-[6px] transition-colors"
           classList={{
@@ -126,15 +129,15 @@ export const ChimeraRail: Component = () => {
     <nav
       data-component="chimera-rail"
       class="flex w-[46px] shrink-0 flex-col items-center gap-1.5 border-r-[0.5px] border-v2-border-border-muted py-2.5"
-      aria-label={`${BRAND.name} 导航`}
+      aria-label={language.t("chimera.nav.label", { name: BRAND.name })}
     >
       <For each={top}>{item}</For>
       <div class="flex-1" />
-      {item({ id: "settings", label: "设置", onClick: openSettings })}
-      <TooltipV2 placement="right" value="账户与密钥">
+      {item({ id: "settings", label: () => language.t("chimera.nav.settings"), onClick: openSettings })}
+      <TooltipV2 placement="right" value={language.t("chimera.nav.account")}>
         <button
           type="button"
-          aria-label="账户与密钥"
+          aria-label={language.t("chimera.nav.account")}
           class="flex items-center justify-center rounded-full transition-[filter] hover:brightness-110"
           onClick={openKeysPage}
         >
@@ -150,6 +153,7 @@ export const ChimeraStatusBar: Component = () => {
   const layout = useLayout()
   const tabs = useTabs()
   const serverSync = useServerSync()
+  const language = useLanguage()
 
   const gatewayHost = createMemo(() => {
     try {
@@ -257,32 +261,39 @@ export const ChimeraStatusBar: Component = () => {
         </Show>
         <Show when={sessionDiff()}>
           {(diff) => (
-            <span class="flex items-center gap-1.5 font-mono text-[10.5px]" title="本会话变更">
+            <span class="flex items-center gap-1.5 font-mono text-[10.5px]" title={language.t("chimera.status.changes.tooltip")}>
               <span style={{ color: "var(--v2-state-fg-success)" }}>+{diff().additions}</span>
               <span style={{ color: "var(--v2-state-fg-danger)" }}>-{diff().deletions}</span>
-              <span class="text-v2-text-text-faint">· {diff().files} 处更改</span>
+              <span class="text-v2-text-text-faint">
+                {language.t("chimera.status.changes", { count: `${diff().files}` })}
+              </span>
             </span>
           )}
         </Show>
       </div>
       <div class="flex items-center gap-3">
         <Show when={keyName()}>
-          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title="当前密钥（Ctrl+Shift+K 切换）">
-            密钥 {keyName()}
+          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={language.t("chimera.status.key.tooltip")}>
+            {language.t("chimera.status.key", { name: keyName()! })}
           </span>
         </Show>
         <Show when={sessionCost() > 0}>
-          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title="当前会话累计费用">
-            会话 ${sessionCost() < 0.01 ? sessionCost().toFixed(4) : sessionCost().toFixed(2)}
+          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={language.t("chimera.status.sessionCost.tooltip")}>
+            {language.t("chimera.status.sessionCost", {
+              cost: `$${sessionCost() < 0.01 ? sessionCost().toFixed(4) : sessionCost().toFixed(2)}`,
+            })}
           </span>
         </Show>
         <Show when={context()}>
           {(ctx) => (
             <span
               class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint"
-              title={`上下文 ${compact(ctx().used)} / ${compact(ctx().limit)} tokens`}
+              title={language.t("chimera.status.context.tooltip", {
+                used: compact(ctx().used),
+                limit: compact(ctx().limit),
+              })}
             >
-              上下文
+              {language.t("chimera.status.context")}
               <span class="relative inline-block h-[3px] w-[44px] overflow-hidden rounded-full bg-v2-background-bg-layer-03">
                 <span
                   class="absolute inset-y-0 left-0 rounded-full"
@@ -296,7 +307,10 @@ export const ChimeraStatusBar: Component = () => {
             </span>
           )}
         </Show>
-        <span class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint" title="网关连接">
+        <span
+          class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint"
+          title={language.t("chimera.status.gateway.tooltip")}
+        >
           <span class="inline-block size-1.5 rounded-full" style={{ background: "var(--v2-state-fg-success)" }} />
           {gatewayHost()}
         </span>

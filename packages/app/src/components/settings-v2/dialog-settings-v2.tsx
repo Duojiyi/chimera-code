@@ -86,7 +86,7 @@ export const DialogSettings: Component<{
                     </TabsV2.Trigger>
                     <TabsV2.Trigger value="keys">
                       <Icon name="key" />
-                      密钥
+                      {language.t("chimera.settings.tab.keys")}
                     </TabsV2.Trigger>
                   </div>
                 </div>

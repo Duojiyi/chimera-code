@@ -5,6 +5,7 @@ import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
 import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@opencode-ai/ui/v2/dialog-v2"
 import { Spinner } from "@opencode-ai/ui/spinner"
 import { Show, createSignal, type Accessor, type Component, type JSX } from "solid-js"
+import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
@@ -77,6 +78,7 @@ const icons = {
 // TODO(chimera): 文案待补 i18n 键。
 export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
   const dialog = useDialog()
+  const language = useLanguage()
   const serverSDK = useServerSDK()
   const serverSync = useServerSync()
   const [tab, setTab] = createSignal<"account" | "key">("account")
@@ -95,7 +97,7 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
   const finish = () => {
     // 立即刷新 providers 缓存，让新同步的模型即时可选（V1 服务端无对应推送事件）
     void serverSync().refreshProviders()
-    showToast({ title: `已连接 ${BRAND.name} 中转站`, variant: "default" })
+    showToast({ title: language.t("chimera.connect.success", { name: BRAND.name }), variant: "default" })
     dialog.close()
   }
 
@@ -107,7 +109,7 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
     try {
       if (tab() === "account") {
         if (!username().trim() || !password()) {
-          setError("请输入账号和密码")
+          setError(language.t("chimera.connect.error.credentials"))
           return
         }
         // 方式索引 0 = 中转站账号密码（见 @chimera/plugin auth.methods 顺序）
@@ -123,7 +125,7 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
         return
       }
       if (!apiKey().trim()) {
-        setError("请输入 API 密钥")
+        setError(language.t("chimera.connect.error.key"))
         return
       }
       await serverSDK().api.integration.connect.key({
@@ -131,10 +133,14 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
         key: apiKey().trim(),
         location: location(),
       })
-      registerChimeraKey(apiKey().trim())
+      registerChimeraKey(apiKey().trim(), (index) =>
+        language.t("chimera.keys.defaultName", { index: `${index}` }),
+      )
       finish()
     } catch {
-      setError(tab() === "account" ? "登录失败，请检查账号密码或网关可用性" : "保存失败，请检查密钥")
+      setError(
+        tab() === "account" ? language.t("chimera.connect.error.signIn") : language.t("chimera.connect.error.save"),
+      )
     } finally {
       setPending(false)
     }
@@ -153,9 +159,9 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
       containerClass="!h-auto max-h-[calc(100vh_-_16px)] !w-[min(calc(100vw_-_16px),440px)]"
       class="[font-family:var(--v2-font-family-sans)] [&_[data-slot=dialog-header]]:!px-5 [&_[data-slot=dialog-header-title]]:!text-[15px]"
     >
-      <DialogHeader closeLabel="关闭">
+      <DialogHeader closeLabel={language.t("common.close")}>
         <DialogTitle>
-          <span class="sr-only">连接 {BRAND.name}</span>
+          <span class="sr-only">{language.t("chimera.connect.title", { name: BRAND.name })}</span>
         </DialogTitle>
       </DialogHeader>
       <DialogBody class="min-h-0 flex-none gap-0 overflow-y-auto px-5 pb-5">
@@ -171,12 +177,14 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
           >
             <Mark class="size-6" />
           </span>
-          <h2 class="text-[17px] font-[600] leading-6 text-v2-text-text-base">欢迎使用 {BRAND.name}</h2>
-          <p class="text-[12px] leading-4 text-v2-text-text-muted">连接企业网关后开始使用</p>
+          <h2 class="text-[17px] font-[600] leading-6 text-v2-text-text-base">
+            {language.t("chimera.connect.welcome", { name: BRAND.name })}
+          </h2>
+          <p class="text-[12px] leading-4 text-v2-text-text-muted">{language.t("chimera.connect.subtitle")}</p>
         </div>
         <form class="flex w-full flex-col gap-4" onSubmit={submit}>
           <div class="flex w-full flex-col gap-1.5">
-            <label class="text-[12px] font-[530] text-v2-text-text-muted">网关地址</label>
+            <label class="text-[12px] font-[530] text-v2-text-text-muted">{language.t("chimera.connect.gateway")}</label>
             <div class="flex h-9 w-full items-center gap-2 rounded-[8px] border-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-3">
               <IconV2 name="globe" size="small" class="shrink-0 text-v2-icon-icon-muted" />
               <span class="min-w-0 truncate font-mono text-[12px] text-v2-text-text-base">
@@ -190,17 +198,17 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
                 }}
               >
                 {icons.lock}
-                管理员预置
+                {language.t("chimera.connect.managed")}
               </span>
             </div>
           </div>
 
           <div class="flex w-full gap-1 rounded-[8px] bg-v2-background-bg-layer-02 p-1">
             <button type="button" class={tabClass(tab() === "account")} onClick={() => setTab("account")}>
-              账号密码
+              {language.t("chimera.connect.tab.account")}
             </button>
             <button type="button" class={tabClass(tab() === "key")} onClick={() => setTab("key")}>
-              API 密钥
+              {language.t("chimera.connect.tab.key")}
             </button>
           </div>
 
@@ -208,17 +216,21 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
             when={tab() === "account"}
             fallback={
               <div class="flex w-full flex-col gap-1.5">
-                <label class="text-[12px] font-[530] text-v2-text-text-muted">API 密钥</label>
+                <label class="text-[12px] font-[530] text-v2-text-text-muted">
+                  {language.t("chimera.connect.tab.key")}
+                </label>
                 <FieldInput
                   icon={icons.key}
                   type={showPassword() ? "text" : "password"}
-                  placeholder="chm-... / sk-..."
+                  placeholder={language.t("chimera.keys.key.placeholder")}
                   value={apiKey()}
                   onInput={setApiKey}
                   trailing={
                     <button
                       type="button"
-                      aria-label={showPassword() ? "隐藏密钥" : "显示密钥"}
+                      aria-label={
+                        showPassword() ? language.t("chimera.connect.hideSecret") : language.t("chimera.connect.showSecret")
+                      }
                       class="shrink-0 text-v2-icon-icon-faint hover:text-v2-icon-icon-base"
                       onClick={() => setShowPassword((v) => !v)}
                     >
@@ -231,11 +243,20 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
           >
             <div class="flex w-full flex-col gap-3">
               <div class="flex w-full flex-col gap-1.5">
-                <label class="text-[12px] font-[530] text-v2-text-text-muted">账号</label>
-                <FieldInput icon={icons.user} placeholder="中转站用户名" value={username()} onInput={setUsername} />
+                <label class="text-[12px] font-[530] text-v2-text-text-muted">
+                  {language.t("chimera.connect.username")}
+                </label>
+                <FieldInput
+                  icon={icons.user}
+                  placeholder={language.t("chimera.connect.username.placeholder")}
+                  value={username()}
+                  onInput={setUsername}
+                />
               </div>
               <div class="flex w-full flex-col gap-1.5">
-                <label class="text-[12px] font-[530] text-v2-text-text-muted">密码</label>
+                <label class="text-[12px] font-[530] text-v2-text-text-muted">
+                  {language.t("chimera.connect.password")}
+                </label>
                 <FieldInput
                   icon={icons.lock}
                   type={showPassword() ? "text" : "password"}
@@ -245,7 +266,9 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
                   trailing={
                     <button
                       type="button"
-                      aria-label={showPassword() ? "隐藏密码" : "显示密码"}
+                      aria-label={
+                        showPassword() ? language.t("chimera.connect.hideSecret") : language.t("chimera.connect.showSecret")
+                      }
                       class="shrink-0 text-v2-icon-icon-faint hover:text-v2-icon-icon-base"
                       onClick={() => setShowPassword((v) => !v)}
                     >
@@ -270,11 +293,11 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
             <Show when={pending()} fallback={icons.arrow}>
               <Spinner class="size-4" />
             </Show>
-            {tab() === "account" ? "登录并同步密钥" : "保存密钥"}
+            {tab() === "account" ? language.t("chimera.connect.signIn") : language.t("chimera.connect.saveKey")}
           </button>
 
           <p class="text-center text-[11px] leading-4 text-v2-text-text-faint">
-            账号与密钥由中转站统一管理 · 登录后自动同步该账号下全部密钥
+            {language.t("chimera.connect.footnote")}
           </p>
         </form>
       </DialogBody>

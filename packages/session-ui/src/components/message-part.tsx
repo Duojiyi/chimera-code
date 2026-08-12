@@ -1730,7 +1730,9 @@ PART_MAPPING["text"] = function TextPartDisplay(props) {
           : -1
     if (!(ms >= 0)) return ""
     const total = Math.round(ms / 1000)
-    return `耗时 ${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`
+    return i18n.t("ui.chimera.duration", {
+      time: `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`,
+    })
   })
 
   const meta = createMemo(() => {

@@ -5,14 +5,13 @@ import { For, Show, createSignal, type Accessor, type Component } from "solid-js
 import { createStore } from "solid-js/store"
 import { ChimeraAvatar } from "../chimera-avatar"
 import { readChimeraKeys, writeChimeraKeys, type ChimeraKeyEntry } from "../chimera-keys"
+import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
 
 // 设置 · 密钥（设计稿 S6）：账号卡 + 中转站多密钥表格。
-// 前后端对齐：切换=服务端 auth 保存并刷新实例；退出登录=服务端 DELETE /auth；
-// 用量列待网关统计接口，先展示占位。
-// TODO(chimera): 文案待补 i18n 键。
+// 前后端对齐：切换=服务端 auth 保存并刷新实例；退出登录=服务端 DELETE /auth。
 
 const mask = (key: string) => {
   if (key.length <= 10) return "••••••"
@@ -28,6 +27,7 @@ const gatewayHost = (() => {
 })()
 
 export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
+  const language = useLanguage()
   const serverSDK = useServerSDK()
   const serverSync = useServerSync()
   const [store, setStore] = createStore(readChimeraKeys())
@@ -56,9 +56,9 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
       setStore("active", entry.key)
       persist()
       void serverSync().refreshProviders()
-      showToast({ title: `已切换到 ${entry.name}`, variant: "default" })
+      showToast({ title: language.t("chimera.keys.switched", { name: entry.name }), variant: "default" })
     } catch {
-      showToast({ title: "切换失败，请检查网关可用性", variant: "default" })
+      showToast({ title: language.t("chimera.keys.switchFailed"), variant: "default" })
     } finally {
       setPending("")
     }
@@ -66,7 +66,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
 
   const copy = async (entry: ChimeraKeyEntry) => {
     await navigator.clipboard.writeText(entry.key)
-    showToast({ title: "密钥已复制", variant: "default" })
+    showToast({ title: language.t("chimera.keys.copied"), variant: "default" })
   }
 
   const remove = (entry: ChimeraKeyEntry) => {
@@ -88,14 +88,17 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     setStore({ keys: [], active: "" })
     persist()
     void serverSync().refreshProviders()
-    showToast({ title: "已退出登录", variant: "default" })
+    showToast({ title: language.t("chimera.keys.signedOut"), variant: "default" })
   }
 
   const add = async (e: SubmitEvent) => {
     e.preventDefault()
     const key = newKey().trim()
     if (!key) return
-    const entry: ChimeraKeyEntry = { name: newName().trim() || `密钥 ${store.keys.length + 1}`, key }
+    const entry: ChimeraKeyEntry = {
+      name: newName().trim() || language.t("chimera.keys.defaultName", { index: `${store.keys.length + 1}` }),
+      key,
+    }
     if (!store.keys.some((item) => item.key === key)) setStore("keys", store.keys.length, entry)
     persist()
     setNewName("")
@@ -108,15 +111,15 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     <div class="flex w-full flex-col gap-4">
       <div class="flex items-start justify-between gap-4">
         <div class="flex flex-col gap-1">
-          <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">密钥</h2>
-          <p class="text-[12.5px] leading-5 text-v2-text-text-muted">中转站账号下的接入密钥，可随时切换</p>
+          <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">{language.t("chimera.keys.title")}</h2>
+          <p class="text-[12.5px] leading-5 text-v2-text-text-muted">{language.t("chimera.keys.description")}</p>
         </div>
         <button
           type="button"
           class="flex h-8 shrink-0 items-center gap-1 rounded-[7px] border-[0.5px] border-v2-border-border-base px-3 text-[12.5px] font-[530] text-v2-text-text-base transition-colors hover:bg-v2-overlay-simple-overlay-hover"
           onClick={() => setAdding((v) => !v)}
         >
-          <span class="text-[14px] leading-none">+</span> 添加密钥
+          <span class="text-[14px] leading-none">+</span> {language.t("chimera.keys.add")}
         </button>
       </div>
 
@@ -125,10 +128,14 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
         <ChimeraAvatar size={30} />
         <div class="flex min-w-0 flex-1 flex-col gap-0.5">
           <span class="truncate font-mono text-[13px] font-[600] leading-4 text-v2-text-text-base">
-            {account() || "已连接"}
+            {account() || language.t("chimera.keys.connected")}
           </span>
           <span class="font-mono text-[11px] leading-4 text-v2-text-text-faint">
-            {store.keys.length > 0 || account() ? "已登录" : "未登录"} · {gatewayHost}
+            {store.keys.length > 0 || account()
+              ? language.t("chimera.keys.signedIn")
+              : language.t("chimera.keys.notSignedIn")}
+            {" · "}
+            {gatewayHost}
           </span>
         </div>
         <Show when={account() || store.keys.length > 0}>
@@ -137,7 +144,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
             class="flex h-7 shrink-0 items-center rounded-[7px] border-[0.5px] border-v2-border-border-base px-3 text-[12px] text-v2-text-text-muted transition-colors hover:bg-v2-overlay-simple-overlay-hover hover:text-v2-text-text-base"
             onClick={() => void signOut()}
           >
-            退出登录
+            {language.t("chimera.keys.signOut")}
           </button>
         </Show>
       </div>
@@ -145,14 +152,18 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
       <Show when={adding()}>
         <form class="flex w-full items-end gap-2" onSubmit={add}>
           <div class="flex flex-1 flex-col gap-1.5">
-            <label class="text-[12px] font-[530] text-v2-text-text-muted">名称</label>
-            <TextInputV2 placeholder="如：个人密钥" value={newName()} onInput={(e) => setNewName(e.currentTarget.value)} />
+            <label class="text-[12px] font-[530] text-v2-text-text-muted">{language.t("chimera.keys.header.name")}</label>
+            <TextInputV2
+              placeholder={language.t("chimera.keys.name.placeholder")}
+              value={newName()}
+              onInput={(e) => setNewName(e.currentTarget.value)}
+            />
           </div>
           <div class="flex flex-[2] flex-col gap-1.5">
-            <label class="text-[12px] font-[530] text-v2-text-text-muted">密钥</label>
+            <label class="text-[12px] font-[530] text-v2-text-text-muted">{language.t("chimera.keys.header.key")}</label>
             <TextInputV2
               type="password"
-              placeholder="sk-... / chm-..."
+              placeholder={language.t("chimera.keys.key.placeholder")}
               value={newKey()}
               onInput={(e) => setNewKey(e.currentTarget.value)}
             />
@@ -162,24 +173,30 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
             class="flex h-9 shrink-0 items-center rounded-[8px] px-4 text-[13px] font-[530] transition-[filter] hover:brightness-105"
             style={{ background: "var(--v2-state-fg-warning)", color: "var(--v2-background-bg-base)" }}
           >
-            保存并使用
+            {language.t("chimera.keys.save")}
           </button>
         </form>
       </Show>
 
-      {/* 密钥表（设计稿 S6）：名称 / 密钥 / 本月用量 / 操作 */}
+      {/* 密钥表（设计稿 S6）：名称 / 密钥 / 操作 */}
       <div class="flex w-full flex-col overflow-hidden rounded-[10px] border-[0.5px] border-v2-border-border-muted">
         <div class="flex h-10 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-4">
-          <span class="w-[210px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">名称</span>
-          <span class="w-[260px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">密钥</span>
+          <span class="w-[210px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.keys.header.name")}
+          </span>
+          <span class="w-[260px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.keys.header.key")}
+          </span>
           <div class="flex-1" />
-          <span class="font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">操作</span>
+          <span class="font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.keys.header.actions")}
+          </span>
         </div>
         <Show
           when={store.keys.length > 0}
           fallback={
             <div class="flex h-20 items-center justify-center bg-v2-background-bg-layer-01 text-[12.5px] text-v2-text-text-faint">
-              还没有登记密钥 · 点击右上角「添加密钥」或从连接网关开始
+              {language.t("chimera.keys.empty")}
             </div>
           }
         >
@@ -201,7 +218,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                           background: "color-mix(in srgb, var(--v2-state-fg-warning) 15%, transparent)",
                         }}
                       >
-                        当前
+                        {language.t("chimera.keys.current")}
                       </span>
                     </Show>
                   </span>
@@ -209,8 +226,8 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                     <span class="truncate font-mono text-[11.5px] text-v2-text-text-muted">{mask(entry.key)}</span>
                     <button
                       type="button"
-                      aria-label="复制密钥"
-                      title="复制密钥"
+                      aria-label={language.t("chimera.keys.copy")}
+                      title={language.t("chimera.keys.copy")}
                       class="flex size-5 shrink-0 items-center justify-center rounded-[4px] text-v2-icon-icon-faint transition-colors hover:bg-v2-overlay-simple-overlay-hover hover:text-v2-icon-icon-base"
                       onClick={() => void copy(entry)}
                     >
@@ -228,8 +245,8 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                         <>
                           <button
                             type="button"
-                            aria-label={`删除 ${entry.name}`}
-                            title="删除"
+                            aria-label={language.t("chimera.keys.deleteNamed", { name: entry.name })}
+                            title={language.t("chimera.keys.delete")}
                             class="flex size-6 items-center justify-center rounded-[6px] text-v2-icon-icon-faint opacity-0 transition-all hover:text-v2-state-fg-danger group-hover:opacity-100"
                             onClick={() => remove(entry)}
                           >
@@ -243,7 +260,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                             disabled={!!pending()}
                             onClick={() => void activate(entry)}
                           >
-                            <Show when={pending() === entry.key} fallback="切换">
+                            <Show when={pending() === entry.key} fallback={language.t("chimera.keys.switch")}>
                               <Spinner class="size-3" />
                             </Show>
                           </button>
@@ -258,7 +275,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                           class="inline-block size-1.5 rounded-full"
                           style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}
                         />
-                        使用中
+                        {language.t("chimera.keys.inUse")}
                       </span>
                     </Show>
                   </div>
@@ -270,7 +287,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
       </div>
 
       <p class="font-mono text-[11px] leading-4 tracking-[0.2px] text-v2-text-text-faint">
-        同一中转站可保存多条密钥 · 任意界面 Ctrl+Shift+K 快速切换
+        {language.t("chimera.keys.footnote")}
       </p>
     </div>
   )

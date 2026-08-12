@@ -1,3 +1,4 @@
+import { BRAND } from "@chimera/brand"
 import { useFilteredList } from "@opencode-ai/ui/hooks"
 import { Switch } from "@opencode-ai/ui/v2/switch-v2"
 import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
@@ -13,19 +14,20 @@ type ModelItem = ReturnType<ReturnType<typeof useModels>["list"]>[number]
 // chimera: 设置·模型（设计稿 S3）——网关模型表：模型 / 协议 / 上下文 / 默认 / 状态。
 // 前后端对齐：状态=可见性开关（本地持久化）；默认=置顶最近使用（composer 无会话选择时
 // 的真实默认取值链）；协议/上下文来自 provider 与模型元数据。
-// TODO(chimera): 文案待补 i18n 键。
-
-const PROTOCOLS: Record<string, string> = {
-  anthropic: "Anthropic",
-  chimera: "OpenAI 兼容",
-  openai: "OpenAI",
-}
 
 function contextLabel(item: ModelItem) {
   const context = item.limit?.context
   if (!context) return "—"
   if (context >= 1_000_000) return `${(context / 1_000_000).toFixed(context % 1_000_000 ? 1 : 0)}m`
   return `${Math.round(context / 1000)}k`
+}
+
+// Anthropic/OpenAI 为产品专名不译；OpenAI 兼容为可译描述
+function protocolLabel(item: ModelItem, language: ReturnType<typeof useLanguage>) {
+  if (item.provider.id === "anthropic") return "Anthropic"
+  if (item.provider.id === "openai") return "OpenAI"
+  if (item.provider.id === "chimera") return language.t("chimera.models.protocol.openaiCompatible")
+  return item.provider.name
 }
 
 export const SettingsModelsV2: Component = () => {
@@ -49,7 +51,9 @@ export const SettingsModelsV2: Component = () => {
       <div class="flex w-full items-start justify-between gap-4">
         <div class="flex min-w-0 flex-1 flex-col gap-1">
           <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">{language.t("settings.models.title")}</h2>
-          <p class="text-[12.5px] leading-5 text-v2-text-text-muted">通过 Chimera 网关提供，由管理员统一配置</p>
+          <p class="text-[12.5px] leading-5 text-v2-text-text-muted">
+            {language.t("chimera.models.description", { name: BRAND.name })}
+          </p>
         </div>
         <div class="settings-v2-tab-search shrink-0" style={{ width: "220px" }}>
           <TextInputV2
@@ -79,11 +83,21 @@ export const SettingsModelsV2: Component = () => {
 
       <div class="mt-4 flex w-full flex-col overflow-hidden rounded-[10px] border-[0.5px] border-v2-border-border-muted">
         <div class="flex h-10 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-4">
-          <span class="flex-1 font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">模型</span>
-          <span class="w-[110px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">协议</span>
-          <span class="w-[70px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">上下文</span>
-          <span class="w-[52px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">默认</span>
-          <span class="w-[44px] text-right font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">状态</span>
+          <span class="flex-1 font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.models.header.model")}
+          </span>
+          <span class="w-[110px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.models.header.protocol")}
+          </span>
+          <span class="w-[70px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.models.header.context")}
+          </span>
+          <span class="w-[52px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.models.header.default")}
+          </span>
+          <span class="w-[44px] text-right font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
+            {language.t("chimera.models.header.status")}
+          </span>
         </div>
         <Show
           when={!list.grouped.loading}
@@ -131,7 +145,7 @@ export const SettingsModelsV2: Component = () => {
                     </span>
                     <span class="w-[110px] shrink-0">
                       <span class="inline-flex h-[18px] items-center rounded-[4px] border-[0.5px] border-v2-border-border-base px-1.5 font-mono text-[10px] text-v2-text-text-muted">
-                        {PROTOCOLS[item.provider.id] ?? item.provider.name}
+                        {protocolLabel(item, language)}
                       </span>
                     </span>
                     <span class="w-[70px] shrink-0 font-mono text-[11.5px] text-v2-text-text-muted">
@@ -142,8 +156,12 @@ export const SettingsModelsV2: Component = () => {
                         type="button"
                         role="radio"
                         aria-checked={isDefault()}
-                        aria-label={`设为默认模型 ${item.id}`}
-                        title={isDefault() ? "当前默认模型" : "设为默认（新会话优先使用）"}
+                        aria-label={language.t("chimera.models.setDefault", { id: item.id })}
+                        title={
+                          isDefault()
+                            ? language.t("chimera.models.currentDefault")
+                            : language.t("chimera.models.setDefaultHint")
+                        }
                         class="flex size-[18px] items-center justify-center rounded-full border-[1.5px] transition-colors"
                         style={{
                           "border-color": isDefault() ? "var(--v2-state-fg-warning)" : "var(--v2-border-border-base)",
@@ -173,7 +191,7 @@ export const SettingsModelsV2: Component = () => {
       </div>
 
       <p class="mt-3 font-mono text-[11px] leading-4 tracking-[0.2px] text-v2-text-text-faint">
-        模型由管理员在网关控制台签发与配置。本地仅可启用 / 停用。
+        {language.t("chimera.models.footnote")}
       </p>
     </>
   )

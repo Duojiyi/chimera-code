@@ -83,8 +83,10 @@ export function HomeSessionsView(props: HomeSessionsViewProps) {
       <div class="sticky top-0 z-30 shrink-0 bg-v2-background-bg-base pb-3 pt-6 lg:pt-10" onWheel={props.onWheel}>
         <div class="flex items-start gap-3">
           <div class="flex min-w-0 flex-1 flex-col gap-1 pt-0.5">
-            <h1 class="text-[20px] font-[600] leading-7 text-v2-text-text-base">会话</h1>
-            <p class="text-[12.5px] leading-4 text-v2-text-text-muted">继续进行中的工作，或开启新任务</p>
+            <h1 class="text-[20px] font-[600] leading-7 text-v2-text-text-base">
+              {props.language.t("chimera.home.title")}
+            </h1>
+            <p class="text-[12.5px] leading-4 text-v2-text-text-muted">{props.language.t("chimera.home.subtitle")}</p>
           </div>
           <div class="w-[240px] shrink-0 pt-1.5">
             <HomeSessionSearch {...props} />
