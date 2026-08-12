@@ -45,7 +45,15 @@ async function officialModels(): Promise<Map<string, OfficialModel>> {
     if (!res.ok) return officialCatalog ?? new Map()
     const data = (await res.json()) as Record<string, { models?: Record<string, OfficialModel> }>
     const map = new Map<string, OfficialModel>()
-    for (const provider of Object.values(data)) {
+    // 一方厂商目录优先：第三方聚合渠道对同名模型常有改动过的上下文/价格
+    //（如 sonnet-4-5 在部分渠道标 1M，官方为 200k），仅用于补缺。
+    const firstParty = ["anthropic", "openai", "google", "deepseek", "xai", "mistral"]
+    const rank = (key: string) => {
+      const index = firstParty.indexOf(key)
+      return index === -1 ? firstParty.length : index
+    }
+    const providers = Object.entries(data).sort(([a], [b]) => rank(a) - rank(b))
+    for (const [, provider] of providers) {
       for (const [id, model] of Object.entries(provider.models ?? {})) {
         if (!map.has(id)) map.set(id, model)
       }

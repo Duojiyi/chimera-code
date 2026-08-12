@@ -22,11 +22,19 @@ function contextLabel(item: ModelItem) {
   return `${Math.round(context / 1000)}k`
 }
 
-// Anthropic/OpenAI 为产品专名不译；OpenAI 兼容为可译描述
+// 协议列显示模型家族原生协议（设计稿 S3：claude→Anthropic）。网关模型按模型 ID
+// 推断家族；推断不出时回落「OpenAI 兼容」（网关实际接入协议）。
+// Anthropic/OpenAI/Google 为产品专名不译。
 function protocolLabel(item: ModelItem, language: ReturnType<typeof useLanguage>) {
   if (item.provider.id === "anthropic") return "Anthropic"
   if (item.provider.id === "openai") return "OpenAI"
-  if (item.provider.id === "chimera") return language.t("chimera.models.protocol.openaiCompatible")
+  if (item.provider.id === "chimera") {
+    const id = item.id.toLowerCase()
+    if (id.startsWith("claude")) return "Anthropic"
+    if (id.startsWith("gpt") || /^o\d/.test(id)) return "OpenAI"
+    if (id.startsWith("gemini")) return "Google"
+    return language.t("chimera.models.protocol.openaiCompatible")
+  }
   return item.provider.name
 }
 
