@@ -1362,8 +1362,22 @@ const layer = Layer.effect(
           const providerID = ProviderV2.ID.make(p.id)
           if (disabled.has(providerID)) continue
 
-          const provider = database[providerID]
-          if (!provider) continue
+          let provider = database[providerID]
+          // Chimera: config 声明的 provider（如插件注入的中转站）不在 models.dev 目录中，
+          // 为其建立数据库条目，使插件的动态模型同步同样生效。
+          if (!provider) {
+            const declared = configProviders.find(([id]) => id === providerID)
+            if (!declared) continue
+            provider = {
+              id: providerID,
+              name: declared[1].name ?? providerID,
+              env: declared[1].env ?? [],
+              options: declared[1].options ?? {},
+              source: "config",
+              models: {},
+            } as Info
+            database[providerID] = provider
+          }
           const pluginAuth = yield* auth.get(providerID).pipe(Effect.orDie)
 
           provider.models = yield* Effect.promise(async () => {

@@ -6,6 +6,46 @@ export const PROVIDER_ID = BRAND.nameLower
 
 const gateway = (path: string) => new URL(path, BRAND.gatewayUrl).toString()
 
+type GatewayModels = Awaited<ReturnType<NonNullable<NonNullable<Hooks["provider"]>["models"]>>>
+
+/** 由模型 ID 生成展示名："claude-opus-5" → "Claude Opus 5"。 */
+function displayName(id: string) {
+  return id
+    .split("-")
+    .map((part) => (/^\d/.test(part) ? part : part.charAt(0).toUpperCase() + part.slice(1)))
+    .join(" ")
+}
+
+/** 网关模型的保守默认元数据；后续可由网关下发的扩展字段精化。 */
+function gatewayModel(id: string) {
+  return {
+    id,
+    providerID: PROVIDER_ID,
+    name: displayName(id),
+    api: {
+      id,
+      npm: "@ai-sdk/openai-compatible",
+      url: gateway("v1"),
+    },
+    status: "active",
+    headers: {},
+    options: {},
+    cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
+    limit: { context: 200_000, output: 8_192 },
+    capabilities: {
+      temperature: true,
+      reasoning: false,
+      attachment: false,
+      toolcall: true,
+      input: { text: true, audio: false, image: true, video: false, pdf: false },
+      output: { text: true, audio: false, image: false, video: false, pdf: false },
+      interleaved: false,
+    },
+    release_date: "",
+    variants: {},
+  }
+}
+
 /**
  * Chimera 系统插件（随客户端内置，先于用户插件加载）。
  *
@@ -32,6 +72,31 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       // 品牌定制：预置供应商只有中转站一个；用户在配置中自定义的 provider
       // 会一并放行（此时 config.provider 已含用户配置）。显式配置优先。
       config.enabled_providers ??= Object.keys(config.provider)
+    },
+
+    // 模型列表由中转站下发（GET {gateway}/v1/models），登录/保存密钥后自动同步。
+    provider: {
+      id: PROVIDER_ID,
+      async models(_provider, ctx) {
+        const auth = ctx.auth
+        if (!auth || auth.type !== "api" || !auth.key) return {}
+        try {
+          const res = await fetch(gateway("v1/models"), {
+            headers: { authorization: `Bearer ${auth.key}` },
+            signal: AbortSignal.timeout(10_000),
+          })
+          if (!res.ok) return {}
+          const data = (await res.json()) as { data?: Array<{ id?: string }> }
+          const models: Record<string, unknown> = {}
+          for (const item of data.data ?? []) {
+            if (!item.id) continue
+            models[item.id] = gatewayModel(item.id)
+          }
+          return models as GatewayModels
+        } catch {
+          return {}
+        }
+      },
     },
 
     auth: {
@@ -76,7 +141,7 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
     },
 
     "chat.headers": async (input, output) => {
-      if (input.provider.info.id !== PROVIDER_ID) return
+      if (input?.provider?.info?.id !== PROVIDER_ID) return
       output.headers["x-chimera-client"] = `${BRAND.nameLower}-desktop`
     },
   }

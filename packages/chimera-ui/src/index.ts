@@ -6,6 +6,7 @@ import "@fontsource/jetbrains-mono/500.css"
 import "@fontsource/space-grotesk/500.css"
 import "@fontsource/space-grotesk/600.css"
 import "./fonts.css"
+import "./overrides.css"
 
 import { tokens } from "./tokens"
 
