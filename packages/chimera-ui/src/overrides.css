@@ -168,6 +168,12 @@
   font-size: 11.5px;
 }
 
+/* 输入区附件按钮：描边圆角（设计稿 S1 工具条按钮语法） */
+[data-component="prompt-input-v2"] [data-component="icon-button-v2"][aria-label="添加图片和文件"] {
+  border: 0.5px solid var(--v2-border-border-base);
+  border-radius: 7px;
+}
+
 /* 输入区发送按钮：熔金实心（设计稿 S1 右下角 ↑ 按钮） */
 [data-component="icon-button"][aria-label="发送"],
 [data-component="icon-button"][aria-label="Send"] {
