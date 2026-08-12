@@ -108,7 +108,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
   }
 
   return (
-    <div class="flex w-full flex-col gap-4">
+    <div class="flex w-full flex-col gap-4 px-9 pb-10 pt-8">
       <div class="flex items-start justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">{language.t("chimera.keys.title")}</h2>

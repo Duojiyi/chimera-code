@@ -7,6 +7,7 @@
    上游 neutral = 半透明灰黑（bg-button-neutral），与品牌视觉不符。 */
 [data-component="button-v2"][data-variant="neutral"][data-variant] {
   background-color: var(--v2-state-fg-warning);
+  background-image: none;
   color: var(--v2-background-bg-base);
   box-shadow: none;
 }
@@ -218,10 +219,13 @@
   border-radius: 7px;
 }
 
-/* 输入区发送按钮：熔金实心圆形（设计稿 S1 右下角 ● ↑ 按钮） */
+/* 输入区发送按钮：熔金实心圆形（设计稿 S1 右下角 ● ↑ 按钮）。
+   上游用双层 background-image 渐变（高光 + 实心灰）画按钮主体，会盖住
+   background-color，必须显式清掉 image 层（用户"灰按钮"反馈的真因）。 */
 [data-component="icon-button"][aria-label="发送"],
 [data-component="icon-button"][aria-label="Send"] {
-  background: var(--v2-state-fg-warning);
+  background-color: var(--v2-state-fg-warning) !important;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 100%) !important;
   color: var(--v2-background-bg-base);
   border-radius: 999px;
   box-shadow: none;
@@ -229,16 +233,15 @@
 
 [data-component="icon-button"][aria-label="发送"]:hover:not(:disabled),
 [data-component="icon-button"][aria-label="Send"]:hover:not(:disabled) {
-  background: var(--v2-state-fg-warning);
   filter: brightness(1.08);
 }
 
-/* 禁用态保持熔金常亮、仅降不透明度（设计稿 S1/S2 的 ↑ 始终为品牌焦点色） */
+/* 禁用态：满金实体、仅降箭头对比。按钮任何状态都保持干净的品牌金。 */
 [data-component="icon-button"][aria-label="发送"]:disabled,
 [data-component="icon-button"][aria-label="Send"]:disabled {
-  background: var(--v2-state-fg-warning);
-  color: var(--v2-background-bg-base);
-  opacity: 0.62;
+  background-color: var(--v2-state-fg-warning) !important;
+  color: color-mix(in srgb, var(--v2-background-bg-base) 55%, var(--v2-state-fg-warning));
+  opacity: 1;
 }
 
 /* 设置页搜索框（模型表右上）：透明底细描边胶囊，与表格视觉同语言 */

@@ -55,7 +55,7 @@ export const SettingsModelsV2: Component = () => {
   })
 
   return (
-    <>
+    <div class="flex w-full flex-col px-9 pb-10 pt-8">
       <div class="flex w-full items-start justify-between gap-4">
         <div class="flex min-w-0 flex-1 flex-col gap-1">
           <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">{language.t("settings.models.title")}</h2>
@@ -201,6 +201,6 @@ export const SettingsModelsV2: Component = () => {
       <p class="mt-3 font-mono text-[11px] leading-4 tracking-[0.2px] text-v2-text-text-faint">
         {language.t("chimera.models.footnote")}
       </p>
-    </>
+    </div>
   )
 }
