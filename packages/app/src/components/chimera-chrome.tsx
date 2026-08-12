@@ -2,11 +2,12 @@ import { BRAND } from "@chimera/brand"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
-import { For, Show, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
+import { For, Show, createEffect, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
 import { ChimeraAvatar } from "@/components/chimera-avatar"
 import { activeChimeraKeyName } from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
 import { useLayout } from "@/context/layout"
+import { useModels } from "@/context/models"
 import { usePlatform } from "@/context/platform"
 import { useServerSync } from "@/context/server-sync"
 import { useTabs } from "@/context/tabs"
@@ -176,15 +177,47 @@ export const ChimeraStatusBar: Component = () => {
     return serverSync().child(dir)[0].vcs?.branch
   })
 
-  // 当前会话累计费用（assistant 消息 cost 合计，设计稿 S1 状态栏"今日 ¥"的诚实近似）
-  const sessionCost = createMemo(() => {
+  // 会话消息在 session 服务 store（serverSync().session.data.message），
+  // 目录 child store 的 message 是另一份按需数据，这里不用。
+  const sessionMessages = createMemo(() => {
     const route = layout.route()
-    if (route.type !== "session") return 0
-    const dir = directory()
-    if (!dir) return 0
-    const messages = serverSync().child(dir)[0].message?.[route.sessionId] ?? []
-    return messages.reduce((sum, item) => sum + (item.role === "assistant" ? ((item as { cost?: number }).cost ?? 0) : 0), 0)
+    if (route.type !== "session") return []
+    return serverSync().session.data.message?.[route.sessionId] ?? []
   })
+
+  // 当前会话累计费用（assistant 消息 cost 合计，设计稿 S1 状态栏"今日 ¥"的诚实近似）
+  const sessionCost = createMemo(() =>
+    sessionMessages().reduce(
+      (sum, item) => sum + (item.role === "assistant" ? ((item as { cost?: number }).cost ?? 0) : 0),
+      0,
+    ),
+  )
+
+  // 上下文占用（设计稿 S1 渐变用量条）：最近一次请求 tokens ÷ 模型上下文窗口
+  const models = useModels()
+  const context = createMemo(() => {
+    const messages = sessionMessages()
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const item = messages[i] as {
+        role: string
+        providerID?: string
+        modelID?: string
+        tokens?: { input: number; output: number; reasoning: number; cache?: { read: number; write: number } }
+      }
+      if (item.role !== "assistant" || !item.tokens) continue
+      const used = item.tokens.input + item.tokens.output + item.tokens.reasoning + (item.tokens.cache?.read ?? 0)
+      if (used <= 0) continue
+      const limit =
+        item.providerID && item.modelID
+          ? models.find({ providerID: item.providerID, modelID: item.modelID })?.limit?.context
+          : undefined
+      if (!limit) return undefined
+      return { used, limit, pct: Math.min(100, Math.round((used / limit) * 100)) }
+    }
+    return undefined
+  })
+
+  const compact = (n: number) => (n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`)
 
   // 当前密钥名：chimera-keys 写入时广播事件，这里保持同步
   const [keyName, setKeyName] = createSignal(activeChimeraKeyName())
@@ -220,6 +253,26 @@ export const ChimeraStatusBar: Component = () => {
           <span class="font-mono text-[10.5px] text-v2-text-text-faint" title="当前会话累计费用">
             会话 ${sessionCost() < 0.01 ? sessionCost().toFixed(4) : sessionCost().toFixed(2)}
           </span>
+        </Show>
+        <Show when={context()}>
+          {(ctx) => (
+            <span
+              class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint"
+              title={`上下文 ${compact(ctx().used)} / ${compact(ctx().limit)} tokens`}
+            >
+              上下文
+              <span class="relative inline-block h-[3px] w-[44px] overflow-hidden rounded-full bg-v2-background-bg-layer-03">
+                <span
+                  class="absolute inset-y-0 left-0 rounded-full"
+                  style={{
+                    width: `${Math.max(2, ctx().pct)}%`,
+                    background: "linear-gradient(90deg, #DEA54C, #46C39A)",
+                  }}
+                />
+              </span>
+              {ctx().pct}%
+            </span>
+          )}
         </Show>
         <span class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint" title="网关连接">
           <span class="inline-block size-1.5 rounded-full" style={{ background: "var(--v2-state-fg-success)" }} />

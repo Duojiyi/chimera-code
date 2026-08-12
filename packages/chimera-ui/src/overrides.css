@@ -94,6 +94,16 @@
   letter-spacing: 0.2px;
 }
 
+/* 输入区模型选择：描边胶囊（设计稿 S1 的 ● claude-opus-5 ▾ pill） */
+[data-component="button-v2"][data-action="prompt-model"] {
+  height: 26px;
+  padding: 0 10px;
+  border: 0.5px solid var(--v2-border-border-base);
+  border-radius: 999px;
+  font-family: var(--font-family-mono);
+  font-size: 11.5px;
+}
+
 /* 输入区发送按钮：熔金实心（设计稿 S1 右下角 ↑ 按钮） */
 [data-component="icon-button"][aria-label="发送"],
 [data-component="icon-button"][aria-label="Send"] {
