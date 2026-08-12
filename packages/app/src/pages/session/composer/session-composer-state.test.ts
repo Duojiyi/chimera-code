@@ -118,8 +118,9 @@ describe("todoState", () => {
     expect(todoState({ count: 2, done: true, live: true })).toBe("close")
   })
 
-  test("clears stale todos when the turn ends", () => {
-    expect(todoState({ count: 2, done: false, live: false })).toBe("clear")
+  test("keeps unfinished todos visible when the turn ends", () => {
+    // chimera: 设计稿 S1 任务清单卡在有未完成任务时常驻
+    expect(todoState({ count: 2, done: false, live: false })).toBe("open")
   })
 
   test("clears completed todos when the session is no longer live", () => {

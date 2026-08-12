@@ -16,7 +16,8 @@ export const todoState = (input: {
   live: boolean
 }): "hide" | "clear" | "open" | "close" => {
   if (input.count === 0) return "hide"
-  if (!input.live) return "clear"
+  // chimera: 未完成任务常驻展示（设计稿 S1 任务清单卡）；全部完成且空闲才清除
+  if (!input.live && input.done) return "clear"
   if (!input.done) return "open"
   return "close"
 }

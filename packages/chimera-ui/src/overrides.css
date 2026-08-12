@@ -116,3 +116,42 @@
 
 /* AI 回复头（渐变标 + Chimera + 模型 · 时间）由 message-timeline 的
    chimera-turn-header 组件渲染（设计稿 S1），不再使用 CSS 伪元素。 */
+
+/* 任务清单行尾状态标签（设计稿 S1：进行中=熔金，等待=灰） */
+[data-component="session-todo-dock"] [data-component="checkbox"] {
+  display: flex;
+  align-items: flex-start;
+}
+
+[data-component="session-todo-dock"] [data-component="checkbox"][data-state="in_progress"]::after {
+  content: "进行中";
+  margin-left: auto;
+  padding-left: 12px;
+  flex-shrink: 0;
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  line-height: 20px;
+  color: var(--v2-state-fg-warning);
+}
+
+[data-component="session-todo-dock"] [data-component="checkbox"][data-state="pending"]::after {
+  content: "等待";
+  margin-left: auto;
+  padding-left: 12px;
+  flex-shrink: 0;
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  line-height: 20px;
+  color: var(--v2-text-text-faint);
+}
+
+[data-component="session-todo-dock"] [data-component="checkbox"][data-state="completed"]::after {
+  content: "完成";
+  margin-left: auto;
+  padding-left: 12px;
+  flex-shrink: 0;
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  line-height: 20px;
+  color: var(--v2-state-fg-success);
+}
