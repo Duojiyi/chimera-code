@@ -1,0 +1,17 @@
+{
+  "name": "@chimera/ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Chimera UI layer: design tokens and UI overrides mounted on top of the upstream app",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens": "./src/tokens.ts"
+  },
+  "dependencies": {
+    "@chimera/brand": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

@@ -1,5 +1,6 @@
 // @refresh reload
 
+import "@chimera/ui"
 import { render } from "solid-js/web"
 import { AppBaseProviders, AppInterface } from "@/app"
 import { loadInitialLocale } from "@/context/language"

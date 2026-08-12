@@ -1,5 +1,6 @@
 // @refresh reload
 
+import "@chimera/ui"
 import {
   ACCEPTED_FILE_EXTENSIONS,
   AppBaseProviders,
