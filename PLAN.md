@@ -21,10 +21,8 @@ Chimera 在其基础上做品牌定制，通过自有 AI 网关（`https://api.c
 
 ```
 chimera-code/                     ← 本仓库（Duojiyi/chimera-code）
-├── chimera.brand.ts               ← 品牌常量（纯新增，永不冲突）
-├── scripts/
-│   └── sync-upstream.sh          ← 一键同步上游
 ├── packages/
+│   ├── chimera-brand/            ← 【新增】品牌常量包 @chimera/brand（纯新增，永不冲突）
 │   ├── chimera-plugin/           ← 【新增】Chimera 后端功能（纯新增，永不冲突）
 │   ├── chimera-ui/               ← 【新增】Chimera UI 组件（纯新增）
 │   ├── opencode/                 ← 继承自 OpenCode，仅改 provider 层 + 插件接入点
@@ -56,7 +54,7 @@ upstream → https://github.com/sst/opencode            # OpenCode 上游（只�
 
 ### commit-A：品牌配置（零冲突）
 
-新建 `chimera.brand.ts`，集中所有品牌常量：
+新建 `packages/chimera-brand`（`@chimera/brand`，无构建步骤的 ESM + 手写类型），集中所有品牌常量：
 
 ```ts
 export const BRAND = {

@@ -4,10 +4,10 @@
   "version": "1.18.16",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://opencode.ai",
+  "homepage": "https://chimerahub.org",
   "author": {
-    "name": "OpenCode",
-    "email": "hello@opencode.ai"
+    "name": "Chimera",
+    "email": "hello@chimerahub.org"
   },
   "scripts": {
     "typecheck": "tsgo -b",
@@ -24,6 +24,7 @@
   },
   "main": "./out/main/index.js",
   "dependencies": {
+    "@chimera/brand": "workspace:*",
     "@zip.js/zip.js": "2.7.62",
     "effect": "catalog:",
     "electron-context-menu": "4.1.2",

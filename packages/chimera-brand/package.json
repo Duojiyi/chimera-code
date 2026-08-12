@@ -1,0 +1,13 @@
+{
+  "name": "@chimera/brand",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Chimera brand constants, single source of truth for all branding",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  }
+}
