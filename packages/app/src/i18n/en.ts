@@ -1215,6 +1215,18 @@ export const dict = {
   "chimera.connect.error.signIn": "Sign-in failed, check credentials or gateway availability",
   "chimera.connect.error.turnstile":
     "The gateway has human verification (Turnstile) enabled, which the desktop sign-in cannot pass. Use the API key method, or ask the administrator to disable Turnstile.",
+  "chimera.connect.tab.device": "Device authorization",
+  "chimera.connect.device.intro":
+    "Your password never touches the desktop app. Start authorization, sign in from the browser, and this completes automatically.",
+  "chimera.connect.device.start": "Start authorization",
+  "chimera.connect.device.codeLabel": "Device code",
+  "chimera.connect.device.waiting": "Confirm in the browser — this completes automatically once you sign in.",
+  "chimera.connect.device.openManually": "Open the confirmation page again",
+  "chimera.connect.device.cancel": "Cancel",
+  "chimera.connect.device.syncing": "Authorized, syncing keys…",
+  "chimera.connect.device.expired": "Authorization timed out. Start again.",
+  "chimera.connect.device.failed": "Authorization failed, check gateway availability.",
+  "chimera.connect.device.desktopOnly": "Device authorization requires the desktop app. Use the API key method here.",
   "chimera.connect.error.save": "Save failed, check the key",
   "chimera.connect.success": "Connected to the {{name}} relay station",
   "chimera.models.description": "Provided via the {{name}} gateway, managed by your administrator",

@@ -158,71 +158,15 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       },
     },
 
+    // 账号登录经设备授权流在桌面端完成（凭据只在浏览器，见
+    // new-api docs/chimera-desktop-auth.md）；插件侧仅保留 API 密钥方式。
     auth: {
       provider: PROVIDER_ID,
       methods: [
         {
           type: "api",
-          label: "中转站账号密码",
-          prompts: [
-            { type: "text", key: "username", message: "账号", placeholder: "中转站用户名" },
-            { type: "text", key: "password", message: "密码" },
-          ],
-          async authorize(inputs) {
-            const username = inputs?.["username"]?.trim()
-            const password = inputs?.["password"]
-            if (!username || !password) return { type: "failed" }
-
-            // 中转站为 new-api：登录换 dashboard access_token，
-            // 拉取账号下全部令牌并取回首个启用令牌的完整密钥。
-            try {
-              const login = await fetch(gateway("api/user/login"), {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ username, password }),
-                signal: AbortSignal.timeout(15_000),
-              })
-              const loginData = (await login.json()) as {
-                success?: boolean
-                data?: { access_token?: string }
-              }
-              if (!loginData.success || !loginData.data?.access_token) return { type: "failed" }
-              const bearer = { authorization: `Bearer ${loginData.data.access_token}` }
-
-              const list = await fetch(gateway("api/token/?p=1&page_size=100"), {
-                headers: bearer,
-                signal: AbortSignal.timeout(15_000),
-              })
-              const listData = (await list.json()) as {
-                success?: boolean
-                data?:
-                  | { items?: Array<{ id: number; name?: string; status?: number }> }
-                  | Array<{ id: number; name?: string; status?: number }>
-              }
-              if (!listData.success) return { type: "failed" }
-              const items = Array.isArray(listData.data) ? listData.data : (listData.data?.items ?? [])
-              const first = items.find((item) => item.status === 1) ?? items[0]
-              if (!first) return { type: "failed" }
-
-              const keyRes = await fetch(gateway(`api/token/${first.id}/key`), {
-                method: "POST",
-                headers: bearer,
-                signal: AbortSignal.timeout(15_000),
-              })
-              const keyData = (await keyRes.json()) as { success?: boolean; data?: { key?: string } }
-              const raw = keyData.data?.key
-              if (!keyData.success || !raw) return { type: "failed" }
-              const key = raw.startsWith("sk-") ? raw : `sk-${raw}`
-              return { type: "success", key, metadata: { username } }
-            } catch {
-              return { type: "failed" }
-            }
-          },
-        },
-        {
-          type: "api",
           label: "API 密钥",
-          prompts: [{ type: "text", key: "apiKey", message: "API 密钥", placeholder: "chm-..." }],
+          prompts: [{ type: "text", key: "apiKey", message: "API 密钥", placeholder: "sk-..." }],
         },
       ],
     },
