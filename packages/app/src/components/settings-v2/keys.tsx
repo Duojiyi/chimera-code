@@ -6,6 +6,7 @@ import { createStore } from "solid-js/store"
 import { ChimeraAvatar } from "../chimera-avatar"
 import { readChimeraKeys, writeChimeraKeys, type ChimeraKeyEntry } from "../chimera-keys"
 import { useServerSDK } from "@/context/server-sdk"
+import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
 
 // 设置 · 密钥（设计稿 S6）：账号卡 + 中转站多密钥表格。
@@ -28,6 +29,7 @@ const gatewayHost = (() => {
 
 export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
   const serverSDK = useServerSDK()
+  const serverSync = useServerSync()
   const [store, setStore] = createStore(readChimeraKeys())
   const [account, setAccount] = createSignal(localStorage.getItem("chimera-account") ?? "")
   const [adding, setAdding] = createSignal(false)
@@ -53,6 +55,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
       })
       setStore("active", entry.key)
       persist()
+      void serverSync().refreshProviders()
       showToast({ title: `已切换到 ${entry.name}`, variant: "default" })
     } catch {
       showToast({ title: "切换失败，请检查网关可用性", variant: "default" })
@@ -84,6 +87,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     setAccount("")
     setStore({ keys: [], active: "" })
     persist()
+    void serverSync().refreshProviders()
     showToast({ title: "已退出登录", variant: "default" })
   }
 

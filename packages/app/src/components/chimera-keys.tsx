@@ -6,6 +6,7 @@ import { Spinner } from "@opencode-ai/ui/spinner"
 import { For, Show, createSignal, type Accessor, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useServerSDK } from "@/context/server-sdk"
+import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
 
 // Chimera 密钥管理（设计稿 S6）：同一中转站保存多条密钥，一键切换当前密钥。
@@ -53,6 +54,7 @@ const mask = (key: string) => (key.length > 10 ? `${key.slice(0, 6)}…${key.sli
 export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
   const dialog = useDialog()
   const serverSDK = useServerSDK()
+  const serverSync = useServerSync()
   const [store, setStore] = createStore(readChimeraKeys())
   const [adding, setAdding] = createSignal(false)
   const [newName, setNewName] = createSignal("")
@@ -79,6 +81,7 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
       })
       setStore("active", entry.key)
       persist()
+      void serverSync().refreshProviders()
       showToast({ title: `已切换到 ${entry.name}`, variant: "default" })
     } catch {
       setError("切换失败，请检查网关可用性")
