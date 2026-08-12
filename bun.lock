@@ -94,6 +94,21 @@
         "vite-plugin-solid": "catalog:",
       },
     },
+    "packages/chimera-brand": {
+      "name": "@chimera/brand",
+      "version": "0.1.0",
+    },
+    "packages/chimera-plugin": {
+      "name": "@chimera/plugin",
+      "version": "0.1.0",
+      "dependencies": {
+        "@chimera/brand": "workspace:*",
+      },
+      "devDependencies": {
+        "@opencode-ai/plugin": "workspace:*",
+        "typescript": "catalog:",
+      },
+    },
     "packages/cli": {
       "name": "@opencode-ai/cli",
       "version": "1.18.16",
@@ -383,6 +398,7 @@
       "name": "@opencode-ai/desktop",
       "version": "1.18.16",
       "dependencies": {
+        "@chimera/brand": "workspace:*",
         "@zip.js/zip.js": "2.7.62",
         "drizzle-orm": "catalog:",
         "effect": "catalog:",
@@ -587,6 +603,7 @@
         "@ai-sdk/vercel": "2.0.39",
         "@ai-sdk/xai": "3.0.102",
         "@aws-sdk/credential-providers": "3.1057.0",
+        "@chimera/plugin": "workspace:*",
         "@clack/prompts": "1.0.0-alpha.1",
         "@effect/opentelemetry": "catalog:",
         "@effect/platform-node": "catalog:",
@@ -1449,6 +1466,10 @@
     "@bufbuild/protoplugin": ["@bufbuild/protoplugin@2.12.0", "", { "dependencies": { "@bufbuild/protobuf": "2.12.0", "@typescript/vfs": "^1.6.2", "typescript": "5.4.5" } }, "sha512-ORlDITp8AFUXzIhLRoMCG+ud+D3MPKWb5HQXBoskMMnjeyEjE1H1qLonVNPyOr8lkx3xSfYUo8a0dvOZJVAzow=="],
 
     "@capsizecss/unpack": ["@capsizecss/unpack@2.4.0", "", { "dependencies": { "blob-to-buffer": "^1.2.8", "cross-fetch": "^3.0.4", "fontkit": "^2.0.2" } }, "sha512-GrSU71meACqcmIUxPYOJvGKF0yryjN/L1aCuE9DViCTJI7bfkjgYDPD1zbNDcINJwSSP6UaBZY9GAbYDO7re0Q=="],
+
+    "@chimera/brand": ["@chimera/brand@workspace:packages/chimera-brand"],
+
+    "@chimera/plugin": ["@chimera/plugin@workspace:packages/chimera-plugin"],
 
     "@clack/core": ["@clack/core@1.0.0-alpha.1", "", { "dependencies": { "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-rFbCU83JnN7l3W1nfgCqqme4ZZvTTgsiKQ6FM0l+r0P+o2eJpExcocBUWUIwnDzL76Aca9VhUdWmB2MbUv+Qyg=="],
 

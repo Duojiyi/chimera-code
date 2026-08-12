@@ -1,0 +1,17 @@
+{
+  "name": "@chimera/plugin",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Chimera system plugin: gateway provider, relay-account auth and key management",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@chimera/brand": "workspace:*"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

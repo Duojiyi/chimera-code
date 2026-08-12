@@ -6,6 +6,7 @@ import type {
   PluginModule,
   WorkspaceAdapter as PluginWorkspaceAdapter,
 } from "@opencode-ai/plugin"
+import { ChimeraPlugin } from "@chimera/plugin"
 import { Config } from "@/config/config"
 import { createOpencodeClient } from "@opencode-ai/sdk"
 import { ServerAuth } from "@/server/auth"
@@ -65,6 +66,8 @@ export function experimentalWebSocketsEnabled(input: { enabled: boolean; channel
 // Built-in plugins that are directly imported (not installed from npm)
 function internalPlugins(flags: RuntimeFlags.Info): PluginInstance[] {
   return [
+    // Chimera 系统插件：网关 provider + 中转站鉴权，先于其他内置插件加载。
+    ChimeraPlugin,
     // Temporary rollout: pre-release builds use WebSockets by default; releases require explicit opt-in.
     (input) =>
       CodexAuthPlugin(input, {
