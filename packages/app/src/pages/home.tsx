@@ -1,16 +1,14 @@
 import { ScrollView } from "@opencode-ai/ui/scroll-view"
 import { createHomeController } from "./home/home-controller"
-import { createHomeProjectsController } from "./home/home-projects-controller"
-import { HomeUtilityNav } from "./home/home-projects-view"
-import { HomeProjects } from "./home/home-projects"
 import { createHomeScrollController } from "./home/home-scroll-controller"
 import { createHomeSessionSearchController } from "./home/home-session-search-controller"
 import { createHomeSessionsController } from "./home/home-sessions-controller"
 import { HomeSessions } from "./home/home-sessions"
 
+// chimera: 首页为单列会话流（设计稿 S0）。项目选择由「新建会话」页承担，
+// 设置入口在左侧图标栏。
 export function NewHome() {
   const home = createHomeController()
-  const projects = createHomeProjectsController(home)
   const sessions = createHomeSessionsController(home)
   const search = createHomeSessionSearchController(home, sessions)
   const scroll = createHomeScrollController(sessions.data.groups)
@@ -29,20 +27,8 @@ export function NewHome() {
         onScroll={(event) => scroll.viewport.update(event.currentTarget.scrollTop)}
         onWheel={scroll.viewport.containOuterWheel}
       >
-        <div
-          class={`
-            mx-auto grid min-h-full w-full max-w-[1080px] grid-rows-[auto_minmax(0,1fr)_auto] gap-4 px-3
-            lg:grid-cols-[280px_minmax(0,720px)] lg:grid-rows-1 lg:gap-8 lg:px-6
-          `}
-        >
-          <HomeProjects projects={projects} scroll={scroll} />
+        <div class="mx-auto flex min-h-full w-full max-w-[860px] flex-col px-4 lg:px-6">
           <HomeSessions sessions={sessions} search={search} scroll={scroll} />
-          <HomeUtilityNav
-            class="flex lg:hidden"
-            onOpenSettings={projects.utility.settings}
-            onOpenHelp={projects.utility.help}
-            language={projects.copy.language}
-          />
         </div>
       </ScrollView>
     </div>

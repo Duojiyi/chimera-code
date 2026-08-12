@@ -78,24 +78,33 @@ export function HomeSessionsView(props: HomeSessionsViewProps) {
       class="min-h-0 min-w-0 flex-1 flex flex-col"
       aria-label={props.language.t("sidebar.project.recentSessions")}
     >
-      <div class="sticky top-0 z-30 shrink-0 bg-v2-background-bg-base pb-3 pt-6 lg:pt-12" onWheel={props.onWheel}>
-        <HomeSessionSearch {...props} />
-        <Suspense>
-          <Show when={props.groups().length > 0 && props.canCreateSession()}>
-            <div class="pointer-events-none absolute right-0 top-[84px] z-20 flex lg:top-[108px]">
-              <ButtonV2
-                data-action="home-new-session"
-                variant="ghost-muted"
-                size="normal"
-                icon="edit"
-                class="pointer-events-auto h-7 px-2 [font-weight:530]"
-                onClick={props.onCreateSession}
-              >
-                {props.language.t("command.session.new")}
-              </ButtonV2>
-            </div>
-          </Show>
-        </Suspense>
+      {/* chimera: 设计稿 S0 头部——标题居左，搜索与新建会话同行居右 */}
+      <div class="sticky top-0 z-30 shrink-0 bg-v2-background-bg-base pb-3 pt-6 lg:pt-10" onWheel={props.onWheel}>
+        <div class="flex items-start gap-3">
+          <div class="flex min-w-0 flex-1 flex-col gap-1 pt-0.5">
+            <h1 class="text-[20px] font-[600] leading-7 text-v2-text-text-base">会话</h1>
+            <p class="text-[12.5px] leading-4 text-v2-text-text-muted">继续进行中的工作，或开启新任务</p>
+          </div>
+          <div class="w-[240px] shrink-0 pt-1.5">
+            <HomeSessionSearch {...props} />
+          </div>
+          <Suspense>
+            <Show when={props.canCreateSession()}>
+              <div class="shrink-0 pt-1.5">
+                <ButtonV2
+                  data-action="home-new-session"
+                  variant="ghost-muted"
+                  size="normal"
+                  icon="edit"
+                  class="h-8 px-3 [font-weight:530]"
+                  onClick={props.onCreateSession}
+                >
+                  {props.language.t("command.session.new")}
+                </ButtonV2>
+              </div>
+            </Show>
+          </Suspense>
+        </div>
       </div>
       <div class="pointer-events-none sticky top-[84px] z-40 h-0 -mr-3 lg:top-[108px]">
         <div
