@@ -49,6 +49,8 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
           inputs: { username: username().trim(), password: password() },
           location: location(),
         })
+        // 账号名持久化，供设置·密钥页账号卡展示
+        localStorage.setItem("chimera-account", username().trim())
         finish()
         return
       }

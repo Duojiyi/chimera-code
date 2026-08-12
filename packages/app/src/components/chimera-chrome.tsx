@@ -3,6 +3,7 @@ import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
 import { For, Show, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
+import { ChimeraAvatar } from "@/components/chimera-avatar"
 import { activeChimeraKeyName } from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
 import { useLayout } from "@/context/layout"
@@ -133,11 +134,10 @@ export const ChimeraRail: Component = () => {
         <button
           type="button"
           aria-label="账户与密钥"
-          class="flex size-[26px] items-center justify-center rounded-full text-[11px] font-bold hover:brightness-105"
-          style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)", color: "#10231D" }}
+          class="flex items-center justify-center rounded-full transition-[filter] hover:brightness-110"
           onClick={openKeysPage}
         >
-          多
+          <ChimeraAvatar size={26} />
         </button>
       </TooltipV2>
     </nav>

@@ -1,75 +1,57 @@
 import { useFilteredList } from "@opencode-ai/ui/hooks"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
 import { Switch } from "@opencode-ai/ui/v2/switch-v2"
 import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
 import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
 import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { type Component, For, Show } from "solid-js"
-import { createStore } from "solid-js/store"
+import { type Component, For, Show, createMemo } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useModels } from "@/context/models"
-import { useServerSDK } from "@/context/server-sdk"
-import { popularProviders } from "@/hooks/use-providers"
-import { Persist, persisted } from "@/utils/persist"
-import { SettingsListV2 } from "./parts/list"
-import { SettingsRowV2 } from "./parts/row"
 import "./settings-v2.css"
 
 type ModelItem = ReturnType<ReturnType<typeof useModels>["list"]>[number]
 
-const PROVIDER_ICON_SIZE = 16
+// chimera: 设置·模型（设计稿 S3）——网关模型表：模型 / 协议 / 上下文 / 默认 / 状态。
+// 前后端对齐：状态=可见性开关（本地持久化）；默认=置顶最近使用（composer 无会话选择时
+// 的真实默认取值链）；协议/上下文来自 provider 与模型元数据。
+// TODO(chimera): 文案待补 i18n 键。
 
-// chimera: 设计稿 S3 的「协议 · 上下文」元信息行，数据来自 provider 与模型 limit
-function modelMeta(item: ModelItem) {
-  const protocols: Record<string, string> = {
-    anthropic: "Anthropic",
-    chimera: "OpenAI 兼容",
-    openai: "OpenAI",
-  }
-  const parts: string[] = []
-  if (protocols[item.provider.id]) parts.push(protocols[item.provider.id])
+const PROTOCOLS: Record<string, string> = {
+  anthropic: "Anthropic",
+  chimera: "OpenAI 兼容",
+  openai: "OpenAI",
+}
+
+function contextLabel(item: ModelItem) {
   const context = item.limit?.context
-  if (context)
-    parts.push(`上下文 ${context >= 1_000_000 ? `${(context / 1_000_000).toFixed(context % 1_000_000 ? 1 : 0)}M` : `${Math.round(context / 1000)}K`}`)
-  return parts.join(" · ")
+  if (!context) return "—"
+  if (context >= 1_000_000) return `${(context / 1_000_000).toFixed(context % 1_000_000 ? 1 : 0)}m`
+  return `${Math.round(context / 1000)}k`
 }
 
 export const SettingsModelsV2: Component = () => {
   const language = useLanguage()
   const models = useModels()
-  const serverSdk = useServerSDK()
-  const [store, setStore] = persisted(
-    Persist.serverGlobal(serverSdk().scope, "settings-v2.models.providers"),
-    createStore({ collapsed: {} as Record<string, boolean> }),
-  )
 
   const list = useFilteredList<ModelItem>({
     items: (_filter) => models.list(),
     key: (x) => `${x.provider.id}:${x.id}`,
     filterKeys: ["provider.name", "name", "id"],
-    sortBy: (a, b) => a.name.localeCompare(b.name),
-    groupBy: (x) => x.provider.id,
-    sortGroupsBy: (a, b) => {
-      const aIndex = popularProviders.indexOf(a.category)
-      const bIndex = popularProviders.indexOf(b.category)
-      const aPopular = aIndex >= 0
-      const bPopular = bIndex >= 0
+    sortBy: (a, b) => a.id.localeCompare(b.id),
+  })
 
-      if (aPopular && !bPopular) return -1
-      if (!aPopular && bPopular) return 1
-      if (aPopular && bPopular) return aIndex - bIndex
-
-      const aName = a.items[0].provider.name
-      const bName = b.items[0].provider.name
-      return aName.localeCompare(bName)
-    },
+  const defaultKey = createMemo(() => {
+    const recent = models.recent.list()[0]
+    return recent ? `${recent.providerID}:${recent.modelID}` : undefined
   })
 
   return (
     <>
-      <div class="settings-v2-tab-header settings-v2-tab-header--stacked">
-        <h2 class="settings-v2-tab-title">{language.t("settings.models.title")}</h2>
-        <div class="settings-v2-tab-search">
+      <div class="flex w-full items-start justify-between gap-4">
+        <div class="flex min-w-0 flex-1 flex-col gap-1">
+          <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">{language.t("settings.models.title")}</h2>
+          <p class="text-[12.5px] leading-5 text-v2-text-text-muted">通过 Chimera 网关提供，由管理员统一配置</p>
+        </div>
+        <div class="settings-v2-tab-search shrink-0" style={{ width: "220px" }}>
           <TextInputV2
             type="search"
             appearance="base"
@@ -95,11 +77,18 @@ export const SettingsModelsV2: Component = () => {
         </div>
       </div>
 
-      <div class="settings-v2-tab-body settings-v2-models">
+      <div class="mt-4 flex w-full flex-col overflow-hidden rounded-[10px] border-[0.5px] border-v2-border-border-muted">
+        <div class="flex h-10 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-4">
+          <span class="flex-1 font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">模型</span>
+          <span class="w-[110px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">协议</span>
+          <span class="w-[70px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">上下文</span>
+          <span class="w-[52px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">默认</span>
+          <span class="w-[44px] text-right font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">状态</span>
+        </div>
         <Show
           when={!list.grouped.loading}
           fallback={
-            <div class="settings-v2-models-status">
+            <div class="flex h-16 items-center justify-center bg-v2-background-bg-layer-01 text-[12px] text-v2-text-text-faint">
               {language.t("common.loading")}
               {language.t("common.loading.ellipsis")}
             </div>
@@ -108,88 +97,73 @@ export const SettingsModelsV2: Component = () => {
           <Show
             when={list.flat().length > 0}
             fallback={
-              <div class="settings-v2-models-status">
+              <div class="flex h-16 items-center justify-center gap-1 bg-v2-background-bg-layer-01 text-[12px] text-v2-text-text-faint">
                 <span>{language.t("dialog.model.empty")}</span>
                 <Show when={list.filter()}>
-                  <span class="settings-v2-models-status-filter">&quot;{list.filter()}&quot;</span>
+                  <span>&quot;{list.filter()}&quot;</span>
                 </Show>
               </div>
             }
           >
-            <For each={list.grouped.latest}>
-              {(group) => {
-                const searching = () => list.filter().length > 0
-                const expanded = () => searching() || !store.collapsed[group.category]
-
+            <For each={list.flat()}>
+              {(item, index) => {
+                const key = { providerID: item.provider.id, modelID: item.id }
+                const visible = () => models.visible(key)
+                const isDefault = () => defaultKey() === `${item.provider.id}:${item.id}`
                 return (
                   <div
-                    class="settings-v2-section"
-                    data-component="settings-models-provider"
-                    data-expanded={expanded() ? "" : undefined}
+                    class="flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4 transition-opacity"
+                    classList={{
+                      "border-t-[0.5px] border-v2-border-border-muted": index() > 0,
+                      "opacity-45": !visible(),
+                    }}
                   >
-                    <h3 class="settings-v2-models-group-header">
+                    <span class="flex min-w-0 flex-1 items-center gap-2.5">
+                      <span
+                        class="inline-block size-1.5 shrink-0 rounded-full"
+                        style={{
+                          background: visible() ? "var(--v2-state-fg-success)" : "var(--v2-icon-icon-faint)",
+                        }}
+                      />
+                      <span class="truncate font-mono text-[12.5px] font-[530] text-v2-text-text-base" title={item.name}>
+                        {item.id}
+                      </span>
+                    </span>
+                    <span class="w-[110px] shrink-0">
+                      <span class="inline-flex h-[18px] items-center rounded-[4px] border-[0.5px] border-v2-border-border-base px-1.5 font-mono text-[10px] text-v2-text-text-muted">
+                        {PROTOCOLS[item.provider.id] ?? item.provider.name}
+                      </span>
+                    </span>
+                    <span class="w-[70px] shrink-0 font-mono text-[11.5px] text-v2-text-text-muted">
+                      {contextLabel(item)}
+                    </span>
+                    <span class="flex w-[52px] shrink-0 items-center">
                       <button
                         type="button"
-                        class="settings-v2-models-group-trigger"
-                        aria-expanded={expanded()}
-                        disabled={searching()}
-                        onClick={() => setStore("collapsed", group.category, expanded())}
+                        role="radio"
+                        aria-checked={isDefault()}
+                        aria-label={`设为默认模型 ${item.id}`}
+                        title={isDefault() ? "当前默认模型" : "设为默认（新会话优先使用）"}
+                        class="flex size-[18px] items-center justify-center rounded-full border-[1.5px] transition-colors"
+                        style={{
+                          "border-color": isDefault() ? "var(--v2-state-fg-warning)" : "var(--v2-border-border-base)",
+                          color: "var(--v2-state-fg-warning)",
+                        }}
+                        disabled={!visible()}
+                        onClick={() => models.recent.push(key)}
                       >
-                        <span class="settings-v2-models-group-chevron">
-                          <Show
-                            when={expanded()}
-                            fallback={
-                              <svg width="5" height="6" viewBox="0 0 5 6" fill="none" aria-hidden="true">
-                                <path
-                                  d="M0.75194 5.31663C0.41861 5.51103 0 5.27063 0 4.88473V0.500754C0 0.114854 0.41861 -0.125577 0.75194 0.0688635L4.5096 2.26084C4.8404 2.45378 4.8404 2.93168 4.5096 3.12462L0.75194 5.31663Z"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                            }
-                          >
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                              <path
-                                d="M5.37624 6.75194C5.18184 6.41861 5.42224 6 5.80814 6H10.1921C10.578 6 10.8184 6.41861 10.624 6.75194L8.43203 10.5096C8.23909 10.8404 7.76119 10.8404 7.56825 10.5096L5.37624 6.75194Z"
-                                fill="currentColor"
-                              />
-                            </svg>
-                          </Show>
-                        </span>
-                        <span class="settings-v2-models-group-label">
-                          <ProviderIcon
-                            id={group.category}
-                            width={PROVIDER_ICON_SIZE}
-                            height={PROVIDER_ICON_SIZE}
-                            class="settings-v2-models-provider-icon shrink-0"
-                          />
-                          <span class="settings-v2-section-title">{group.items[0].provider.name}</span>
-                        </span>
+                        <Show when={isDefault()}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" class="size-2.5">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        </Show>
                       </button>
-                    </h3>
-                    <Show when={expanded()}>
-                      <SettingsListV2>
-                        <For each={group.items}>
-                          {(item) => {
-                            const key = { providerID: item.provider.id, modelID: item.id }
-                            return (
-                              <SettingsRowV2 title={item.name} description={modelMeta(item)}>
-                                <div>
-                                  <Switch
-                                    checked={models.visible(key)}
-                                    onChange={(checked) => {
-                                      models.setVisibility(key, checked)
-                                    }}
-                                    hideLabel
-                                  >
-                                    {item.name}
-                                  </Switch>
-                                </div>
-                              </SettingsRowV2>
-                            )
-                          }}
-                        </For>
-                      </SettingsListV2>
-                    </Show>
+                    </span>
+                    <span class="flex w-[44px] shrink-0 justify-end">
+                      <Switch checked={visible()} onChange={(checked) => models.setVisibility(key, checked)} hideLabel>
+                        {item.id}
+                      </Switch>
+                    </span>
                   </div>
                 )
               }}
@@ -197,6 +171,10 @@ export const SettingsModelsV2: Component = () => {
           </Show>
         </Show>
       </div>
+
+      <p class="mt-3 font-mono text-[11px] leading-4 tracking-[0.2px] text-v2-text-text-faint">
+        模型由管理员在网关控制台签发与配置。本地仅可启用 / 停用。
+      </p>
     </>
   )
 }
