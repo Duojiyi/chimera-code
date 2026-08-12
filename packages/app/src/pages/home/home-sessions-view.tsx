@@ -437,7 +437,7 @@ function HomeSessionRow(props: HomeSessionsViewProps & { record: HomeSessionReco
 
   return (
     <div
-      class="group/session relative flex h-10 min-w-0 items-center rounded-[6px]"
+      class="group/session relative flex h-10 min-w-0 items-center border-b-[0.5px] border-v2-border-border-muted"
       classList={{ group: !!showProjectName() }}
     >
       <button

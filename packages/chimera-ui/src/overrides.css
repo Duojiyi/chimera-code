@@ -49,15 +49,16 @@
 
 /* --- 排版密度：设计稿为窄列紧凑排版 --- */
 
-/* 内容列收窄（设计稿 ~600px），双属性提特异性压过 tailwind md:max-w-200 */
+/* 内容列 760px：设计稿卡宽按含右侧文件面板的布局折算；无常驻右面板时
+   640 两侧留白过大（用户实拍反馈），放宽至 760 维持同等呼吸感 */
 [data-timeline-row][data-timeline-row] {
-  max-width: 640px;
+  max-width: 760px;
   margin-inline: auto;
 }
 
-/* 输入区与内容列同轴同宽（上游 dock 内层为 800px，与 640 内容列错位） */
+/* 输入区与内容列同轴同宽（上游 dock 内层为 800px，与内容列错位） */
 [data-component="session-prompt-dock"] > div {
-  max-width: 640px;
+  max-width: 760px;
 }
 
 /* 正文字号 13.5px、行高收紧（设计稿正文密度） */
@@ -187,7 +188,8 @@
   letter-spacing: 0.2px;
 }
 
-/* 输入区模型选择：描边胶囊（设计稿 S1 的 ● claude-opus-5 ▾ pill） */
+/* 输入区模型选择：描边胶囊 + 金点前缀（设计稿 S1 的 ● claude-opus-5 ▾ pill）。
+   隐藏上游提供商图标，用伪元素画状态点。 */
 [data-component="button-v2"][data-action="prompt-model"] {
   height: 26px;
   padding: 0 10px;
@@ -197,17 +199,31 @@
   font-size: 11.5px;
 }
 
+[data-component="button-v2"][data-action="prompt-model"] > :is(svg, img):not(:last-child) {
+  display: none;
+}
+
+[data-component="button-v2"][data-action="prompt-model"]::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--v2-state-fg-warning);
+}
+
 /* 输入区附件按钮：描边圆角（设计稿 S1 工具条按钮语法） */
 [data-component="prompt-input-v2"] [data-component="icon-button-v2"][aria-label="添加图片和文件"] {
   border: 0.5px solid var(--v2-border-border-base);
   border-radius: 7px;
 }
 
-/* 输入区发送按钮：熔金实心（设计稿 S1 右下角 ↑ 按钮） */
+/* 输入区发送按钮：熔金实心圆形（设计稿 S1 右下角 ● ↑ 按钮） */
 [data-component="icon-button"][aria-label="发送"],
 [data-component="icon-button"][aria-label="Send"] {
   background: var(--v2-state-fg-warning);
   color: var(--v2-background-bg-base);
+  border-radius: 999px;
   box-shadow: none;
 }
 
@@ -223,6 +239,19 @@
   background: var(--v2-state-fg-warning);
   color: var(--v2-background-bg-base);
   opacity: 0.62;
+}
+
+/* 设置页搜索框（模型表右上）：透明底细描边胶囊，与表格视觉同语言 */
+.settings-v2-tab-search [data-component="text-input-v2"] {
+  height: 30px;
+  border: 0.5px solid var(--v2-border-border-base);
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.settings-v2-tab-search [data-component="text-input-v2"]:where(:hover, :focus-within) {
+  background: color-mix(in srgb, var(--v2-background-bg-layer-02) 50%, transparent);
 }
 
 /* 开关：标准圆形滑动 toggle（设计稿 S3 状态列——金底白点，未选灰底）。
