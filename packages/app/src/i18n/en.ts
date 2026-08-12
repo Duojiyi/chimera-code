@@ -1247,5 +1247,6 @@ export const dict = {
   "chimera.newSession.subtitle": "Pick a project and tell Chimera what to do",
   "chimera.newSession.hints": "Enter Start · Esc Back",
   "chimera.status.gateway.latency": "Gateway {{ms}}ms",
+  "chimera.nav.theme": "Toggle light/dark",
   "ui.chimera.duration": "Took {{time}}",
 }

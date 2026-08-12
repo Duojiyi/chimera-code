@@ -42,6 +42,9 @@
       "markdown-image": "#9A681B",
       "markdown-image-text": "#1E8E6A",
       "markdown-code-block": "#1B211F"
+    },
+    "v2Overrides": {
+      "v2-state-fg-warning": "#9A681B"
     }
   },
   "dark": {
@@ -84,6 +87,9 @@
       "markdown-image": "#DEA54C",
       "markdown-image-text": "#46C39A",
       "markdown-code-block": "#ECEFED"
+    },
+    "v2Overrides": {
+      "v2-state-fg-warning": "#CE9740"
     }
   }
 }

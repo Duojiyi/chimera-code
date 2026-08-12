@@ -1,5 +1,6 @@
 import { BRAND } from "@chimera/brand"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { useTheme } from "@opencode-ai/ui/theme/context"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
 import { For, Show, createEffect, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
@@ -34,6 +35,10 @@ const ICONS: Record<string, JSX.Element> = {
   settings: stroke(
     '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
   ),
+  sun: stroke(
+    '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  ),
+  moon: stroke('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'),
 }
 
 export const ChimeraRail: Component = () => {
@@ -41,6 +46,7 @@ export const ChimeraRail: Component = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const language = useLanguage()
+  const theme = useTheme()
 
   const onHome = createMemo(() => location.pathname === "/" || location.pathname === "")
 
@@ -133,6 +139,20 @@ export const ChimeraRail: Component = () => {
     >
       <For each={top}>{item}</For>
       <div class="flex-1" />
+      {/* 深浅色快速切换（点击在 light/dark 间轮换） */}
+      <TooltipV2 placement="right" value={language.t("chimera.nav.theme")}>
+        <button
+          type="button"
+          aria-label={language.t("chimera.nav.theme")}
+          class="flex size-8 items-center justify-center rounded-[6px] transition-colors hover:bg-v2-overlay-simple-overlay-hover"
+          style={{ color: "var(--v2-icon-icon-muted)" }}
+          onClick={() => theme.setColorScheme(theme.mode() === "dark" ? "light" : "dark")}
+        >
+          <Show when={theme.mode() === "dark"} fallback={ICONS.moon}>
+            {ICONS.sun}
+          </Show>
+        </button>
+      </TooltipV2>
       {item({ id: "settings", label: () => language.t("chimera.nav.settings"), onClick: openSettings })}
       <TooltipV2 placement="right" value={language.t("chimera.nav.account")}>
         <button
