@@ -82,7 +82,7 @@ export const SettingsModelsV2: Component = () => {
       </div>
 
       <div class="mt-4 flex w-full flex-col overflow-hidden rounded-[10px] border-[0.5px] border-v2-border-border-muted">
-        <div class="flex h-10 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-4">
+        <div class="flex h-8 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted px-4">
           <span class="flex-1 font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
             {language.t("chimera.models.header.model")}
           </span>
@@ -102,7 +102,7 @@ export const SettingsModelsV2: Component = () => {
         <Show
           when={!list.grouped.loading}
           fallback={
-            <div class="flex h-16 items-center justify-center bg-v2-background-bg-layer-01 text-[12px] text-v2-text-text-faint">
+            <div class="flex h-16 items-center justify-center text-[12px] text-v2-text-text-faint">
               {language.t("common.loading")}
               {language.t("common.loading.ellipsis")}
             </div>
@@ -111,7 +111,7 @@ export const SettingsModelsV2: Component = () => {
           <Show
             when={list.flat().length > 0}
             fallback={
-              <div class="flex h-16 items-center justify-center gap-1 bg-v2-background-bg-layer-01 text-[12px] text-v2-text-text-faint">
+              <div class="flex h-16 items-center justify-center gap-1 text-[12px] text-v2-text-text-faint">
                 <span>{language.t("dialog.model.empty")}</span>
                 <Show when={list.filter()}>
                   <span>&quot;{list.filter()}&quot;</span>
@@ -126,7 +126,7 @@ export const SettingsModelsV2: Component = () => {
                 const isDefault = () => defaultKey() === `${item.provider.id}:${item.id}`
                 return (
                   <div
-                    class="flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4 transition-[opacity,background-color] hover:bg-v2-overlay-simple-overlay-hover"
+                    class="flex h-10 w-full items-center gap-3 px-4 transition-[opacity,background-color] hover:bg-v2-overlay-simple-overlay-hover"
                     classList={{
                       "border-t-[0.5px] border-v2-border-border-muted": index() > 0,
                       "opacity-45": !visible(),

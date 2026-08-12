@@ -96,14 +96,6 @@
     0 0 18px -6px color-mix(in srgb, var(--v2-state-fg-warning) 35%, transparent);
 }
 
-/* 发送按钮：熔金常亮（设计稿右下角 ↑ 始终为品牌焦点色，禁用仅降不透明度） */
-[data-component="icon-button"][aria-label="发送"]:disabled,
-[data-component="icon-button"][aria-label="Send"]:disabled {
-  background: var(--v2-state-fg-warning);
-  color: var(--v2-background-bg-base);
-  opacity: 0.45;
-}
-
 /* 用户消息：右侧气泡改为全宽安静卡片（设计稿为深底无边框、紧凑内边距、13px） */
 [data-component="user-message"] [data-slot="user-message-body"],
 [data-component="user-message"] [data-component="user-message-body"] {
@@ -225,10 +217,41 @@
   filter: brightness(1.08);
 }
 
+/* 禁用态保持熔金常亮、仅降不透明度（设计稿 S1/S2 的 ↑ 始终为品牌焦点色） */
 [data-component="icon-button"][aria-label="发送"]:disabled,
 [data-component="icon-button"][aria-label="Send"]:disabled {
-  background: transparent;
-  color: var(--v2-icon-icon-muted);
+  background: var(--v2-state-fg-warning);
+  color: var(--v2-background-bg-base);
+  opacity: 0.62;
+}
+
+/* 开关：标准圆形滑动 toggle（设计稿 S3 状态列——金底白点，未选灰底）。
+   上游为方形滑块（radius 4px、灰 thumb）且样式在更高优先级层，需 !important。 */
+[data-slot="switch-control"] {
+  width: 28px !important;
+  height: 16px !important;
+  border-radius: 999px !important;
+  background: var(--v2-background-bg-layer-03, rgba(255, 255, 255, 0.14)) !important;
+  padding: 2px !important;
+  transition: background-color 140ms ease !important;
+}
+
+[data-slot="switch-control"][data-checked] {
+  background: var(--v2-state-fg-warning) !important;
+}
+
+[data-slot="switch-thumb"] {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 999px !important;
+  background: #fcfcfc !important;
+  transform: translateX(0) !important;
+  transition: transform 140ms ease !important;
+}
+
+[data-slot="switch-thumb"][data-checked] {
+  transform: translateX(12px) !important;
+  background: var(--v2-background-bg-base) !important;
 }
 
 /* AI 回复头（渐变标 + Chimera + 模型 · 时间）由 message-timeline 的

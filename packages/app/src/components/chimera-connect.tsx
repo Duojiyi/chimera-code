@@ -325,12 +325,13 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
       <DialogBody class="min-h-0 flex-none gap-0 overflow-y-auto px-5 pb-5">
         {/* 品牌头（设计稿 S5）：方标 + 欢迎语 */}
         <div class="flex flex-col items-center gap-2.5 pb-5 pt-1">
+          {/* 设计稿 S5：深底金标 app 图标风格 */}
           <span
-            class="flex size-10 items-center justify-center rounded-[10px]"
+            class="flex size-10 items-center justify-center rounded-[10px] border-[0.5px] border-v2-border-border-base"
             style={{
-              background: "linear-gradient(135deg, #DEA54C, #46C39A)",
-              "--icon-strong-base": "#10231D",
-              "--icon-base": "#10231D",
+              background: "var(--v2-background-bg-layer-02)",
+              "--icon-strong-base": "var(--v2-state-fg-warning)",
+              "--icon-base": "var(--v2-state-fg-warning)",
             }}
           >
             <Mark class="size-6" />

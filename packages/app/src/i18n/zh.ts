@@ -1318,5 +1318,9 @@ export const dict = {
   "chimera.settings.tab.keys": "密钥",
   "chimera.home.title": "会话",
   "chimera.home.subtitle": "继续进行中的工作，或开启新任务",
+  "chimera.palette.hints": "↑↓ 选择 · Enter 执行 · Esc 关闭",
+  "chimera.newSession.subtitle": "选择项目，告诉 Chimera 要做什么",
+  "chimera.newSession.hints": "Enter 开始 · Esc 返回",
+  "chimera.status.gateway.latency": "网关 {{ms}}ms",
   "ui.chimera.duration": "耗时 {{time}}",
 } satisfies Partial<Record<Keys, string>>

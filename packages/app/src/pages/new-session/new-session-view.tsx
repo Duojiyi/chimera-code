@@ -26,13 +26,12 @@ export function NewSessionView(props: {
         data-component="session-new-design"
         class="relative flex-1 min-h-0 overflow-hidden rounded-[10px] bg-v2-background-bg-deep"
       >
-        {/* Chimera S2：水印字标改为标题组，内容垂直居中（设计稿 design/s2-new-session-*.png） */}
-        <div class="absolute inset-0 flex flex-col items-center justify-center px-6">
+        {/* Chimera S2：水印字标改为标题组，内容上三分位（设计稿 design/s2-new-session-*.png） */}
+        <div class="absolute inset-0 flex flex-col items-center justify-start overflow-y-auto px-6 pt-[24cqh]">
           <div class={NEW_SESSION_CONTENT_WIDTH}>
             <div class="flex flex-col gap-2">
               <h1 class="text-xl font-semibold text-v2-text-text-base">{language.t("command.session.new")}</h1>
-              {/* TODO(chimera): 副标题待补 i18n 键 */}
-              <p class="text-[13px] text-v2-text-text-faint">选择项目，告诉 Chimera 要做什么</p>
+              <p class="text-[13px] text-v2-text-text-faint">{language.t("chimera.newSession.subtitle")}</p>
             </div>
             <div class="mt-6 flex flex-col gap-6">
               <PromptInputV2Composer controller={props.input} />
@@ -60,6 +59,10 @@ export function NewSessionView(props: {
                   </Show>
                 </div>
               </Show>
+              {/* chimera: 设计稿 S2 卡片下快捷键提示行 */}
+              <p class="text-center font-mono text-[10.5px] tracking-[0.3px] text-v2-text-text-faint">
+                {language.t("chimera.newSession.hints")}
+              </p>
             </div>
           </div>
         </div>

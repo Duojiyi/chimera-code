@@ -180,7 +180,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
 
       {/* 密钥表（设计稿 S6）：名称 / 密钥 / 操作 */}
       <div class="flex w-full flex-col overflow-hidden rounded-[10px] border-[0.5px] border-v2-border-border-muted">
-        <div class="flex h-10 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted bg-v2-background-bg-layer-02 px-4">
+        <div class="flex h-8 w-full items-center gap-3 border-b-[0.5px] border-v2-border-border-muted px-4">
           <span class="w-[210px] font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">
             {language.t("chimera.keys.header.name")}
           </span>
@@ -195,7 +195,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
         <Show
           when={store.keys.length > 0}
           fallback={
-            <div class="flex h-20 items-center justify-center bg-v2-background-bg-layer-01 text-[12.5px] text-v2-text-text-faint">
+            <div class="flex h-20 items-center justify-center text-[12.5px] text-v2-text-text-faint">
               {language.t("chimera.keys.empty")}
             </div>
           }
@@ -205,7 +205,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
               const active = () => store.active === entry.key
               return (
                 <div
-                  class="group flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4 transition-colors hover:bg-v2-overlay-simple-overlay-hover"
+                  class="group flex h-10 w-full items-center gap-3 px-4 transition-colors hover:bg-v2-overlay-simple-overlay-hover"
                   classList={{ "border-t-[0.5px] border-v2-border-border-muted": index() > 0 }}
                 >
                   <span class="flex w-[210px] shrink-0 items-center gap-2 truncate">

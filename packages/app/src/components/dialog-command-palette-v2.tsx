@@ -243,7 +243,7 @@ function CommandPaletteView(props: {
         </ScrollView>
         {/* chimera: 设计稿 S4 底部按键提示条 */}
         <div class="command-palette-v2-footer">
-          <span>↑↓ 选择 · Enter 执行 · Esc 关闭</span>
+          <span>{language.t("chimera.palette.hints")}</span>
           <span class="command-palette-v2-footer-accent" />
         </div>
       </DialogBody>

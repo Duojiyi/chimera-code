@@ -1243,5 +1243,9 @@ export const dict = {
   "chimera.settings.tab.keys": "Keys",
   "chimera.home.title": "Sessions",
   "chimera.home.subtitle": "Continue where you left off, or start something new",
+  "chimera.palette.hints": "↑↓ Select · Enter Run · Esc Close",
+  "chimera.newSession.subtitle": "Pick a project and tell Chimera what to do",
+  "chimera.newSession.hints": "Enter Start · Esc Back",
+  "chimera.status.gateway.latency": "Gateway {{ms}}ms",
   "ui.chimera.duration": "Took {{time}}",
 }

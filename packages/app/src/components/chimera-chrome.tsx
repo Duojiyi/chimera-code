@@ -163,6 +163,21 @@ export const ChimeraStatusBar: Component = () => {
     }
   })
 
+  // 网关延迟探测（设计稿 S1 状态栏「● 网关 42ms」）：60s 一次轻量状态请求测 RTT
+  const [latency, setLatency] = createSignal<number | undefined>(undefined)
+  const probeGateway = async () => {
+    const started = performance.now()
+    try {
+      await fetch(new URL("/api/status", BRAND.gatewayUrl), { method: "GET", mode: "no-cors", cache: "no-store" })
+      setLatency(Math.max(1, Math.round(performance.now() - started)))
+    } catch {
+      setLatency(undefined)
+    }
+  }
+  void probeGateway()
+  const probeTimer = setInterval(() => void probeGateway(), 60_000)
+  onCleanup(() => clearInterval(probeTimer))
+
   // 当前路由对应的工作目录（与 DialogSettings 同款推导）
   const directory = createMemo(() => {
     const route = layout.route()
@@ -292,14 +307,22 @@ export const ChimeraStatusBar: Component = () => {
             </span>
           )}
         </Show>
+        {/* 设计稿 S1：● 网关 42ms（悬浮显示完整域名与上游版本） */}
         <span
           class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint"
-          title={language.t("chimera.status.gateway.tooltip")}
+          title={`${gatewayHost()} · ${language.t("chimera.status.gateway.tooltip")}`}
         >
-          <span class="inline-block size-1.5 rounded-full" style={{ background: "var(--v2-state-fg-success)" }} />
-          {gatewayHost()}
+          <span
+            class="inline-block size-1.5 rounded-full"
+            style={{ background: latency() ? "var(--v2-state-fg-success)" : "var(--v2-state-fg-danger)" }}
+          />
+          <Show when={latency()} fallback={gatewayHost()}>
+            {language.t("chimera.status.gateway.latency", { ms: `${latency()}` })}
+          </Show>
         </span>
-        <span class="font-mono text-[10.5px] text-v2-text-text-faint">v{platform.version}</span>
+        <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={`opencode v${platform.version}`}>
+          v{BRAND.version}
+        </span>
       </div>
     </footer>
   )

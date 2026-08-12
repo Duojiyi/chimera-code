@@ -5,6 +5,8 @@ export const BRAND = {
   nameLower: "chimera",
   appId: "io.chimera.desktop",
   scheme: "chimera",
+  // 品牌产品版本（状态栏、关于页展示），独立于上游 opencode 版本号
+  version: "0.1.0",
   gatewayUrl: "https://api.chimerahub.org/",
   homepage: "https://chimerahub.org",
   github: { owner: "Duojiyi", repo: "chimera-code" },

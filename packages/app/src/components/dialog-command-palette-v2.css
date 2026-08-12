@@ -219,6 +219,24 @@
   }
 }
 
+/* chimera: 设计稿 S4——搜索行为无框输入行：透明底、贴面板顶部、底部发丝分隔线 */
+.command-palette-v2-search {
+  padding: 0;
+  border-bottom: 0.5px solid var(--v2-border-border-muted);
+}
+
+.command-palette-v2-search [data-component="text-input-v2"],
+.command-palette-v2-search [data-component="text-input-v2"]:where(:hover, :focus-within):not([data-disabled]) {
+  height: 46px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.command-palette-v2-search [data-component="text-input-v2"] [data-slot="text-input-v2-leading-icon"] {
+  padding-left: 16px;
+}
+
 /* chimera: 设计稿 S4——分组标题 mono 眉标 */
 .command-palette-v2-group-title {
   font-family: var(--font-family-mono);
@@ -227,27 +245,35 @@
   color: var(--v2-text-text-faint);
 }
 
-/* chimera: 设计稿 S4——快捷键徽章改为等宽轻量样式，底部按键提示条 */
+/* chimera: 设计稿 S4——选中行为熔金调高亮 */
+.command-palette-v2-row[data-active],
+.command-palette-v2-row:focus-visible {
+  background: color-mix(in srgb, var(--v2-state-fg-warning) 9%, transparent);
+}
+
+.command-palette-v2-row[data-active] .command-palette-v2-row-icon {
+  color: var(--v2-state-fg-warning);
+}
+
+/* chimera: 设计稿 S4——快捷键为细边框等宽小徽标（⌘N 样式） */
 .command-palette-v2-row [data-component="keybind-v2"][data-variant] {
-  gap: 2px;
+  gap: 3px;
   background: transparent;
-  border: none;
   box-shadow: none;
-  color: var(--v2-text-text-faint);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
 }
 
 .command-palette-v2-row [data-component="keybind-v2"][data-variant] [data-slot="keybind-v2-key"],
 .command-palette-v2-row [data-component="keybind-v2"][data-variant] [data-slot="keybind-v2-label"] {
-  min-width: 0;
-  padding: 0;
+  min-width: 16px;
+  padding: 1px 5px;
   background: transparent;
-  border: none;
+  border: 0.5px solid var(--v2-border-border-base);
+  border-radius: 4px;
   box-shadow: none;
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
+  color: var(--v2-text-text-faint);
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  line-height: 15px;
 }
 
 .command-palette-v2-footer {

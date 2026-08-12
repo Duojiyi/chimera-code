@@ -1097,6 +1097,20 @@ export function MessageTimeline(props: {
       const row = input.row()
       return row._tag === "AssistantPart" && row.previousAssistantPart
     }
+    // chimera: 首条用户消息上方的日期分隔线（设计稿 S1「今天」居中分隔线）
+    const dateDivider = () => {
+      const row = input.row()
+      if (row._tag !== "UserMessage") return
+      const first = sessionMessages().find((message) => message.role === "user")
+      if (!first || first.id !== row.userMessageID) return
+      const created = new Date(first.time.created)
+      const today = new Date()
+      const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+      const diffDays = Math.round((startOfDay(today) - startOfDay(created)) / 86_400_000)
+      if (diffDays === 0) return language.t("home.sessions.group.today")
+      if (diffDays === 1) return language.t("home.sessions.group.yesterday")
+      return new Intl.DateTimeFormat(language.locale(), { month: "short", day: "numeric" }).format(created)
+    }
     // chimera: 轮首 assistant 行的回复头（渐变标 + Chimera + 模型 · 时间，设计稿 S1）
     const turnHeaderMessage = () => {
       const row = input.row()
@@ -1120,6 +1134,19 @@ export function MessageTimeline(props: {
           "pt-3": previousAssistantPart(),
         }}
       >
+        <Show when={dateDivider()}>
+          {(label) => (
+            <div
+              data-slot="chimera-date-divider"
+              class="flex items-center gap-3 px-4 pb-4 pt-1 md:px-5"
+              aria-hidden="true"
+            >
+              <span class="h-px flex-1 bg-v2-border-border-muted" />
+              <span class="font-mono text-[10.5px] tracking-[0.5px] text-v2-text-text-faint">{label()}</span>
+              <span class="h-px flex-1 bg-v2-border-border-muted" />
+            </div>
+          )}
+        </Show>
         <Show when={turnHeaderMessage()}>
           {(msg) => (
               <div data-slot="chimera-turn-header" class="flex items-center gap-2 px-4 pb-1.5 pt-0.5 md:px-5">
@@ -1131,7 +1158,7 @@ export function MessageTimeline(props: {
               <span class="font-mono text-[11px] text-v2-text-text-faint">
                 {msg().modelID}
                 {" · "}
-                {new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit" }).format(
+                {new Intl.DateTimeFormat(language.locale(), { hour: "2-digit", minute: "2-digit" }).format(
                   new Date(msg().time.created),
                 )}
               </span>

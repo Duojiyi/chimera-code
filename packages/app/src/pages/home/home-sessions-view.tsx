@@ -8,7 +8,6 @@ import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLanguage } from "@/context/language"
 import { ServerConnection } from "@/context/server"
-import { SessionTabAvatarView } from "@/pages/layout/session-tab-avatar"
 import { sessionTitle } from "@/utils/session-title"
 import { getRelativeTime } from "@/utils/time"
 import { shouldOpenSessionInBackground } from "../home-session-open"
@@ -96,9 +95,9 @@ export function HomeSessionsView(props: HomeSessionsViewProps) {
               <div class="shrink-0 pt-1.5">
                 <ButtonV2
                   data-action="home-new-session"
-                  variant="ghost-muted"
+                  variant="neutral"
                   size="normal"
-                  icon="edit"
+                  icon="plus"
                   class="h-8 px-3 [font-weight:530]"
                   onClick={props.onCreateSession}
                 >
@@ -183,6 +182,8 @@ function HomeSessionLeadingController(props: {
   )
 }
 
+// chimera: 设计稿 S0 会话行左侧为状态点——运行中=熔金、未读=熔金亮、常态=青金。
+// 项目归属改由行尾元信息呈现，不再渲染项目头像徽标。
 function HomeSessionLeading(props: {
   record: HomeSessionRecord
   revealProjectOnHover: boolean
@@ -191,7 +192,7 @@ function HomeSessionLeading(props: {
   loading: boolean
 }) {
   return (
-    <div class="relative shrink-0">
+    <div class="relative flex shrink-0 items-center">
       <Show when={props.open}>
         <span
           aria-hidden="true"
@@ -199,15 +200,17 @@ function HomeSessionLeading(props: {
             pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2
             rounded-[2px] bg-v2-background-bg-layer-04
           `}
-          style={{ right: "calc(100% + 4px)" }}
+          style={{ right: "calc(100% + 8px)" }}
         />
       </Show>
-      <SessionTabAvatarView
-        project={props.record.project}
-        directory={props.record.session.directory}
-        revealProjectOnHover={props.revealProjectOnHover}
-        unread={props.unread}
-        loading={props.loading}
+      <span
+        aria-hidden="true"
+        class="inline-block size-1.5 rounded-full"
+        classList={{ "animate-pulse": props.loading }}
+        style={{
+          background:
+            props.loading || props.unread ? "var(--v2-state-fg-warning)" : "var(--v2-state-fg-success)",
+        }}
       />
     </div>
   )
@@ -278,11 +281,13 @@ function HomeSessionSearch(props: HomeSessionsViewProps) {
             </div>
           </div>
         </Show>
+        {/* chimera: 设计稿 S0 搜索框——透明底细描边胶囊 */}
         <label
           class={`
-            relative z-20 flex h-9 w-full items-center gap-2 rounded-[6px] py-1 pl-3 pr-2
-            bg-v2-background-bg-layer-02/60 text-v2-icon-icon-muted transition-[background-color,box-shadow]
-            duration-[120ms] ease-in-out hover:bg-v2-background-bg-layer-02 focus-within:bg-v2-background-bg-layer-02
+            relative z-20 flex h-8 w-full items-center gap-2 rounded-[8px] border-[0.5px] border-v2-border-border-base
+            bg-transparent py-1 pl-3 pr-2 text-v2-icon-icon-muted transition-[background-color,border-color,box-shadow]
+            duration-[120ms] ease-in-out hover:bg-v2-background-bg-layer-02/50 focus-within:border-v2-border-border-strong
+            focus-within:bg-v2-background-bg-layer-02/50
           `}
         >
           <IconV2 name="magnifying-glass" />
@@ -460,16 +465,17 @@ function HomeSessionRow(props: HomeSessionsViewProps & { record: HomeSessionReco
           record={props.record}
           revealProjectOnHover={!!showProjectName()}
         />
-        <HomeSessionTitle title={title()} showProjectName={!!showProjectName()} />
-        <Show when={showProjectName()}>
-          <HomeSessionProjectName name={props.record.projectName} />
-        </Show>
-        {/* chimera: 行尾相对时间（设计稿 S0 会话行右侧） */}
-        <Show when={props.record.session.time?.updated}>
-          <span class="ml-auto shrink-0 font-mono text-[10.5px] text-v2-text-text-faint">
-            {getRelativeTime(new Date(props.record.session.time.updated).toISOString(), props.language.t)}
-          </span>
-        </Show>
+        <HomeSessionTitle title={title()} showProjectName={false} />
+        {/* chimera: 行尾元信息「项目名 · 相对时间」等宽小字（设计稿 S0 会话行右侧） */}
+        <span class="ml-auto flex shrink-0 items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint">
+          <Show when={showProjectName()}>
+            <span>{props.record.projectName}</span>
+            <span aria-hidden="true">·</span>
+          </Show>
+          <Show when={props.record.session.time?.updated}>
+            <span>{getRelativeTime(new Date(props.record.session.time.updated).toISOString(), props.language.t)}</span>
+          </Show>
+        </span>
       </button>
       <Show when={SHOW_HOME_SESSION_ARCHIVE}>
         <div
