@@ -1,0 +1,28 @@
+/*
+ * Chimera 样式覆盖层：以 data 属性精准定位上游组件，用主题语义变量重塑关键控件。
+ * 只覆盖设计稿明确要求的差异点，其余交给 chimera 主题的全局 token。
+ */
+
+/* 首页"新建会话"主操作：熔金实心按钮（设计稿 S0）。
+   --v2-state-fg-warning 在 chimera 主题下即熔金/深金，深浅主题自适应。
+   三重属性选择器确保胜过上游 variant 样式的层叠顺序。 */
+[data-component="button-v2"][data-action="home-new-session"][data-action] {
+  background: var(--v2-state-fg-warning);
+  background-image: none;
+  color: var(--v2-background-bg-base);
+  box-shadow: none;
+}
+
+[data-component="button-v2"][data-action="home-new-session"][data-action]:is(:hover, [data-state="hover"]):not(
+    :disabled
+  ) {
+  background-image: none;
+  filter: brightness(1.06);
+}
+
+[data-component="button-v2"][data-action="home-new-session"][data-action]:is(:active, [data-state="pressed"]):not(
+    :disabled
+  ) {
+  background-image: none;
+  filter: brightness(0.96);
+}
