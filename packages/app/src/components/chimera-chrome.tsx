@@ -70,35 +70,55 @@ export const ChimeraRail: Component = () => {
     },
   ])
 
-  const top: Array<{ id: string; label: string; onClick?: () => void; active?: () => boolean; disabled?: boolean }> = [
+  // 会话页内注册的上游命令；不在会话页时命令缺席，按钮自动灰置
+  const hasCommand = (id: string) => command.options.some((option) => option.id === id)
+
+  const top: Array<{
+    id: string
+    label: string
+    onClick?: () => void
+    active?: () => boolean
+    command?: string
+  }> = [
     { id: "chat", label: "会话", onClick: () => navigate("/"), active: onHome },
-    { id: "files", label: "文件（会话内可用）", disabled: true },
-    { id: "git", label: "源代码管理（会话内可用）", disabled: true },
-    { id: "terminal", label: "终端（会话内可用）", disabled: true },
+    { id: "files", label: "文件树", command: "fileTree.toggle" },
+    { id: "git", label: "代码审查", command: "review.toggle" },
+    { id: "terminal", label: "终端", command: "terminal.toggle" },
   ]
 
-  const item = (entry: (typeof top)[number]) => (
-    <TooltipV2 placement="right" value={entry.label}>
-      <button
-        type="button"
-        aria-label={entry.label}
-        disabled={entry.disabled}
-        class="flex size-8 items-center justify-center rounded-[6px] transition-colors"
-        classList={{
-          "text-v2-icon-icon-faint cursor-default": !!entry.disabled,
-          "hover:bg-v2-overlay-simple-overlay-hover": !entry.disabled,
-        }}
-        style={
-          entry.active?.()
-            ? { background: "color-mix(in srgb, var(--v2-state-fg-warning) 14%, transparent)", color: "var(--v2-state-fg-warning)" }
-            : { color: entry.disabled ? undefined : "var(--v2-icon-icon-muted)" }
-        }
-        onClick={entry.onClick}
-      >
-        {ICONS[entry.id]}
-      </button>
-    </TooltipV2>
-  )
+  const item = (entry: (typeof top)[number]) => {
+    const disabled = () => (entry.command ? !hasCommand(entry.command) : false)
+    const label = () => (disabled() ? `${entry.label}（会话内可用）` : entry.label)
+    const onClick = () => {
+      if (entry.command) {
+        command.trigger(entry.command)
+        return
+      }
+      entry.onClick?.()
+    }
+    return (
+      <TooltipV2 placement="right" value={label()}>
+        <button
+          type="button"
+          aria-label={entry.label}
+          disabled={disabled()}
+          class="flex size-8 items-center justify-center rounded-[6px] transition-colors"
+          classList={{
+            "text-v2-icon-icon-faint cursor-default": disabled(),
+            "hover:bg-v2-overlay-simple-overlay-hover": !disabled(),
+          }}
+          style={
+            entry.active?.()
+              ? { background: "color-mix(in srgb, var(--v2-state-fg-warning) 14%, transparent)", color: "var(--v2-state-fg-warning)" }
+              : { color: disabled() ? undefined : "var(--v2-icon-icon-muted)" }
+          }
+          onClick={onClick}
+        >
+          {ICONS[entry.id]}
+        </button>
+      </TooltipV2>
+    )
+  }
 
   return (
     <nav
