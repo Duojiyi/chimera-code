@@ -1213,6 +1213,8 @@ export const dict = {
   "chimera.connect.error.credentials": "Enter your account and password",
   "chimera.connect.error.key": "Enter an API key",
   "chimera.connect.error.signIn": "Sign-in failed, check credentials or gateway availability",
+  "chimera.connect.error.turnstile":
+    "The gateway has human verification (Turnstile) enabled, which the desktop sign-in cannot pass. Use the API key method, or ask the administrator to disable Turnstile.",
   "chimera.connect.error.save": "Save failed, check the key",
   "chimera.connect.success": "Connected to the {{name}} relay station",
   "chimera.models.description": "Provided via the {{name}} gateway, managed by your administrator",

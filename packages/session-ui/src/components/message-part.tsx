@@ -1703,17 +1703,15 @@ PART_MAPPING["text"] = function TextPartDisplay(props) {
     })
   })
 
-  // chimera: 元信息行追加轮次 tokens 与费用（设计稿 S1）
+  // chimera: 元信息行追加轮次 tokens（设计稿 S1）；按需求不展示金额，仅展示消耗
   const usage = createMemo(() => {
-    if (props.message.role !== "assistant") return { tokens: "", cost: "" }
+    if (props.message.role !== "assistant") return { tokens: "" }
     const turn = props.turnUsage
     const message = props.message as AssistantMessage
     const tokens =
       turn?.tokens ?? (message.tokens ? message.tokens.input + message.tokens.output + message.tokens.reasoning : 0)
-    const cost = turn?.cost ?? message.cost ?? 0
     return {
       tokens: tokens > 0 ? `${tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : tokens} tokens` : "",
-      cost: cost > 0 ? `$${cost < 0.01 ? cost.toFixed(4) : cost.toFixed(2)}` : "",
     }
   })
 
@@ -1737,12 +1735,7 @@ PART_MAPPING["text"] = function TextPartDisplay(props) {
 
   const meta = createMemo(() => {
     if (props.message.role !== "assistant") return ""
-    const items = [
-      chimeraDuration(),
-      usage().tokens,
-      usage().cost,
-      interrupted() ? i18n.t("ui.message.interrupted") : "",
-    ]
+    const items = [chimeraDuration(), usage().tokens, interrupted() ? i18n.t("ui.message.interrupted") : ""]
     return items.filter((x) => !!x).join(" \u00B7 ")
   })
 

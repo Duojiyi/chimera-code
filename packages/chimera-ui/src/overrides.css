@@ -3,6 +3,24 @@
  * 只覆盖设计稿明确要求的差异点，其余交给 chimera 主题的全局 token。
  */
 
+/* 主操作按钮（上游 neutral 变体）：熔金实心（设计稿的主按钮语言）。
+   上游 neutral = 半透明灰黑（bg-button-neutral），与品牌视觉不符。 */
+[data-component="button-v2"][data-variant="neutral"][data-variant] {
+  background-color: var(--v2-state-fg-warning);
+  color: var(--v2-background-bg-base);
+  box-shadow: none;
+}
+
+[data-component="button-v2"][data-variant="neutral"][data-variant]:is(:hover, [data-state="hover"]):not(:disabled) {
+  background-image: none;
+  filter: brightness(1.06);
+}
+
+[data-component="button-v2"][data-variant="neutral"][data-variant]:is(:active, [data-state="pressed"]):not(:disabled) {
+  background-image: none;
+  filter: brightness(0.94);
+}
+
 /* 首页"新建会话"主操作：熔金实心按钮（设计稿 S0）。
    --v2-state-fg-warning 在 chimera 主题下即熔金/深金，深浅主题自适应。
    三重属性选择器确保胜过上游 variant 样式的层叠顺序。 */
@@ -35,6 +53,11 @@
 [data-timeline-row][data-timeline-row] {
   max-width: 640px;
   margin-inline: auto;
+}
+
+/* 输入区与内容列同轴同宽（上游 dock 内层为 800px，与 640 内容列错位） */
+[data-component="session-prompt-dock"] > div {
+  max-width: 640px;
 }
 
 /* 正文字号 13.5px、行高收紧（设计稿正文密度） */

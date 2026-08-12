@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process"
 import { stat } from "node:fs/promises"
 import { basename, join } from "node:path"
+import { BRAND } from "@chimera/brand"
 import { app, BrowserWindow, clipboard, dialog, ipcMain, shell } from "electron"
 import type { IpcMainEvent, IpcMainInvokeEvent } from "electron"
 import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
@@ -63,6 +64,35 @@ export function registerIpcHandlers(deps: Deps) {
   app.on("browser-window-created", (_event, win) => win.on("session-end", () => drafts.flush()))
 
   ipcMain.handle("kill-sidecar", () => deps.killSidecar())
+  // chimera: 网关 Dashboard API 代理（渲染层受 CORS 限制，主进程无此限制）。
+  // 仅允许固定网关域名下的 /api/ 路径，防止被用作任意请求代理。
+  ipcMain.handle(
+    "chimera-gateway-fetch",
+    async (
+      _event: IpcMainInvokeEvent,
+      input: { path: string; method?: string; headers?: Record<string, string>; body?: string },
+    ) => {
+      const base = new URL(BRAND.gatewayUrl)
+      const url = new URL(input.path, base)
+      if (url.origin !== base.origin || !url.pathname.startsWith("/api/")) {
+        return { status: 403, body: JSON.stringify({ success: false, message: "forbidden path" }) }
+      }
+      try {
+        const res = await fetch(url, {
+          method: input.method ?? "GET",
+          headers: input.headers,
+          body: input.body,
+          signal: AbortSignal.timeout(15_000),
+        })
+        return { status: res.status, body: await res.text() }
+      } catch (error) {
+        return {
+          status: 0,
+          body: JSON.stringify({ success: false, message: error instanceof Error ? error.message : "network error" }),
+        }
+      }
+    },
+  )
   ipcMain.handle("await-initialization", () => deps.awaitInitialization())
   ipcMain.handle("consume-initial-deep-links", () => deps.consumeInitialDeepLinks())
   ipcMain.handle("get-default-server-url", () => deps.getDefaultServerUrl())

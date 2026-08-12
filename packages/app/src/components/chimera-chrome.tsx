@@ -189,14 +189,6 @@ export const ChimeraStatusBar: Component = () => {
     return serverSync().session.data.message?.[route.sessionId] ?? []
   })
 
-  // 当前会话累计费用（assistant 消息 cost 合计，设计稿 S1 状态栏"今日 ¥"的诚实近似）
-  const sessionCost = createMemo(() =>
-    sessionMessages().reduce(
-      (sum, item) => sum + (item.role === "assistant" ? ((item as { cost?: number }).cost ?? 0) : 0),
-      0,
-    ),
-  )
-
   // 上下文占用（设计稿 S1 渐变用量条）：最近一次请求 tokens ÷ 模型上下文窗口
   const models = useModels()
   const context = createMemo(() => {
@@ -275,13 +267,6 @@ export const ChimeraStatusBar: Component = () => {
         <Show when={keyName()}>
           <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={language.t("chimera.status.key.tooltip")}>
             {language.t("chimera.status.key", { name: keyName()! })}
-          </span>
-        </Show>
-        <Show when={sessionCost() > 0}>
-          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={language.t("chimera.status.sessionCost.tooltip")}>
-            {language.t("chimera.status.sessionCost", {
-              cost: `$${sessionCost() < 0.01 ? sessionCost().toFixed(4) : sessionCost().toFixed(2)}`,
-            })}
           </span>
         </Show>
         <Show when={context()}>

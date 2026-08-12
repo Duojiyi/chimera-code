@@ -117,6 +117,8 @@ export const { use: useModels, provider: ModelsProvider } = createSimpleContext(
       const state = visibility().get(key)
       if (state === "hide") return false
       if (state === "show") return true
+      // chimera: 网关下发的模型默认全部可见（管理员已在网关侧控制签发范围）
+      if (model.providerID === "chimera") return true
       if (latestSet().has(key)) return true
       const date = release().get(key)
       if (!date?.isValid) return true

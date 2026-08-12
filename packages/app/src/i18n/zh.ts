@@ -1290,6 +1290,7 @@ export const dict = {
   "chimera.connect.error.credentials": "请输入账号和密码",
   "chimera.connect.error.key": "请输入 API 密钥",
   "chimera.connect.error.signIn": "登录失败，请检查账号密码或网关可用性",
+  "chimera.connect.error.turnstile": "网关启用了人机验证（Turnstile），桌面端登录无法通过。请改用 API 密钥方式，或联系管理员关闭 Turnstile 后重试。",
   "chimera.connect.error.save": "保存失败，请检查密钥",
   "chimera.connect.success": "已连接 {{name}} 中转站",
   "chimera.models.description": "通过 {{name}} 网关提供，由管理员统一配置",

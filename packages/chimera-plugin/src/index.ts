@@ -16,12 +16,57 @@ function displayName(id: string) {
     .join(" ")
 }
 
-/** 网关模型的保守默认元数据；后续可由网关下发的扩展字段精化。 */
-function gatewayModel(id: string) {
+/** models.dev 官方目录中的模型元数据（仅取本插件需要的字段）。 */
+type OfficialModel = {
+  name?: string
+  limit?: { context?: number; output?: number }
+  cost?: { input?: number; output?: number; cache_read?: number; cache_write?: number }
+  tool_call?: boolean
+  reasoning?: boolean
+  attachment?: boolean
+  temperature?: boolean
+  modalities?: { input?: string[]; output?: string[] }
+  release_date?: string
+}
+
+let officialCatalog: Map<string, OfficialModel> | undefined
+let officialCatalogAt = 0
+
+/**
+ * 拉取 models.dev 官方目录并按模型 ID 展平索引（跨厂商）。
+ * 网关模型 ID 与官方 ID 一致（如 claude-sonnet-4-6），据此自动识别
+ * 上下文窗口等官方数据；目录缓存 10 分钟，失败时退回保守默认值。
+ */
+async function officialModels(): Promise<Map<string, OfficialModel>> {
+  const now = Date.now()
+  if (officialCatalog && now - officialCatalogAt < 10 * 60_000) return officialCatalog
+  try {
+    const res = await fetch("https://models.dev/api.json", { signal: AbortSignal.timeout(10_000) })
+    if (!res.ok) return officialCatalog ?? new Map()
+    const data = (await res.json()) as Record<string, { models?: Record<string, OfficialModel> }>
+    const map = new Map<string, OfficialModel>()
+    for (const provider of Object.values(data)) {
+      for (const [id, model] of Object.entries(provider.models ?? {})) {
+        if (!map.has(id)) map.set(id, model)
+      }
+    }
+    officialCatalog = map
+    officialCatalogAt = now
+    return map
+  } catch {
+    return officialCatalog ?? new Map()
+  }
+}
+
+/** 网关模型元数据：官方目录（models.dev）自动识别，缺失字段用保守默认；
+ *  用户可在 opencode.json 的 provider.chimera.models.<id> 手动覆盖。 */
+function gatewayModel(id: string, official?: OfficialModel) {
+  const modality = (values: string[] | undefined, key: string, fallback: boolean) =>
+    values ? values.includes(key) : fallback
   return {
     id,
     providerID: PROVIDER_ID,
-    name: displayName(id),
+    name: official?.name ?? displayName(id),
     api: {
       id,
       npm: "@ai-sdk/openai-compatible",
@@ -30,18 +75,31 @@ function gatewayModel(id: string) {
     status: "active",
     headers: {},
     options: {},
-    cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
-    limit: { context: 200_000, output: 8_192 },
+    cost: {
+      input: official?.cost?.input ?? 0,
+      output: official?.cost?.output ?? 0,
+      cache: { read: official?.cost?.cache_read ?? 0, write: official?.cost?.cache_write ?? 0 },
+    },
+    limit: {
+      context: official?.limit?.context ?? 200_000,
+      output: official?.limit?.output ?? 8_192,
+    },
     capabilities: {
-      temperature: true,
-      reasoning: false,
-      attachment: false,
-      toolcall: true,
-      input: { text: true, audio: false, image: true, video: false, pdf: false },
+      temperature: official?.temperature ?? true,
+      reasoning: official?.reasoning ?? false,
+      attachment: official?.attachment ?? false,
+      toolcall: official?.tool_call ?? true,
+      input: {
+        text: true,
+        audio: modality(official?.modalities?.input, "audio", false),
+        image: modality(official?.modalities?.input, "image", true),
+        video: modality(official?.modalities?.input, "video", false),
+        pdf: modality(official?.modalities?.input, "pdf", false),
+      },
       output: { text: true, audio: false, image: false, video: false, pdf: false },
       interleaved: false,
     },
-    release_date: "",
+    release_date: official?.release_date ?? "",
     variants: {},
   }
 }
@@ -87,10 +145,11 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
           })
           if (!res.ok) return {}
           const data = (await res.json()) as { data?: Array<{ id?: string }> }
+          const official = await officialModels()
           const models: Record<string, unknown> = {}
           for (const item of data.data ?? []) {
             if (!item.id) continue
-            models[item.id] = gatewayModel(item.id)
+            models[item.id] = gatewayModel(item.id, official.get(item.id))
           }
           return models as GatewayModels
         } catch {
@@ -114,19 +173,47 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
             const password = inputs?.["password"]
             if (!username || !password) return { type: "failed" }
 
-            // TODO(chimera): 对接中转站登录接口，换取该账号下的全部密钥并落盘。
-            // 预期流程：POST {gateway}/auth/login → { keys: [{ name, key, usage }] }
-            // → 保存密钥列表 → 返回默认密钥。接口就绪前先以失败处理，避免误导。
+            // 中转站为 new-api：登录换 dashboard access_token，
+            // 拉取账号下全部令牌并取回首个启用令牌的完整密钥。
             try {
-              const res = await fetch(gateway("auth/login"), {
+              const login = await fetch(gateway("api/user/login"), {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ username, password }),
+                signal: AbortSignal.timeout(15_000),
               })
-              if (!res.ok) return { type: "failed" }
-              const data = (await res.json()) as { key?: string }
-              if (!data.key) return { type: "failed" }
-              return { type: "success", key: data.key, metadata: { username } }
+              const loginData = (await login.json()) as {
+                success?: boolean
+                data?: { access_token?: string }
+              }
+              if (!loginData.success || !loginData.data?.access_token) return { type: "failed" }
+              const bearer = { authorization: `Bearer ${loginData.data.access_token}` }
+
+              const list = await fetch(gateway("api/token/?p=1&page_size=100"), {
+                headers: bearer,
+                signal: AbortSignal.timeout(15_000),
+              })
+              const listData = (await list.json()) as {
+                success?: boolean
+                data?:
+                  | { items?: Array<{ id: number; name?: string; status?: number }> }
+                  | Array<{ id: number; name?: string; status?: number }>
+              }
+              if (!listData.success) return { type: "failed" }
+              const items = Array.isArray(listData.data) ? listData.data : (listData.data?.items ?? [])
+              const first = items.find((item) => item.status === 1) ?? items[0]
+              if (!first) return { type: "failed" }
+
+              const keyRes = await fetch(gateway(`api/token/${first.id}/key`), {
+                method: "POST",
+                headers: bearer,
+                signal: AbortSignal.timeout(15_000),
+              })
+              const keyData = (await keyRes.json()) as { success?: boolean; data?: { key?: string } }
+              const raw = keyData.data?.key
+              if (!keyData.success || !raw) return { type: "failed" }
+              const key = raw.startsWith("sk-") ? raw : `sk-${raw}`
+              return { type: "success", key, metadata: { username } }
             } catch {
               return { type: "failed" }
             }

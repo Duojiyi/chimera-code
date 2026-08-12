@@ -9,7 +9,7 @@ import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
-import { registerChimeraKey } from "./chimera-keys"
+import { registerChimeraKey, writeChimeraKeys } from "./chimera-keys"
 
 // 图标前缀输入框（设计稿 S5 的表单行语法）
 const FieldInput: Component<{
@@ -75,7 +75,63 @@ const icons = {
 }
 
 // Chimera 连接中转站（设计稿 S5）：账号密码 / API 密钥 双方式。
-// TODO(chimera): 文案待补 i18n 键。
+// 账号密码：桌面端经主进程代理直连中转站（new-api）——登录换 access_token，
+// 拉取该账号全部令牌并逐个取回完整密钥，全部登记进本地密钥管理器；
+// 无代理环境（纯浏览器）回退服务端 authorize 链路（仅保存单个密钥）。
+
+type GatewayFetch = (input: {
+  path: string
+  method?: string
+  headers?: Record<string, string>
+  body?: string
+}) => Promise<{ status: number; body: string }>
+
+const gatewayProxy = (): GatewayFetch | undefined =>
+  (window as { api?: { chimeraGatewayFetch?: GatewayFetch } }).api?.chimeraGatewayFetch
+
+/** new-api 登录并同步账号下全部密钥；返回同步的密钥列表（首个为建议激活项）。 */
+async function syncKeysViaGateway(gw: GatewayFetch, username: string, password: string) {
+  const login = await gw({
+    path: "/api/user/login",
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  })
+  const loginData = JSON.parse(login.body) as {
+    success?: boolean
+    message?: string
+    data?: { access_token?: string }
+  }
+  if (!loginData.success || !loginData.data?.access_token) {
+    if (loginData.message?.toLowerCase().includes("turnstile")) throw new Error("turnstile")
+    throw new Error(loginData.message || `login failed (${login.status})`)
+  }
+  const bearer = { authorization: `Bearer ${loginData.data.access_token}` }
+
+  const list = await gw({ path: "/api/token/?p=1&page_size=100", headers: bearer })
+  const listData = JSON.parse(list.body) as {
+    success?: boolean
+    data?: { items?: Array<{ id: number; name?: string; status?: number }> } | Array<{ id: number; name?: string; status?: number }>
+  }
+  if (!listData.success) throw new Error("token list failed")
+  const items = Array.isArray(listData.data) ? listData.data : (listData.data?.items ?? [])
+
+  const keys: Array<{ name: string; key: string; enabled: boolean }> = []
+  for (const item of items) {
+    const res = await gw({ path: `/api/token/${item.id}/key`, method: "POST", headers: bearer })
+    const data = JSON.parse(res.body) as { success?: boolean; data?: { key?: string } }
+    const raw = data.data?.key
+    if (!data.success || !raw) continue
+    keys.push({
+      name: item.name?.trim() || `Token ${item.id}`,
+      key: raw.startsWith("sk-") ? raw : `sk-${raw}`,
+      enabled: item.status === 1,
+    })
+  }
+  // 启用的排前面，首个即建议激活项
+  keys.sort((a, b) => Number(b.enabled) - Number(a.enabled))
+  return keys
+}
 export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
   const dialog = useDialog()
   const language = useLanguage()
@@ -112,13 +168,29 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
           setError(language.t("chimera.connect.error.credentials"))
           return
         }
-        // 方式索引 0 = 中转站账号密码（见 @chimera/plugin auth.methods 顺序）
-        await serverSDK().api.integration.oauth.connect({
-          integrationID: "chimera",
-          methodID: "0",
-          inputs: { username: username().trim(), password: password() },
-          location: location(),
-        })
+        const gw = gatewayProxy()
+        if (gw) {
+          // 桌面端：直连中转站同步该账号全部密钥
+          const keys = await syncKeysViaGateway(gw, username().trim(), password())
+          if (!keys.length) throw new Error("no keys")
+          writeChimeraKeys({
+            keys: keys.map((item) => ({ name: item.name, key: item.key })),
+            active: keys[0].key,
+          })
+          await serverSDK().api.integration.connect.key({
+            integrationID: "chimera",
+            key: keys[0].key,
+            location: location(),
+          })
+        } else {
+          // 浏览器等无代理环境：回退服务端 authorize（方式索引 0 = 账号密码）
+          await serverSDK().api.integration.oauth.connect({
+            integrationID: "chimera",
+            methodID: "0",
+            inputs: { username: username().trim(), password: password() },
+            location: location(),
+          })
+        }
         // 账号名持久化，供设置·密钥页账号卡展示
         localStorage.setItem("chimera-account", username().trim())
         finish()
@@ -137,7 +209,11 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
         language.t("chimera.keys.defaultName", { index: `${index}` }),
       )
       finish()
-    } catch {
+    } catch (error) {
+      if (error instanceof Error && error.message === "turnstile") {
+        setError(language.t("chimera.connect.error.turnstile"))
+        return
+      }
       setError(
         tab() === "account" ? language.t("chimera.connect.error.signIn") : language.t("chimera.connect.error.save"),
       )
@@ -149,7 +225,7 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
   const tabClass = (active: boolean) =>
     `flex h-7 flex-1 items-center justify-center rounded-[6px] text-[13px] transition-colors ${
       active
-        ? "bg-v2-background-bg-base font-[530] text-v2-text-text-base shadow-[var(--v2-elevation-raised)]"
+        ? "bg-v2-background-bg-inverse font-[560] text-v2-text-text-inverse shadow-[var(--v2-elevation-raised)]"
         : "text-v2-text-text-muted hover:text-v2-text-text-base"
     }`
 
