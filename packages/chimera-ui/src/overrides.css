@@ -71,49 +71,15 @@
   color: var(--v2-state-fg-warning);
 }
 
-/* 活动卡：连续工具行熔接为一张发丝线卡片（设计稿 S1 活动分组）。
-   父容器 flex column gap=12px，用 -12px 负边距把相邻工具行吸合；
-   run 首行出"活动"眉标，run 尾行（:has 检测后继非工具行）收底圆角。 */
-[data-slot="session-turn-assistant-content"] > [data-component="tool-part-wrapper"] {
+/* 活动卡（设计稿 S1 活动分组）：工具调用与探索分组以发丝线卡片同对话正文分离。
+   app 时间线每个活动组是独立的虚拟化行（行间无兄弟关系），故每组一张卡。 */
+[data-slot="session-turn-assistant-content"]
+  > :is([data-component="tool-part-wrapper"], [data-component="collapsible"], [data-slot="collapsible"]) {
   background: var(--v2-background-bg-layer-01);
   border: 0.5px solid var(--v2-border-border-muted);
-  border-radius: 0;
-  padding: 3px 12px;
+  border-radius: 10px;
+  padding: 7px 12px;
   margin: 0;
-}
-
-[data-slot="session-turn-assistant-content"]
-  > [data-component="tool-part-wrapper"]
-  + [data-component="tool-part-wrapper"] {
-  margin-top: -12px;
-  border-top: none;
-}
-
-[data-slot="session-turn-assistant-content"]
-  > [data-component="tool-part-wrapper"]:not([data-component="tool-part-wrapper"] + [data-component="tool-part-wrapper"]) {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  padding-top: 30px;
-  position: relative;
-}
-
-[data-slot="session-turn-assistant-content"]
-  > [data-component="tool-part-wrapper"]:not([data-component="tool-part-wrapper"] + [data-component="tool-part-wrapper"])::before {
-  content: "活动";
-  position: absolute;
-  top: 9px;
-  left: 12px;
-  font-family: var(--font-family-mono);
-  font-size: 10.5px;
-  letter-spacing: 1px;
-  color: var(--v2-text-text-faint);
-}
-
-[data-slot="session-turn-assistant-content"]
-  > [data-component="tool-part-wrapper"]:not(:has(+ [data-component="tool-part-wrapper"])) {
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  padding-bottom: 8px;
 }
 
 /* 元信息行常驻显示（设计稿 S1：模型 · 耗时 · tokens · 费用 为常显信息，不做 hover 隐藏） */
