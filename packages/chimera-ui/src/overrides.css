@@ -71,6 +71,56 @@
   color: var(--v2-state-fg-warning);
 }
 
+/* 活动卡：连续工具行熔接为一张发丝线卡片（设计稿 S1 活动分组）。
+   父容器 flex column gap=12px，用 -12px 负边距把相邻工具行吸合；
+   run 首行出"活动"眉标，run 尾行（:has 检测后继非工具行）收底圆角。 */
+[data-slot="session-turn-assistant-content"] > [data-component="tool-part-wrapper"] {
+  background: var(--v2-background-bg-layer-01);
+  border: 0.5px solid var(--v2-border-border-muted);
+  border-radius: 0;
+  padding: 3px 12px;
+  margin: 0;
+}
+
+[data-slot="session-turn-assistant-content"]
+  > [data-component="tool-part-wrapper"]
+  + [data-component="tool-part-wrapper"] {
+  margin-top: -12px;
+  border-top: none;
+}
+
+[data-slot="session-turn-assistant-content"]
+  > [data-component="tool-part-wrapper"]:not([data-component="tool-part-wrapper"] + [data-component="tool-part-wrapper"]) {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding-top: 30px;
+  position: relative;
+}
+
+[data-slot="session-turn-assistant-content"]
+  > [data-component="tool-part-wrapper"]:not([data-component="tool-part-wrapper"] + [data-component="tool-part-wrapper"])::before {
+  content: "活动";
+  position: absolute;
+  top: 9px;
+  left: 12px;
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: var(--v2-text-text-faint);
+}
+
+[data-slot="session-turn-assistant-content"]
+  > [data-component="tool-part-wrapper"]:not(:has(+ [data-component="tool-part-wrapper"])) {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding-bottom: 8px;
+}
+
+/* 元信息行常驻显示（设计稿 S1：模型 · 耗时 · tokens · 费用 为常显信息，不做 hover 隐藏） */
+[data-slot="text-part-copy-wrapper"][data-slot] {
+  opacity: 1;
+}
+
 /* AI 回复头部：奇美拉渐变标 + Chimera 名（设计稿 S1 的 AI 消息头） */
 [data-component="assistant-message"]::before,
 [data-component="session-turn-assistant-content"]::before,

@@ -202,6 +202,7 @@ export interface MessagePartProps {
   onContentRendered?: () => void
   showAssistantCopyPartID?: string | null
   turnDurationMs?: number
+  turnUsage?: { tokens: number; cost: number }
   useV2Actions?: boolean
 }
 
@@ -725,6 +726,7 @@ export function AssistantParts(props: {
   messages: AssistantMessage[]
   showAssistantCopyPartID?: string | null
   turnDurationMs?: number
+  turnUsage?: { tokens: number; cost: number }
   useV2Actions?: boolean
   working?: boolean
   showReasoningSummaries?: boolean
@@ -810,6 +812,7 @@ export function AssistantParts(props: {
                         message={message()!}
                         showAssistantCopyPartID={props.showAssistantCopyPartID}
                         turnDurationMs={props.turnDurationMs}
+                        turnUsage={props.turnUsage}
                         useV2Actions={props.useV2Actions}
                         defaultOpen={partDefaultOpen(item()!, props.shellToolDefaultOpen, props.editToolDefaultOpen)}
                       />
@@ -1447,6 +1450,7 @@ export function Part(props: MessagePartProps) {
         onContentRendered={props.onContentRendered}
         showAssistantCopyPartID={props.showAssistantCopyPartID}
         turnDurationMs={props.turnDurationMs}
+        turnUsage={props.turnUsage}
         useV2Actions={props.useV2Actions}
       />
     </Show>
@@ -1689,6 +1693,20 @@ PART_MAPPING["text"] = function TextPartDisplay(props) {
     })
   })
 
+  // chimera: 元信息行追加轮次 tokens 与费用（设计稿 S1）
+  const usage = createMemo(() => {
+    if (props.message.role !== "assistant") return { tokens: "", cost: "" }
+    const turn = props.turnUsage
+    const message = props.message as AssistantMessage
+    const tokens =
+      turn?.tokens ?? (message.tokens ? message.tokens.input + message.tokens.output + message.tokens.reasoning : 0)
+    const cost = turn?.cost ?? message.cost ?? 0
+    return {
+      tokens: tokens > 0 ? `${tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : tokens} tokens` : "",
+      cost: cost > 0 ? `$${cost < 0.01 ? cost.toFixed(4) : cost.toFixed(2)}` : "",
+    }
+  })
+
   const meta = createMemo(() => {
     if (props.message.role !== "assistant") return ""
     const agent = (props.message as AssistantMessage).agent
@@ -1696,6 +1714,8 @@ PART_MAPPING["text"] = function TextPartDisplay(props) {
       agent ? agent[0]?.toUpperCase() + agent.slice(1) : "",
       model(),
       duration(),
+      usage().tokens,
+      usage().cost,
       interrupted() ? i18n.t("ui.message.interrupted") : "",
     ]
     return items.filter((x) => !!x).join(" \u00B7 ")

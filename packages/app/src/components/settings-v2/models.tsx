@@ -19,6 +19,21 @@ type ModelItem = ReturnType<ReturnType<typeof useModels>["list"]>[number]
 
 const PROVIDER_ICON_SIZE = 16
 
+// chimera: 设计稿 S3 的「协议 · 上下文」元信息行，数据来自 provider 与模型 limit
+function modelMeta(item: ModelItem) {
+  const protocols: Record<string, string> = {
+    anthropic: "Anthropic",
+    chimera: "OpenAI 兼容",
+    openai: "OpenAI",
+  }
+  const parts: string[] = []
+  if (protocols[item.provider.id]) parts.push(protocols[item.provider.id])
+  const context = item.limit?.context
+  if (context)
+    parts.push(`上下文 ${context >= 1_000_000 ? `${(context / 1_000_000).toFixed(context % 1_000_000 ? 1 : 0)}M` : `${Math.round(context / 1000)}K`}`)
+  return parts.join(" · ")
+}
+
 export const SettingsModelsV2: Component = () => {
   const language = useLanguage()
   const models = useModels()
@@ -157,7 +172,7 @@ export const SettingsModelsV2: Component = () => {
                           {(item) => {
                             const key = { providerID: item.provider.id, modelID: item.id }
                             return (
-                              <SettingsRowV2 title={item.name} description="">
+                              <SettingsRowV2 title={item.name} description={modelMeta(item)}>
                                 <div>
                                   <Switch
                                     checked={models.visible(key)}

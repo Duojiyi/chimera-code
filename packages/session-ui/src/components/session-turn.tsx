@@ -350,6 +350,16 @@ export function SessionTurn(
     if (end < start) return undefined
     return end - start
   })
+  // chimera: 轮次 tokens/费用聚合，供元信息行展示（设计稿 S1）
+  const turnUsage = createMemo(() => {
+    let tokens = 0
+    let cost = 0
+    for (const item of assistantMessages()) {
+      if (item.tokens) tokens += item.tokens.input + item.tokens.output + item.tokens.reasoning
+      cost += item.cost ?? 0
+    }
+    return { tokens, cost }
+  })
   const assistantDerived = createMemo(() => {
     let visible = 0
     let reason: string | undefined
@@ -412,6 +422,7 @@ export function SessionTurn(
                     messages={assistantMessages()}
                     showAssistantCopyPartID={assistantCopyPartID()}
                     turnDurationMs={turnDurationMs()}
+                    turnUsage={turnUsage()}
                     working={working()}
                     showReasoningSummaries={showReasoningSummaries()}
                     shellToolDefaultOpen={props.shellToolDefaultOpen}

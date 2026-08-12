@@ -30,6 +30,13 @@ export function readChimeraKeys(): KeysState {
 
 export function writeChimeraKeys(state: KeysState) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  window.dispatchEvent(new CustomEvent("chimera:keys-changed"))
+}
+
+/** 当前生效密钥的展示名（状态栏用） */
+export function activeChimeraKeyName(): string | undefined {
+  const state = readChimeraKeys()
+  return state.keys.find((item) => item.key === state.active)?.name
 }
 
 export function registerChimeraKey(key: string, name?: string) {

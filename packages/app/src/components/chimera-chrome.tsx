@@ -2,8 +2,13 @@ import { BRAND } from "@chimera/brand"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
-import { For, Show, createMemo, type Component, type JSX } from "solid-js"
+import { For, Show, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
+import { activeChimeraKeyName } from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
+import { useLayout } from "@/context/layout"
+import { usePlatform } from "@/context/platform"
+import { useServerSync } from "@/context/server-sync"
+import { useTabs } from "@/context/tabs"
 
 // Chimera 应用骨架（设计稿 S1）：左侧图标栏 + 底部状态栏。
 // 纯新增组件，仅在 layout 挂载一行；图标为内嵌 SVG，避免依赖上游图标清单。
@@ -120,6 +125,11 @@ export const ChimeraRail: Component = () => {
 }
 
 export const ChimeraStatusBar: Component = () => {
+  const platform = usePlatform()
+  const layout = useLayout()
+  const tabs = useTabs()
+  const serverSync = useServerSync()
+
   const gatewayHost = createMemo(() => {
     try {
       return new URL(BRAND.gatewayUrl).host
@@ -128,19 +138,59 @@ export const ChimeraStatusBar: Component = () => {
     }
   })
 
+  // 当前路由对应的工作目录（与 DialogSettings 同款推导）
+  const directory = createMemo(() => {
+    const route = layout.route()
+    if (route.type === "dir-new-sesssion") return route.dir
+    if (route.type === "draft") {
+      const draft = tabs.store.find((item) => item.type === "draft" && item.draftID === route.draftID)
+      return draft?.type === "draft" ? draft.directory : undefined
+    }
+    if (route.type === "session") return serverSync().session.get(route.sessionId)?.directory
+    return undefined
+  })
+
+  const branch = createMemo(() => {
+    const dir = directory()
+    if (!dir) return undefined
+    return serverSync().child(dir)[0].vcs?.branch
+  })
+
+  // 当前密钥名：chimera-keys 写入时广播事件，这里保持同步
+  const [keyName, setKeyName] = createSignal(activeChimeraKeyName())
+  const onKeysChanged = () => setKeyName(activeChimeraKeyName())
+  window.addEventListener("chimera:keys-changed", onKeysChanged)
+  onCleanup(() => window.removeEventListener("chimera:keys-changed", onKeysChanged))
+
   return (
     <footer
       data-component="chimera-statusbar"
       class="flex h-[24px] shrink-0 items-center justify-between border-t-[0.5px] border-v2-border-border-muted px-3"
     >
-      <div class="flex items-center gap-2">
-        <span class="font-mono text-[10.5px] text-v2-text-text-faint">{BRAND.name} v0.1.0</span>
+      <div class="flex items-center gap-3">
+        <span class="font-mono text-[10.5px] text-v2-text-text-faint">
+          {BRAND.name} v{platform.version}
+        </span>
+        <Show when={branch()}>
+          <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-faint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
+              <line x1="6" x2="6" y1="3" y2="15" />
+              <circle cx="18" cy="6" r="3" />
+              <circle cx="6" cy="18" r="3" />
+              <path d="M18 9a9 9 0 0 1-9 9" />
+            </svg>
+            {branch()}
+          </span>
+        </Show>
       </div>
       <div class="flex items-center gap-3">
+        <Show when={keyName()}>
+          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title="当前密钥（Ctrl+Shift+K 切换）">
+            密钥 {keyName()}
+          </span>
+        </Show>
         <span class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint">
-          <Show when={true}>
-            <span class="inline-block size-1.5 rounded-full" style={{ background: "var(--v2-state-fg-success)" }} />
-          </Show>
+          <span class="inline-block size-1.5 rounded-full" style={{ background: "var(--v2-state-fg-success)" }} />
           {gatewayHost()}
         </span>
       </div>
