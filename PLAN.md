@@ -325,18 +325,24 @@ bun install && bun typecheck && bun run dev:desktop
 1. ✅ 确认 provider 协议和网关域名
 2. ✅ 在 Pencil 中完成全套 UI 设计稿（S0–S6，深浅双主题）
 
-### Phase 1（代码改造，进行中）
-3. 配置 upstream remote，将 opencode 源码推入 chimera-code
-4. commit-A：建立 `chimera.brand.ts`，替换 `desktop/package.json` 等
-5. commit-B：裁剪 provider 列表，注入系统插件接入点
-6. commit-C：移除 Sentry，处理 OpenCode 云服务入口
-7. commit-D：替换图标，更新 electron-builder 配置
+### Phase 1（已完成 2026-08-12）
+3. ✅ 配置 upstream remote（默认分支 dev），main = 上游完整历史 + Chimera 原子提交
+4. ✅ commit-A：`packages/chimera-brand` 品牌常量包 + 桌面端品牌接入
+5. ✅ commit-B：provider 裁剪（仅 anthropic + openai-compatible）+ 系统插件注入
+6. ✅ commit-C：移除 Sentry（桌面 + Web 渲染层）
+7. ✅ commit-D：品牌图标全套（gen-icons 管线，147 PNG + ico/icns）+ builder 配置
+8. ✅ commit-F：数据目录与本机已装 opencode 完全隔离（叶子目录 chimera + CLI XDG 圈定）
 
-### Phase 2（Chimera 自有层）
-8. commit-E：按设计稿实现 `chimera-ui` 包，加接入点
-9. 创建 `chimera-plugin` 骨架（provider auth + 鉴权注入）
-10. 本地构建验证（`bun run dev:desktop`）
-11. 打包测试（`bun run package:win`）
+### Phase 2（Chimera 自有层，主体完成）
+9. ✅ commit-E/G/H：chimera-ui（设计 token、chimera 默认主题、品牌字体、文案构建时替换）
+10. ✅ 供应商收敛：预置仅中转站一个，用户自定义 provider 自动放行
+11. ✅ S5 连接界面（账号密码/API 密钥双页签）+ 服务端 api-authorize 链路
+12. ✅ 中转站模型动态同步（provider.models 钩子拉取 /v1/models）
+13. ✅ 端到端验证：真实密钥 → 模型入列 → 会话往返 → 工具调用（写/读文件）
+14. ✅ 界面对齐：S2 新建会话布局、S0 首页 CTA/分组、S1 用户消息卡片/工具行/AI 头部
+15. ⏳ 打包测试（`bun run package:win`）
+16. ⏳ 遗留：S1 消息元信息行与活动卡分组、S3/S6 表格化精调、
+    中转站上游身份透传（需网关侧渠道配置）、网关对话接口延迟波动（15s~120s+）
 
 ### Phase 3（发布）
 12. 配置 CI（GitHub Actions）自动构建 + 发布
