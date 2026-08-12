@@ -1571,9 +1571,19 @@ PART_MAPPING["tool"] = function ToolPartDisplay(props) {
   const controlledOpen = () => (props.onToolOpenChange ? (props.toolOpen ?? props.defaultOpen) : undefined)
   const handleToolOpenChange = (open: boolean) => props.onToolOpenChange?.(open)
 
+  // chimera: 活动行右侧耗时（设计稿 S1 活动卡行 0.4s/1.2s），经 data 属性交给 CSS 展示
+  const chimeraDuration = createMemo(() => {
+    const time = (part().state as { time?: { start?: number; end?: number } }).time
+    if (!time?.start || !time.end || time.end <= time.start) return undefined
+    const ms = time.end - time.start
+    if (ms < 1000) return `${Math.max(1, Math.round(ms))}ms`
+    const seconds = ms / 1000
+    return seconds >= 10 ? `${Math.round(seconds)}s` : `${seconds.toFixed(1)}s`
+  })
+
   return (
     <Show when={!hideQuestion()}>
-      <div data-component="tool-part-wrapper" data-timeline-part-id={part().id}>
+      <div data-component="tool-part-wrapper" data-timeline-part-id={part().id} data-duration={chimeraDuration()}>
         <Switch>
           <Match when={part().state.status === "error" && (part().state as any).error}>
             {(error) => {

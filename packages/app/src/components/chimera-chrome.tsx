@@ -219,6 +219,19 @@ export const ChimeraStatusBar: Component = () => {
 
   const compact = (n: number) => (n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`)
 
+  // 当前会话变更统计（设计稿 S1 状态栏左侧 +44 -214 · 3 处更改）
+  const sessionDiff = createMemo(() => {
+    const route = layout.route()
+    if (route.type !== "session") return undefined
+    const diffs = serverSync().session.data.session_diff?.[route.sessionId] ?? []
+    if (!diffs.length) return undefined
+    return {
+      files: diffs.length,
+      additions: diffs.reduce((sum, item) => sum + ((item as { additions?: number }).additions ?? 0), 0),
+      deletions: diffs.reduce((sum, item) => sum + ((item as { deletions?: number }).deletions ?? 0), 0),
+    }
+  })
+
   // 当前密钥名：chimera-keys 写入时广播事件，这里保持同步
   const [keyName, setKeyName] = createSignal(activeChimeraKeyName())
   const onKeysChanged = () => setKeyName(activeChimeraKeyName())
@@ -241,6 +254,15 @@ export const ChimeraStatusBar: Component = () => {
             </svg>
             {branch()}
           </span>
+        </Show>
+        <Show when={sessionDiff()}>
+          {(diff) => (
+            <span class="flex items-center gap-1.5 font-mono text-[10.5px]" title="本会话变更">
+              <span style={{ color: "var(--v2-state-fg-success)" }}>+{diff().additions}</span>
+              <span style={{ color: "var(--v2-state-fg-danger)" }}>-{diff().deletions}</span>
+              <span class="text-v2-text-text-faint">· {diff().files} 处更改</span>
+            </span>
+          )}
         </Show>
       </div>
       <div class="flex items-center gap-3">

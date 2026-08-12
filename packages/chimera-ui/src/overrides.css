@@ -29,15 +29,62 @@
 
 /* ===== S1 会话界面（对齐设计稿 s1-session-main-*.png）===== */
 
-/* 用户消息：右侧气泡改为全宽安静卡片 */
+/* --- 排版密度：设计稿为窄列紧凑排版 --- */
+
+/* 内容列收窄（设计稿 ~600px），双属性提特异性压过 tailwind md:max-w-200 */
+[data-timeline-row][data-timeline-row] {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+/* 正文字号 13.5px、行高收紧（设计稿正文密度） */
+[data-component="text-part"] [data-slot="text-part-body"] {
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+/* 消息行间距收紧：AssistantPart 行的续行间距减半 */
+[data-timeline-row][data-timeline-row].pt-3 {
+  padding-top: 8px;
+}
+
+/* --- 输入区：熔金描边视觉焦点（设计稿 S1 输入卡） --- */
+[data-component="prompt-input-v2"] {
+  border: 1px solid color-mix(in srgb, var(--v2-state-fg-warning) 45%, transparent);
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--v2-state-fg-warning) 10%, transparent);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+[data-component="prompt-input-v2"]:focus-within {
+  border-color: color-mix(in srgb, var(--v2-state-fg-warning) 75%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--v2-state-fg-warning) 16%, transparent),
+    0 0 18px -6px color-mix(in srgb, var(--v2-state-fg-warning) 35%, transparent);
+}
+
+/* 发送按钮：熔金常亮（设计稿右下角 ↑ 始终为品牌焦点色，禁用仅降不透明度） */
+[data-component="icon-button"][aria-label="发送"]:disabled,
+[data-component="icon-button"][aria-label="Send"]:disabled {
+  background: var(--v2-state-fg-warning);
+  color: var(--v2-background-bg-base);
+  opacity: 0.45;
+}
+
+/* 用户消息：右侧气泡改为全宽安静卡片（设计稿为深底无边框、紧凑内边距、13px） */
 [data-component="user-message"] [data-slot="user-message-body"],
 [data-component="user-message"] [data-component="user-message-body"] {
   width: 100%;
   max-width: 100%;
   margin-left: 0;
-  background: var(--v2-background-bg-layer-01);
-  border: 0.5px solid var(--v2-border-border-muted);
+  background: color-mix(in srgb, var(--v2-background-bg-layer-02) 72%, transparent);
+  border: none;
   border-radius: 8px;
+  padding: 9px 13px;
+  font-size: 13px;
+  line-height: 1.6;
   text-align: left;
   justify-content: flex-start;
   align-items: flex-start;
@@ -78,8 +125,25 @@
   background: var(--v2-background-bg-layer-01);
   border: 0.5px solid var(--v2-border-border-muted);
   border-radius: 10px;
-  padding: 7px 12px;
+  padding: 5px 12px;
   margin: 0;
+}
+
+/* 活动行右侧耗时（设计稿 S1：0.4s / 1.2s / 12s，mono faint 钉在触发行） */
+[data-component="tool-part-wrapper"][data-duration] {
+  position: relative;
+}
+
+[data-component="tool-part-wrapper"][data-duration]::after {
+  content: attr(data-duration);
+  position: absolute;
+  top: 12px;
+  right: 34px;
+  pointer-events: none;
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  line-height: 14px;
+  color: var(--v2-text-text-faint);
 }
 
 /* 元信息行常驻显示（设计稿 S1：耗时 · tokens · 费用 为常显信息，不做 hover 隐藏），
