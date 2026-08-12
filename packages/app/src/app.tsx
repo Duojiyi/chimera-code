@@ -399,6 +399,7 @@ export function AppBaseProviders(
     <MetaProvider>
       <Font />
       <ThemeProvider
+        defaultTheme="chimera"
         onThemeApplied={(_, mode, scheme) => {
           void window.api?.setTitlebar?.({ mode, scheme })
         }}

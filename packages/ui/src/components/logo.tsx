@@ -1,16 +1,45 @@
 import { type ComponentProps } from "solid-js"
 
+// Chimera 品牌标：三笔交叠的神兽标（狮鬃/弯角/蛇尾合一），几何来自 design/ 设计稿。
+const MarkPaths = (props: { head?: string; body?: string }) => {
+  const head = props.head ?? "var(--icon-strong-base)"
+  const body = props.body ?? "var(--icon-strong-base)"
+  return (
+    <>
+      <path
+        transform="translate(2.3785 0.9877)"
+        fill={head}
+        d="M3.45689 7.05487c-0.20157-0.44345-0.47368-1.17917-0.46361-2.19709 0-0.17133 0.02016-0.64502 0.06047-0.65509l1.10862-1.70325 1.43113 0.55431 0.03024 0.03024 1.4009-0.58455 1.1187 1.70325-0.09071 0.28219-1.05823 1.04815c0.06047 0.67525 0.05039 1.19933-0.15117 1.56215 0.48376 0.15118 0.94737 0.24188 1.53191 0.24189 0.3729 0 0.78611-0.05039 1.21949-0.18141l0-0.01008-0.20157-0.64502 1.16909 0.2318 0.34267-0.20156-1.37067-1.90482 1.64278-0.18141-2.14669-1.48152 1.32026-1.07839-2.50951-0.21165 0.63494-1.32027-2.06608 0.64502-0.78611-0.99776-0.78611 0.99776-2.11647-0.64502 0.62487 1.32027-2.52968 0.21165 1.33035 1.08846-2.1467 1.47145 1.62262 0.19149-1.60246 2.2374 1.76371-0.3729-0.88689 2.44905c0.75588-0.96753 1.66293-1.61254 2.53975-1.88466l0.01008 0 0-0.01008 0.01008 0z"
+      />
+      <path
+        transform="translate(5.9884 4.8175)"
+        fill={body}
+        d="M9.6331 0.02016c-0.29227 1.45129-1.59238 3.64838-4.23293 4.05151-3.90034 0.52408-5.08959-2.54983-5.31131-4.07167-0.40314 2.05599 0.56439 4.757 2.92274 5.33147 3.06383 0.89698 6.41993-0.89698 6.63158-4.64614l-0.01008-0.66517 0 0z"
+      />
+      <path
+        transform="translate(10.4714 10.8242)"
+        fill={body}
+        d="M0 0.2318c0.73572 0.79619 1.16909 1.89474 0.86674 3.35611-0.13102 0.62486-0.41321 1.21949-0.86674 1.85442 0.7458-0.50392 1.82419-1.51176 2.40873-3.19485l0-0.01008 0-0.02015 0-0.01008 0-0.01008 0.02016-0.07055c-0.07055-0.72564-0.28219-1.37066-0.68533-2.12654-0.39306 0.11086-0.95745 0.24188-1.74356 0.2318z"
+      />
+      <path
+        transform="translate(3.0428 8.6775)"
+        fill={head}
+        d="M4.83846 1.94513c-1.53191-0.02016-2.39866 1.06831-2.5196 1.95521-0.1411 1.17917 0.70549 2.11646 1.79395 2.11646 1.18925-0.02016 1.33035-0.89698 1.33035-0.89698l-1.30011-0.57447c-0.16125-0.08063-0.2318-0.15118-0.25196-0.27211-0.03024-0.16125 0.12094-0.31243 0.27212-0.46361 0.30235-0.29227 0.6047-0.38298 1.00783-0.29227 0.73572 0.16125 1.18925 0.94737 0.9373 1.82419-0.22173 0.78611-1.10862 1.4916-2.22733 1.4412-1.1187-0.05039-2.2374-0.78611-2.28779-2.44904-0.05039-1.26988 0.95745-2.79171 2.72116-3.04368-0.43337-0.33259-0.82643-0.78611-1.17917-1.29003-1.00784 0.29227-2.0963 0.9776-2.72116 2.25756-0.73572 1.57223-0.43337 3.28555 0.45352 4.48488 0.67525 0.80627 1.68309 1.55207 3.1747 1.55207 0.82643 0.03024 1.78387-0.24188 2.41881-0.73572 0.7458-0.57447 1.20941-1.41097 1.22956-2.48936 0.02016-1.3505-1.05823-3.07391-2.85218-3.1243z"
+      />
+    </>
+  )
+}
+
 export const Mark = (props: { class?: string }) => {
   return (
     <svg
       data-component="logo-mark"
       classList={{ [props.class ?? ""]: !!props.class }}
-      viewBox="0 0 16 20"
+      viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path data-slot="logo-logo-mark-shadow" d="M12 16H4V8H12V16Z" fill="var(--icon-weak-base)" />
-      <path data-slot="logo-logo-mark-o" d="M12 4H4V16H12V4ZM16 20H0V0H16V20Z" fill="var(--icon-strong-base)" />
+      <MarkPaths />
     </svg>
   )
 }
@@ -21,12 +50,11 @@ export const Splash = (props: Pick<ComponentProps<"svg">, "ref" | "class">) => {
       ref={props.ref}
       data-component="logo-splash"
       classList={{ [props.class ?? ""]: !!props.class }}
-      viewBox="0 0 80 100"
+      viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M60 80H20V40H60V80Z" fill="var(--icon-base)" />
-      <path d="M60 20H20V80H60V20ZM80 100H0V0H80V100Z" fill="var(--icon-strong-base)" />
+      <MarkPaths body="var(--icon-base)" />
     </svg>
   )
 }
@@ -39,24 +67,20 @@ export const Logo = (props: { class?: string }) => {
       fill="none"
       classList={{ [props.class ?? ""]: !!props.class }}
     >
-      <g>
-        <path d="M18 30H6V18H18V30Z" fill="var(--icon-weak-base)" />
-        <path d="M18 12H6V30H18V12ZM24 36H0V6H24V36Z" fill="var(--icon-base)" />
-        <path d="M48 30H36V18H48V30Z" fill="var(--icon-weak-base)" />
-        <path d="M36 30H48V12H36V30ZM54 36H36V42H30V6H54V36Z" fill="var(--icon-base)" />
-        <path d="M84 24V30H66V24H84Z" fill="var(--icon-weak-base)" />
-        <path d="M84 24H66V30H84V36H60V6H84V24ZM66 18H78V12H66V18Z" fill="var(--icon-base)" />
-        <path d="M108 36H96V18H108V36Z" fill="var(--icon-weak-base)" />
-        <path d="M108 12H96V36H90V6H108V12ZM114 36H108V12H114V36Z" fill="var(--icon-base)" />
-        <path d="M144 30H126V18H144V30Z" fill="var(--icon-weak-base)" />
-        <path d="M144 12H126V30H144V36H120V6H144V12Z" fill="var(--icon-strong-base)" />
-        <path d="M168 30H156V18H168V30Z" fill="var(--icon-weak-base)" />
-        <path d="M168 12H156V30H168V12ZM174 36H150V6H174V36Z" fill="var(--icon-strong-base)" />
-        <path d="M198 30H186V18H198V30Z" fill="var(--icon-weak-base)" />
-        <path d="M198 12H186V30H198V12ZM204 36H180V6H198V0H204V36Z" fill="var(--icon-strong-base)" />
-        <path d="M234 24V30H216V24H234Z" fill="var(--icon-weak-base)" />
-        <path d="M216 12V18H228V12H216ZM234 24H216V30H234V36H210V6H234V24Z" fill="var(--icon-strong-base)" />
+      <g transform="scale(2.3333)">
+        <MarkPaths />
       </g>
+      <text
+        x="52"
+        y="31"
+        font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+        font-size="28"
+        font-weight="600"
+        letter-spacing="0.5"
+        fill="var(--icon-strong-base)"
+      >
+        Chimera
+      </text>
     </svg>
   )
 }
