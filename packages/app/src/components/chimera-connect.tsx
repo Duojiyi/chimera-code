@@ -7,6 +7,7 @@ import { Spinner } from "@opencode-ai/ui/spinner"
 import { Show, createSignal, type Accessor, type Component } from "solid-js"
 import { useServerSDK } from "@/context/server-sdk"
 import { showToast } from "@/utils/toast"
+import { registerChimeraKey } from "./chimera-keys"
 
 // Chimera 连接中转站（设计稿 S5）：账号密码 / API 密钥 双方式。
 // TODO(chimera): 文案待补 i18n 键。
@@ -60,6 +61,7 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
         key: apiKey().trim(),
         location: location(),
       })
+      registerChimeraKey(apiKey().trim())
       finish()
     } catch {
       setError(tab() === "account" ? "登录失败，请检查账号密码或网关可用性" : "保存失败，请检查密钥")

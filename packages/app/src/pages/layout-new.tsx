@@ -1,5 +1,6 @@
 import { createEffect, Suspense, type ParentProps } from "solid-js"
 import { createStore } from "solid-js/store"
+import { ChimeraRail, ChimeraStatusBar } from "@/components/chimera-chrome"
 import { DebugBar } from "@/components/debug-bar"
 import { TabsInfoPopup } from "@/components/help-button"
 import { Titlebar, type TitlebarUpdate } from "@/components/titlebar"
@@ -38,9 +39,14 @@ export default function NewLayout(props: ParentProps) {
             : undefined
         }
       />
-      <main class="flex-1 min-h-0 min-w-0 overflow-x-hidden flex flex-col items-start contain-strict">
-        <Suspense>{props.children}</Suspense>
-      </main>
+      {/* Chimera S1 骨架：左侧图标栏 + 中央内容 + 底部状态栏 */}
+      <div class="flex min-h-0 min-w-0 flex-1 items-stretch">
+        <ChimeraRail />
+        <main class="flex-1 min-h-0 min-w-0 overflow-x-hidden flex flex-col items-start contain-strict">
+          <Suspense>{props.children}</Suspense>
+        </main>
+      </div>
+      <ChimeraStatusBar />
       {import.meta.env.DEV && state.debugTools && <DebugBar inline />}
       <TabsInfoPopup />
       <ToastRegion v2 />
