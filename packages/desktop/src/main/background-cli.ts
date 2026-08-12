@@ -6,10 +6,12 @@ import { fileURLToPath } from "node:url"
 import { promisify } from "node:util"
 import { app } from "electron"
 
+import { BRAND } from "@chimera/brand"
+
 const execFileAsync = promisify(execFile)
 const root = dirname(fileURLToPath(import.meta.url))
 const stateHome = process.env.XDG_STATE_HOME
-const desktopStateNames = ["ai.opencode.desktop.dev", "ai.opencode.desktop.beta", "ai.opencode.desktop"]
+const desktopStateNames = [`${BRAND.appId}.dev`, `${BRAND.appId}.beta`, BRAND.appId]
 
 type Logger = {
   log(message: string, meta?: Record<string, unknown>): void
@@ -85,8 +87,14 @@ async function run(
 ) {
   logger.log("v2 CLI command started", { binary, args })
   const env = { ...process.env }
-  if (options.stateHome === undefined) delete env.XDG_STATE_HOME
-  else env.XDG_STATE_HOME = options.stateHome
+  // Chimera: CLI sidecar 目前是上游预编译二进制（内部目录叶子仍为 opencode），
+  // 通过 XDG 环境变量把它的 data/config/cache 全部圈进 Chimera 自有目录，
+  // 避免读写本机已安装 opencode 的全局数据。
+  const xdgBase = join(app.getPath("appData"), BRAND.nameLower, "cli-xdg")
+  env.XDG_DATA_HOME = join(xdgBase, "data")
+  env.XDG_CONFIG_HOME = join(xdgBase, "config")
+  env.XDG_CACHE_HOME = join(xdgBase, "cache")
+  env.XDG_STATE_HOME = options.stateHome ?? join(xdgBase, "state")
   return execFileAsync(binary, args, { env, windowsHide: true }).then(
     (result) => {
       const stdout = result.stdout.trim()
