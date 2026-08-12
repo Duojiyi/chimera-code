@@ -60,12 +60,21 @@ export const DialogConnectProvider: Component<{
   const controller = props.controller ?? fallback
   const language = useLanguage()
   const settings = useSettings()
+  const dialog = useDialog()
   const newLayout = settings.general.newLayoutDesigns
   const reset = controller.back
   const back = { current: reset }
   let focusHost: HTMLDivElement | undefined
   const holdFocus = () => focusHost?.focus({ preventScroll: true })
   const select = (provider?: string) => {
+    // Chimera 走专属连接流程（设备授权 / API 密钥，设计稿 S5），不进上游方法列表
+    if (provider === "chimera") {
+      void import("./chimera-connect").then((x) => {
+        dialog.close()
+        void dialog.show(() => <x.ChimeraConnectDialog directory={props.directory} />)
+      })
+      return
+    }
     back.current = reset
     controller.select(provider)
   }

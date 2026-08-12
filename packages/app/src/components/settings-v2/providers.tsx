@@ -42,10 +42,17 @@ export const SettingsProvidersV2: Component<{
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
 
   const connect = (provider?: string) => {
-    // Chimera：中转站的配置入口进入密钥管理器（多密钥快速切换，设计稿 S6）
+    // Chimera：已连接时进入密钥管理器（设计稿 S6），未连接时进入连接流程（设计稿 S5）
     if (provider === "chimera") {
-      void import("../chimera-keys").then((x) => {
-        void dialog.show(() => <x.ChimeraKeysDialog directory={props.directory} />)
+      const isConnected = connected().some((p) => p.id === "chimera")
+      if (isConnected) {
+        void import("../chimera-keys").then((x) => {
+          void dialog.show(() => <x.ChimeraKeysDialog directory={props.directory} />)
+        })
+        return
+      }
+      void import("../chimera-connect").then((x) => {
+        void dialog.show(() => <x.ChimeraConnectDialog directory={props.directory} />)
       })
       return
     }

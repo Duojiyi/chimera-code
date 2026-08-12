@@ -6,6 +6,8 @@ import { createEffect, createMemo, type Accessor } from "solid-js"
 import { selectProviderCatalog } from "./provider-catalog"
 
 export const popularProviders = [
+  // Chimera 中转站是品牌核心提供商，断开后仍应置顶展示（设计稿 S5 入口）
+  "chimera",
   "opencode",
   "opencode-go",
   "anthropic",
