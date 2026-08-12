@@ -413,7 +413,22 @@ function createV1Api(input: CompatibleInput): CompatibleApi {
             { providerID: value.integrationID, method, inputs: value.inputs },
             { throwOnError: true },
           )
-          if (!result.data) throw new Error("Failed to start OAuth authorization")
+          // Chimera: api 方式的 authorize 在服务端直接完成密钥保存并返回空数据，
+          // 视为连接成功，刷新实例后返回一个已完成的占位授权。
+          if (!result.data) {
+            await legacy(value.location).instance.dispose()
+            await input.legacy().instance.dispose()
+            return located(
+              {
+                attemptID: `${value.integrationID}:${method}`,
+                url: "",
+                instructions: "",
+                mode: "auto" as const,
+                time: { created: Date.now(), expires: Date.now() },
+              },
+              value.location,
+            )
+          }
           return located(
             {
               attemptID: `${value.integrationID}:${method}`,

@@ -165,7 +165,6 @@ const layer: Layer.Layer<Service, never, Auth.Service | Plugin.Service> = Layer.
     ) {
       const { hooks, pending } = yield* InstanceState.get(state)
       const method = hooks[input.providerID].methods[input.method]
-      if (method.type !== "oauth") return
 
       if (method.prompts && input.inputs) {
         for (const prompt of method.prompts) {
@@ -174,6 +173,20 @@ const layer: Layer.Layer<Service, never, Auth.Service | Plugin.Service> = Layer.
             if (error) return yield* new ValidationFailed({ field: prompt.key, message: error })
           }
         }
+      }
+
+      // Chimera: api 方式也支持 authorize 流程（如中转站账号密码换取密钥），
+      // 服务端直接校验并保存，不走 OAuth 的 pending/callback 机制。
+      if (method.type === "api") {
+        if (!method.authorize) return
+        const result = yield* Effect.promise(() => method.authorize!(input.inputs))
+        if (!result || result.type !== "success") return yield* new OauthCallbackFailed({})
+        yield* auth.set(input.providerID, {
+          type: "api",
+          key: result.key,
+          ...(result.metadata ? { metadata: result.metadata } : {}),
+        })
+        return
       }
 
       const result = yield* Effect.promise(() => method.authorize(input.inputs))

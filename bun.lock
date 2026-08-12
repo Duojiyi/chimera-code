@@ -31,6 +31,7 @@
       "name": "@opencode-ai/app",
       "version": "1.18.16",
       "dependencies": {
+        "@chimera/brand": "workspace:*",
         "@chimera/ui": "workspace:*",
         "@corvu/drawer": "catalog:",
         "@dnd-kit/abstract": "0.5.0",

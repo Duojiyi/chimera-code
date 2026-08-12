@@ -18,10 +18,8 @@ export const DialogSelectModelUnpaidV2: Component<{ model?: ModelState }> = () =
   const language = useLanguage()
 
   const openConnect = () => {
-    void import("./dialog-connect-provider").then((x) => {
-      const controller = x.useProviderConnectController()
-      controller.select("chimera")
-      void dialog.show(() => <x.DialogConnectProvider controller={controller} directory={directory} />)
+    void import("./chimera-connect").then((x) => {
+      void dialog.show(() => <x.ChimeraConnectDialog directory={directory} />)
     })
   }
 

@@ -69,8 +69,8 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
         },
         {
           type: "api",
-          label: "企业令牌",
-          prompts: [{ type: "text", key: "apiKey", message: "令牌", placeholder: "chm-..." }],
+          label: "API 密钥",
+          prompts: [{ type: "text", key: "apiKey", message: "API 密钥", placeholder: "chm-..." }],
         },
       ],
     },
