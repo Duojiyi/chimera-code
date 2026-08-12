@@ -219,6 +219,14 @@
   }
 }
 
+/* chimera: 设计稿 S4——分组标题 mono 眉标 */
+.command-palette-v2-group-title {
+  font-family: var(--font-family-mono);
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: var(--v2-text-text-faint);
+}
+
 /* chimera: 设计稿 S4——快捷键徽章改为等宽轻量样式，底部按键提示条 */
 .command-palette-v2-row [data-component="keybind-v2"][data-variant] {
   gap: 2px;
