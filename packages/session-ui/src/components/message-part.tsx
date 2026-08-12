@@ -1707,13 +1707,26 @@ PART_MAPPING["text"] = function TextPartDisplay(props) {
     }
   })
 
+  // chimera: 设计稿 S1 元信息行为「耗时 m:ss · Xk tokens · $X」；模型名已上移到轮首回复头
+  const chimeraDuration = createMemo(() => {
+    if (props.message.role !== "assistant") return ""
+    const message = props.message as AssistantMessage
+    const completed = message.time.completed
+    const ms =
+      typeof props.turnDurationMs === "number"
+        ? props.turnDurationMs
+        : typeof completed === "number"
+          ? completed - message.time.created
+          : -1
+    if (!(ms >= 0)) return ""
+    const total = Math.round(ms / 1000)
+    return `耗时 ${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`
+  })
+
   const meta = createMemo(() => {
     if (props.message.role !== "assistant") return ""
-    const agent = (props.message as AssistantMessage).agent
     const items = [
-      agent ? agent[0]?.toUpperCase() + agent.slice(1) : "",
-      model(),
-      duration(),
+      chimeraDuration(),
       usage().tokens,
       usage().cost,
       interrupted() ? i18n.t("ui.message.interrupted") : "",

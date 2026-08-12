@@ -176,6 +176,16 @@ export const ChimeraStatusBar: Component = () => {
     return serverSync().child(dir)[0].vcs?.branch
   })
 
+  // 当前会话累计费用（assistant 消息 cost 合计，设计稿 S1 状态栏"今日 ¥"的诚实近似）
+  const sessionCost = createMemo(() => {
+    const route = layout.route()
+    if (route.type !== "session") return 0
+    const dir = directory()
+    if (!dir) return 0
+    const messages = serverSync().child(dir)[0].message?.[route.sessionId] ?? []
+    return messages.reduce((sum, item) => sum + (item.role === "assistant" ? ((item as { cost?: number }).cost ?? 0) : 0), 0)
+  })
+
   // 当前密钥名：chimera-keys 写入时广播事件，这里保持同步
   const [keyName, setKeyName] = createSignal(activeChimeraKeyName())
   const onKeysChanged = () => setKeyName(activeChimeraKeyName())
@@ -188,11 +198,8 @@ export const ChimeraStatusBar: Component = () => {
       class="flex h-[24px] shrink-0 items-center justify-between border-t-[0.5px] border-v2-border-border-muted px-3"
     >
       <div class="flex items-center gap-3">
-        <span class="font-mono text-[10.5px] text-v2-text-text-faint">
-          {BRAND.name} v{platform.version}
-        </span>
-        <Show when={branch()}>
-          <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-faint">
+        <Show when={branch()} fallback={<span class="font-mono text-[10.5px] text-v2-text-text-faint">{BRAND.name}</span>}>
+          <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-muted">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
               <line x1="6" x2="6" y1="3" y2="15" />
               <circle cx="18" cy="6" r="3" />
@@ -209,10 +216,16 @@ export const ChimeraStatusBar: Component = () => {
             密钥 {keyName()}
           </span>
         </Show>
-        <span class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint">
+        <Show when={sessionCost() > 0}>
+          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title="当前会话累计费用">
+            会话 ${sessionCost() < 0.01 ? sessionCost().toFixed(4) : sessionCost().toFixed(2)}
+          </span>
+        </Show>
+        <span class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint" title="网关连接">
           <span class="inline-block size-1.5 rounded-full" style={{ background: "var(--v2-state-fg-success)" }} />
           {gatewayHost()}
         </span>
+        <span class="font-mono text-[10.5px] text-v2-text-text-faint">v{platform.version}</span>
       </div>
     </footer>
   )

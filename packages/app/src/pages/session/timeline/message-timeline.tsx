@@ -1097,13 +1097,22 @@ export function MessageTimeline(props: {
       const row = input.row()
       return row._tag === "AssistantPart" && row.previousAssistantPart
     }
+    // chimera: 轮首 assistant 行的回复头（渐变标 + Chimera + 模型 · 时间，设计稿 S1）
+    const turnHeaderMessage = () => {
+      const row = input.row()
+      if (row._tag !== "AssistantPart" || row.previousAssistantPart) return
+      const ref = row.group.type === "part" ? row.group.ref : row.group.refs[0]
+      if (!ref) return
+      const msg = messageByID().get(ref.messageID)
+      if (!msg || msg.role !== "assistant") return
+      return msg
+    }
 
     return (
       <div
         id={anchor() ? props.anchor(input.row().userMessageID) : undefined}
         data-message-id={input.row().userMessageID}
         data-timeline-row={input.row()._tag}
-        data-turn-first={input.row()._tag === "AssistantPart" && !previousAssistantPart() ? "" : undefined}
         classList={{
           "min-w-0 w-full max-w-full": true,
           "md:max-w-200 2xl:max-w-[1000px]": props.centered,
@@ -1111,6 +1120,24 @@ export function MessageTimeline(props: {
           "pt-3": previousAssistantPart(),
         }}
       >
+        <Show when={turnHeaderMessage()}>
+          {(msg) => (
+            <div data-slot="chimera-turn-header" class="flex items-center gap-2 px-4 pb-2 pt-1 md:px-5">
+              <span
+                class="inline-block size-[14px] shrink-0 rounded-[4px]"
+                style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}
+              />
+              <span class="text-[12.5px] font-[600] tracking-[0.2px] text-v2-text-text-base">Chimera</span>
+              <span class="font-mono text-[11px] text-v2-text-text-faint">
+                {msg().modelID}
+                {" · "}
+                {new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit" }).format(
+                  new Date(msg().time.created),
+                )}
+              </span>
+            </div>
+          )}
+        </Show>
         <div data-component="session-turn" class="min-w-0 w-full relative" style={{ height: "auto" }}>
           {input.children}
         </div>

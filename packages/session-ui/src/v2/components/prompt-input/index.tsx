@@ -254,6 +254,13 @@ export function PromptInputV2(props: PromptInputV2Props) {
               )}
             </Show>
           </div>
+          {/* chimera: 设计稿 S1 输入区快捷键提示 */}
+          <span
+            data-slot="chimera-send-hint"
+            class="hidden shrink-0 select-none font-mono text-[10.5px] text-v2-text-text-faint md:inline"
+          >
+            Enter {i18n.t("ui.promptInput.send")} · Esc {i18n.t("ui.promptInput.stop")}
+          </span>
           <PromptInputV2SubmitButton
             mode={state.mode}
             stopping={view.submit.stopping()}
