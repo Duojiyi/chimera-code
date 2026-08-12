@@ -3,6 +3,7 @@ import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
 import { For, Show, createMemo, type Component, type JSX } from "solid-js"
+import { useCommand } from "@/context/command"
 
 // Chimera 应用骨架（设计稿 S1）：左侧图标栏 + 底部状态栏。
 // 纯新增组件，仅在 layout 挂载一行；图标为内嵌 SVG，避免依赖上游图标清单。
@@ -45,6 +46,18 @@ export const ChimeraRail: Component = () => {
       void dialog.show(() => <x.ChimeraKeysDialog />)
     })
   }
+
+  // ⌘⇧K / Ctrl+Shift+K：任意界面快速切换密钥（设计稿 S6）
+  const command = useCommand()
+  command.register(() => [
+    {
+      id: "chimera.keys.switch",
+      title: "切换密钥",
+      description: "在中转站的多条密钥间切换",
+      keybind: "ctrl+shift+k,meta+shift+k",
+      onSelect: openKeys,
+    },
+  ])
 
   const top: Array<{ id: string; label: string; onClick?: () => void; active?: () => boolean; disabled?: boolean }> = [
     { id: "chat", label: "会话", onClick: () => navigate("/"), active: onHome },
