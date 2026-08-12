@@ -10,6 +10,7 @@ import { useLanguage } from "@/context/language"
 import { ServerConnection } from "@/context/server"
 import { SessionTabAvatarView } from "@/pages/layout/session-tab-avatar"
 import { sessionTitle } from "@/utils/session-title"
+import { getRelativeTime } from "@/utils/time"
 import { shouldOpenSessionInBackground } from "../home-session-open"
 import {
   HomeSessionStatusController,
@@ -460,6 +461,12 @@ function HomeSessionRow(props: HomeSessionsViewProps & { record: HomeSessionReco
         <HomeSessionTitle title={title()} showProjectName={!!showProjectName()} />
         <Show when={showProjectName()}>
           <HomeSessionProjectName name={props.record.projectName} />
+        </Show>
+        {/* chimera: 行尾相对时间（设计稿 S0 会话行右侧） */}
+        <Show when={props.record.session.time?.updated}>
+          <span class="ml-auto shrink-0 font-mono text-[10.5px] text-v2-text-text-faint">
+            {getRelativeTime(new Date(props.record.session.time.updated).toISOString(), props.language.t)}
+          </span>
         </Show>
       </button>
       <Show when={SHOW_HOME_SESSION_ARCHIVE}>

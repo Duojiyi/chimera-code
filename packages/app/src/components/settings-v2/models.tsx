@@ -112,7 +112,7 @@ export const SettingsModelsV2: Component = () => {
                 const isDefault = () => defaultKey() === `${item.provider.id}:${item.id}`
                 return (
                   <div
-                    class="flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4 transition-opacity"
+                    class="flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4 transition-[opacity,background-color] hover:bg-v2-overlay-simple-overlay-hover"
                     classList={{
                       "border-t-[0.5px] border-v2-border-border-muted": index() > 0,
                       "opacity-45": !visible(),

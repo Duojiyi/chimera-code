@@ -1122,7 +1122,7 @@ export function MessageTimeline(props: {
       >
         <Show when={turnHeaderMessage()}>
           {(msg) => (
-            <div data-slot="chimera-turn-header" class="flex items-center gap-2 px-4 pb-2 pt-1 md:px-5">
+              <div data-slot="chimera-turn-header" class="flex items-center gap-2 px-4 pb-1.5 pt-0.5 md:px-5">
               <span
                 class="inline-block size-[14px] shrink-0 rounded-[4px]"
                 style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}

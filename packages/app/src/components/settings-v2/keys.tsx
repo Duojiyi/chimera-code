@@ -188,7 +188,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
               const active = () => store.active === entry.key
               return (
                 <div
-                  class="group flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4"
+                  class="group flex h-12 w-full items-center gap-3 bg-v2-background-bg-layer-01 px-4 transition-colors hover:bg-v2-overlay-simple-overlay-hover"
                   classList={{ "border-t-[0.5px] border-v2-border-border-muted": index() > 0 }}
                 >
                   <span class="flex w-[210px] shrink-0 items-center gap-2 truncate">
