@@ -146,6 +146,12 @@
   color: var(--v2-text-text-faint);
 }
 
+/* 用户消息不展示「Agent · 模型 · 时间」元信息（设计稿用户卡保持安静；
+   模型与时间已在 AI 回复头呈现），hover 操作按钮保留 */
+[data-slot="user-message-meta"] {
+  display: none;
+}
+
 /* 元信息行常驻显示（设计稿 S1：耗时 · tokens · 费用 为常显信息，不做 hover 隐藏），
    数据一律等宽字体 */
 [data-slot="text-part-copy-wrapper"][data-slot] {
