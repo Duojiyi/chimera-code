@@ -66,6 +66,9 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.handle("kill-sidecar", () => deps.killSidecar())
   // chimera: 网关 Dashboard API 代理（渲染层受 CORS 限制，主进程无此限制）。
   // 仅允许固定网关域名下的 /api/ 路径，防止被用作任意请求代理。
+  // CHIMERA_DESKTOP_SECRET 配置后自动附带桌面客户端凭证头，
+  // 配合网关侧 DESKTOP_CLIENT_SECRET 豁免 Turnstile 人机验证。
+  const desktopSecret = process.env["CHIMERA_DESKTOP_SECRET"] ?? import.meta.env["MAIN_VITE_CHIMERA_DESKTOP_SECRET"]
   ipcMain.handle(
     "chimera-gateway-fetch",
     async (
@@ -80,7 +83,10 @@ export function registerIpcHandlers(deps: Deps) {
       try {
         const res = await fetch(url, {
           method: input.method ?? "GET",
-          headers: input.headers,
+          headers: {
+            ...input.headers,
+            ...(desktopSecret ? { "x-chimera-desktop-secret": desktopSecret } : {}),
+          },
           body: input.body,
           signal: AbortSignal.timeout(15_000),
         })
