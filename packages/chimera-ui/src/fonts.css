@@ -1,0 +1,15 @@
+/*
+ * Chimera 字体覆盖（对应设计稿）：
+ * - 界面：Noto Sans SC（中文为主的 UI 文本）
+ * - 数据/代码：JetBrains Mono
+ * - 品牌字标：Space Grotesk（--chimera-font-display，供水印/品牌组件使用）
+ * 使用 :root:root 提升优先级，确保晚加载的上游 theme.css 不会覆盖回系统字体。
+ */
+:root:root {
+  --font-family-sans:
+    "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI",
+    sans-serif;
+  --font-family-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --chimera-font-display: "Space Grotesk", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+}

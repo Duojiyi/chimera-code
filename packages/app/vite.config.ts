@@ -1,8 +1,9 @@
+import { chimeraBrand } from "@chimera/ui/vite"
 import { defineConfig } from "vite"
 import desktopPlugin from "./vite"
 
 export default defineConfig({
-  plugins: [desktopPlugin] as any,
+  plugins: [desktopPlugin, chimeraBrand()] as any,
   server: {
     host: "0.0.0.0",
     allowedHosts: true,

@@ -1,3 +1,4 @@
+import { chimeraBrand } from "@chimera/ui/vite"
 import { defineConfig } from "electron-vite"
 import appPlugin from "@opencode-ai/app/vite"
 import * as fs from "node:fs/promises"
@@ -73,7 +74,7 @@ const require = __cjs_mod__.createRequire(import.meta.url);
     },
   },
   renderer: {
-    plugins: [appPlugin],
+    plugins: [appPlugin, chimeraBrand()],
     publicDir: "../../../app/public",
     root: "src/renderer",
     build: {

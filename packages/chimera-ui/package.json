@@ -6,12 +6,17 @@
   "description": "Chimera UI layer: design tokens and UI overrides mounted on top of the upstream app",
   "exports": {
     ".": "./src/index.ts",
-    "./tokens": "./src/tokens.ts"
+    "./tokens": "./src/tokens.ts",
+    "./vite": "./vite.ts"
   },
   "dependencies": {
-    "@chimera/brand": "workspace:*"
+    "@chimera/brand": "workspace:*",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/noto-sans-sc": "5.3.0",
+    "@fontsource/space-grotesk": "5.3.0"
   },
   "devDependencies": {
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite": "catalog:"
   }
 }
