@@ -405,9 +405,13 @@ function ProviderConnection(props: {
     timer.current = undefined
   })
 
-  const provider = createMemo(
-    () => providers.all().get(props.provider) ?? serverSync().data.provider.all.get(props.provider)!,
-  )
+  const provider = createMemo(() => {
+    const lookup = () => providers.all().get(props.provider) ?? serverSync().data.provider.all.get(props.provider)
+    const known = lookup()
+    if (known) return known
+    // 目录中尚不存在的 provider（如刚注入还未同步的中转站）兜底为最小信息，避免渲染崩溃。
+    return { id: props.provider, name: props.provider, models: {} } as NonNullable<ReturnType<typeof lookup>>
+  })
   const fallback = createMemo<ConnectMethod[]>(() => [
     {
       type: "key" as const,
@@ -499,7 +503,8 @@ function ProviderConnection(props: {
 
   const methodLabel = (value?: { type?: string; label?: string }) => {
     if (!value) return ""
-    if (value.type === "key") return language.t("provider.connect.method.apiKey")
+    // Chimera: 鉴权方式自带标签时优先展示（如"中转站账号密码"/"企业令牌"）。
+    if (value.type === "key") return value.label ?? language.t("provider.connect.method.apiKey")
     return value.label ?? ""
   }
 

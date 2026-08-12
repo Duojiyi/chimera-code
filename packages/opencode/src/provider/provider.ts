@@ -1048,7 +1048,12 @@ export function toPublicInfo(provider: Info): Info {
 }
 
 export function defaultModelIDs<T extends { models: Record<string, { id: string }> }>(providers: Record<string, T>) {
-  return mapValues(providers, (item) => sort(Object.values(item.models))[0].id)
+  // Chimera: 暂无模型的 provider（如尚未同步模型的中转站）不产生默认模型条目。
+  const entries = Object.entries(providers).flatMap(([id, item]) => {
+    const first = sort(Object.values(item.models))[0]
+    return first ? ([[id, first.id]] as const) : []
+  })
+  return Object.fromEntries(entries)
 }
 
 export class ModelNotFoundError extends Schema.TaggedErrorClass<ModelNotFoundError>()("ProviderModelNotFoundError", {

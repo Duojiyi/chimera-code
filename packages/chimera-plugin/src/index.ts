@@ -29,6 +29,9 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
         },
         models: {},
       }
+      // 品牌定制：预置供应商只有中转站一个；用户在配置中自定义的 provider
+      // 会一并放行（此时 config.provider 已含用户配置）。显式配置优先。
+      config.enabled_providers ??= Object.keys(config.provider)
     },
 
     auth: {

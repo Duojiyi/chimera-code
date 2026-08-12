@@ -51,6 +51,20 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
         mapValues(filtered, (item) => Provider.fromModelsDevProvider(item)),
         connected,
       )
+      // Chimera: config 声明的 provider（如插件注入的中转站）不在 models.dev 目录中，
+      // 也需要出现在目录响应里，否则连接向导拿不到元信息。
+      for (const [id, item] of Object.entries(config.provider ?? {})) {
+        if (providers[id]) continue
+        if ((enabled && !enabled.has(id)) || disabled.has(id)) continue
+        providers[id] = {
+          id: ProviderV2.ID.make(id),
+          name: item.name ?? id,
+          env: item.env ?? [],
+          options: {},
+          source: "config",
+          models: {},
+        } as (typeof providers)[string]
+      }
       return {
         all: Object.values(providers).map(Provider.toPublicInfo),
         default: Provider.defaultModelIDs(providers),
