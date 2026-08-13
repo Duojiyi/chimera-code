@@ -94,18 +94,29 @@ async function downloadSkillZip(dest: string) {
     return
   }
   await mkdir(staging, { recursive: true })
-  const extract = Bun.spawnSync(["tar", "-xf", zipPath, "-C", staging], {
-    stdout: "inherit",
-    stderr: "inherit",
-  })
+  const extracted = extractZip(zipPath, staging)
   await rm(zipPath, { force: true })
-  if (extract.exitCode !== 0) {
+  if (!extracted) {
     await rm(staging, { recursive: true, force: true })
     return
   }
   const root = await resolveSkillRoot(staging)
   if (root) return root
   await rm(staging, { recursive: true, force: true })
+}
+
+function extractZip(zipPath: string, dest: string) {
+  if (run(["unzip", "-q", zipPath, "-d", dest])) return true
+  return run(["tar", "-xf", zipPath, "-C", dest])
+}
+
+function run(cmd: string[]) {
+  const result = Bun.spawnSync(cmd, { stdout: "inherit", stderr: "inherit" })
+  if (result.error) {
+    console.error(`${cmd[0]}: ${result.error.message}`)
+    return false
+  }
+  return result.exitCode === 0
 }
 
 async function curlDownload(url: string, zipPath: string) {
