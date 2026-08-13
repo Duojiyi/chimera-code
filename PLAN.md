@@ -463,7 +463,30 @@ bun install && bun typecheck && bun run dev:desktop
       修"文字贴框"（此前裸 fragment 未套上游 40px 容器）
     - 复验：CDP 像素级采样金色确认（浅 #AF7F2C 深琥珀），深浅两模式
       发送按钮、模型表、密钥页全部实拍确认
-31. ⏳ 遗留（结构性，需专项决策）：顶栏面包屑（与多会话 tab 栏结构冲突）、
+31. ✅ 十一轮（2026-08-13 上午，产品化四板斧 + 主色定调青金）：
+    - 主操作色弃金黄改品牌青金绿（用户三轮否定金黄系）：新增
+      --chimera-accent（暗 #3BAE8C / 亮 #1E8E6A，随 data-color-scheme
+      切换），主按钮/发送钮/开关/pill 点/选中态/徽标 17 处统一迁移；
+      进行中/spinner 保留琥珀（警示语义），v2Overrides 钉色保留供其用
+    - 输入框青金呼吸光：静止 4.2s 缓脉动（border+glow keyframes，
+      prefers-reduced-motion 降级），聚焦常亮收拢
+    - 微动效：主按钮/发送钮/图标栏按压回弹（cubic-bezier 回弹曲线）
+    - 用户卡内行内 code 去底色（"一层套一层"反馈）→ 青金 mono 文字
+    - 菜单品牌化：帮助菜单指向 chimerahub.org 与品牌 GitHub issues，
+      移除 opencode.ai 文档/Discord 论坛/anomalyco 链接与通知 favicon
+    - 版本号：设置左下改品牌 v0.1.0（上游内核版本收进悬浮提示）
+    - 内置字体栈：settings.tsx 三个 fallback 前置 Noto Sans SC /
+      JetBrains Mono（@fontsource 已随包分发，终端字体从系统 mono
+      升级为内置 JetBrains Mono）
+    - 内容列 760→860；密度收紧（AI 头贴正文/段距 6px/续行 4px）；
+      发送按钮与快捷键提示加间距；默认色恢复深色（用户定夺）
+    - 内置产品能力（chimera-plugin）：全局工程守则（6 条精炼中文，
+      每轮注入）+ 常用 MCP 预置（context7 默认启用、deepwiki 预置
+      默认关闭，用户同名配置优先）
+    - 实测验证：模型自述"我是 Chimera，企业级 AI 编程助手"并列出
+      context7 两个工具（身份注入 + MCP 全链路 ✓）；青金主色/间距/
+      密度深色实拍确认
+32. ⏳ 遗留（结构性，需专项决策）：顶栏面包屑（与多会话 tab 栏结构冲突）、
     输入框下排「附件 / @ 上下文」文字按钮（需动上游 ui 核心组件插槽）、
     设置弹窗 vs 设计稿全屏页、S2 项目平铺列表（上游为下拉）、
     右侧文件面板默认常驻（上游为按需开关，已接线图标栏）、
