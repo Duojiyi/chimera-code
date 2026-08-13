@@ -28,7 +28,8 @@ export type { ProjectAvatarVariant }
 
 const AVATAR_COLOR_KEYS = ["pink", "mint", "orange", "purple", "cyan", "lime"] as const
 const DEFAULT_SIDEBAR_WIDTH = 344
-const DEFAULT_FILE_TREE_WIDTH = 200
+const DEFAULT_FILE_TREE_WIDTH = 240
+const DEFAULT_FILE_TREE_TAB = "all" as const
 const DEFAULT_SESSION_WIDTH = 600
 const DEFAULT_TERMINAL_HEIGHT = 280
 const DEFAULT_REVIEW_PANEL_OPENED = false
@@ -205,7 +206,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
           ...fileTree,
           opened: true,
           width: width === 260 ? DEFAULT_FILE_TREE_WIDTH : width,
-          tab: "changes",
+          tab: DEFAULT_FILE_TREE_TAB,
         }
       })()
 
@@ -288,7 +289,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         fileTree: {
           opened: false,
           width: DEFAULT_FILE_TREE_WIDTH,
-          tab: "changes" as "changes" | "all",
+          tab: DEFAULT_FILE_TREE_TAB as "changes" | "all",
         },
         session: {
           width: DEFAULT_SESSION_WIDTH,
@@ -704,7 +705,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
       fileTree: {
         opened: createMemo(() => store.fileTree?.opened ?? true),
         width: createMemo(() => store.fileTree?.width ?? DEFAULT_FILE_TREE_WIDTH),
-        tab: createMemo(() => store.fileTree?.tab ?? "changes"),
+        tab: createMemo(() => store.fileTree?.tab ?? DEFAULT_FILE_TREE_TAB),
         setTab(tab: "changes" | "all") {
           if (!store.fileTree) {
             setStore("fileTree", { opened: true, width: DEFAULT_FILE_TREE_WIDTH, tab })
@@ -714,28 +715,28 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         },
         open() {
           if (!store.fileTree) {
-            setStore("fileTree", { opened: true, width: DEFAULT_FILE_TREE_WIDTH, tab: "changes" })
+            setStore("fileTree", { opened: true, width: DEFAULT_FILE_TREE_WIDTH, tab: DEFAULT_FILE_TREE_TAB })
             return
           }
           setStore("fileTree", "opened", true)
         },
         close() {
           if (!store.fileTree) {
-            setStore("fileTree", { opened: false, width: DEFAULT_FILE_TREE_WIDTH, tab: "changes" })
+            setStore("fileTree", { opened: false, width: DEFAULT_FILE_TREE_WIDTH, tab: DEFAULT_FILE_TREE_TAB })
             return
           }
           setStore("fileTree", "opened", false)
         },
         toggle() {
           if (!store.fileTree) {
-            setStore("fileTree", { opened: true, width: DEFAULT_FILE_TREE_WIDTH, tab: "changes" })
+            setStore("fileTree", { opened: true, width: DEFAULT_FILE_TREE_WIDTH, tab: DEFAULT_FILE_TREE_TAB })
             return
           }
           setStore("fileTree", "opened", (x) => !x)
         },
         resize(width: number) {
           if (!store.fileTree) {
-            setStore("fileTree", { opened: true, width, tab: "changes" })
+            setStore("fileTree", { opened: true, width, tab: DEFAULT_FILE_TREE_TAB })
             return
           }
           setStore("fileTree", "width", width)

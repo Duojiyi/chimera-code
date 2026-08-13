@@ -27,6 +27,7 @@ import type { SnapshotFileDiff, VcsFileDiff } from "@opencode-ai/sdk/v2"
 import type { FileDiffInfo } from "@opencode-ai/client/promise"
 import { ConstrainDragYAxis, getDraggableId } from "@/utils/solid-dnd"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { getFilename } from "@opencode-ai/core/util/path"
 
 import FileTree from "@/components/file-tree"
 import { normalizeFileTreeV2Path } from "@/components/file-tree-v2-model"
@@ -53,13 +54,13 @@ import {
   shouldShowFileTree,
   type Sizing,
 } from "@/pages/session/helpers"
+import { FILE_TREE_WIDTH_MIN, fileTreePaneWidth } from "@/pages/session/session-panel-width"
 import { setSessionHandoff } from "@/pages/session/handoff"
 import { useSessionLayout } from "@/pages/session/session-layout"
 import { SessionFileBrowserTab, type SessionFileBrowserState } from "@/pages/session/v2/session-file-browser-tab"
 
 type ReviewDiff = FileDiffInfo | SnapshotFileDiff | VcsFileDiff
 type RenderDiff = FileDiffInfo | (SnapshotFileDiff & { file: string }) | VcsFileDiff
-const FILE_TREE_WIDTH_MIN = 240
 
 function renderDiff(value: ReviewDiff): value is RenderDiff {
   return typeof value.file === "string"
@@ -91,6 +92,7 @@ export function SessionSidePanel(props: {
   const sdk = useSDK()
   const { sessionKey, tabs, view, params } = useSessionLayout()
   const projectDirectory = createMemo(() => sdk().directory)
+  const projectName = createMemo(() => getFilename(projectDirectory()) || projectDirectory())
 
   const isDesktop = createMediaQuery("(min-width: 768px)")
   const shown = settings.visibility.fileTree
@@ -105,7 +107,7 @@ export function SessionSidePanel(props: {
       }),
   )
   const open = createMemo(() => reviewOpen() || fileOpen())
-  const fileTreeWidth = createMemo(() => Math.max(FILE_TREE_WIDTH_MIN, layout.fileTree.width()))
+  const fileTreeWidth = createMemo(() => fileTreePaneWidth(layout.fileTree.width()))
   const reviewTab = createMemo(() => isDesktop())
   const panelWidth = createMemo(() => {
     if (!open()) return "0px"
@@ -189,6 +191,16 @@ export function SessionSidePanel(props: {
   const activeFileTab = tabState.activeFileTab
 
   const fileTreeTab = () => layout.fileTree.tab()
+  let defaultedEmptyChanges = false
+
+  createEffect(() => {
+    if (defaultedEmptyChanges) return
+    if (!props.diffsReady()) return
+    defaultedEmptyChanges = true
+    if (fileTreeTab() !== "changes") return
+    if (props.reviewCount() > 0) return
+    layout.fileTree.setTab("all")
+  })
 
   const setFileTreeTabValue = (value: string) => {
     if (value !== "changes" && value !== "all") return
@@ -778,6 +790,9 @@ export function SessionSidePanel(props: {
                     data-scope="filetree"
                   >
                     <Tabs.List>
+                      <Tabs.Trigger value="all" class="flex-1" classes={{ button: "w-full" }}>
+                        {language.t("session.files.all")}
+                      </Tabs.Trigger>
                       <Tabs.Trigger value="changes" class="flex-1" classes={{ button: "w-full" }}>
                         <Show
                           when={settings.general.newLayoutDesigns()}
@@ -793,48 +808,56 @@ export function SessionSidePanel(props: {
                           {language.t("session.review.filesChanged", { count: props.reviewCount() })}
                         </Show>
                       </Tabs.Trigger>
-                      <Tabs.Trigger value="all" class="flex-1" classes={{ button: "w-full" }}>
-                        {language.t("session.files.all")}
-                      </Tabs.Trigger>
                     </Tabs.List>
-                    <Show when={fileTreeTab() === "changes"}>
-                      <Tabs.Content value="changes" class="bg-background-stronger px-3 py-0">
-                        <Switch>
-                          <Match when={props.hasReview() || !props.diffsReady()}>
-                            <Show
-                              when={props.diffsReady()}
-                              fallback={
-                                <div class="px-2 py-2 text-12-regular text-text-weak">
-                                  {language.t("common.loading")}
-                                  {language.t("common.loading.ellipsis")}
-                                </div>
-                              }
-                            >
-                              <FileTree
-                                path=""
-                                class="pt-3"
-                                allowed={diffFiles()}
-                                kinds={kinds()}
-                                draggable={false}
-                                active={props.activeDiff}
-                                onFileClick={(node) => props.focusReviewDiff(node.path)}
-                              />
-                            </Show>
-                          </Match>
-                        </Switch>
-                      </Tabs.Content>
-                    </Show>
                     <Show when={fileTreeTab() === "all"}>
                       <Tabs.Content value="all" class="bg-background-stronger px-3 py-0">
                         <Switch>
                           <Match when={nofiles()}>{empty(language.t("session.files.empty"))}</Match>
                           <Match when={true}>
+                            <div class="pt-3">
+                              <div
+                                class="w-full min-w-0 h-6 flex items-center gap-x-1.5 px-1.5 text-12-medium text-text-strong"
+                                title={projectDirectory()}
+                              >
+                                <div class="size-4 flex items-center justify-center text-icon-weak">
+                                  <Icon name="chevron-down" size="small" />
+                                </div>
+                                <Icon name="folder" size="small" class="text-icon-weak" />
+                                <span class="flex-1 min-w-0 truncate">{projectName()}</span>
+                              </div>
+                              <FileTree
+                                path=""
+                                class="pt-0.5"
+                                modified={diffFiles()}
+                                kinds={kinds()}
+                                onFileClick={(node) => openTab(file.tab(node.path))}
+                              />
+                            </div>
+                          </Match>
+                        </Switch>
+                      </Tabs.Content>
+                    </Show>
+                    <Show when={fileTreeTab() === "changes"}>
+                      <Tabs.Content value="changes" class="bg-background-stronger px-3 py-0">
+                        <Switch>
+                          <Match when={!props.diffsReady()}>
+                            <div class="px-2 py-2 text-12-regular text-text-weak">
+                              {language.t("common.loading")}
+                              {language.t("common.loading.ellipsis")}
+                            </div>
+                          </Match>
+                          <Match when={props.reviewCount() === 0}>
+                            {empty(language.t("session.review.empty"))}
+                          </Match>
+                          <Match when={true}>
                             <FileTree
                               path=""
                               class="pt-3"
-                              modified={diffFiles()}
+                              allowed={diffFiles()}
                               kinds={kinds()}
-                              onFileClick={(node) => openTab(file.tab(node.path))}
+                              draggable={false}
+                              active={props.activeDiff}
+                              onFileClick={(node) => props.focusReviewDiff(node.path)}
                             />
                           </Match>
                         </Switch>

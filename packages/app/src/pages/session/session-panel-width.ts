@@ -5,6 +5,16 @@
 export const SESSION_PANEL_WIDTH_MIN = 450
 export const REVIEW_PANE_WIDTH_MIN = 480
 export const REVIEW_PANE_WIDTH_MIN_SPLIT = 800
+export const FILE_TREE_WIDTH_MIN = 240
+export const FILE_TREE_LAYOUT_GAP = 8
+
+export function fileTreePaneWidth(stored: number) {
+  return Math.max(FILE_TREE_WIDTH_MIN, stored)
+}
+
+export function sessionWidthForFileTree(input: { stored: number; gap: number }) {
+  return `calc(100% - ${fileTreePaneWidth(input.stored) + input.gap}px)`
+}
 
 export function sessionPanelWidthMax(input: { available: number; split: boolean }) {
   const pane = input.split ? REVIEW_PANE_WIDTH_MIN_SPLIT : REVIEW_PANE_WIDTH_MIN

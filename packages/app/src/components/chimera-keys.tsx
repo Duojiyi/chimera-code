@@ -41,6 +41,10 @@ export function activeChimeraKeyName(): string | undefined {
   return state.keys.find((item) => item.key === state.active)?.name
 }
 
+export function hasChimeraAuth() {
+  return readChimeraKeys().keys.length > 0 || !!localStorage.getItem("chimera-account")
+}
+
 export function registerChimeraKey(key: string, name?: string | ((index: number) => string)) {
   const state = readChimeraKeys()
   if (!state.keys.some((item) => item.key === key)) {

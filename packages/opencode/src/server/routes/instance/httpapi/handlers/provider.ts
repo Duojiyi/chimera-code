@@ -42,20 +42,26 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       const all = yield* ModelsDev.Service.use((s) => s.get())
       const disabled = new Set(config.disabled_providers ?? [])
       const enabled = config.enabled_providers ? new Set(config.enabled_providers) : undefined
+      const allowed = (id: string) => {
+        if (disabled.has(id)) return false
+        if (enabled && !enabled.has(id)) return false
+        return true
+      }
       const filtered: Record<string, (typeof all)[string]> = {}
       for (const [key, value] of Object.entries(all)) {
-        if ((enabled ? enabled.has(key) : true) && !disabled.has(key)) filtered[key] = value
+        if (allowed(key)) filtered[key] = value
       }
       const connected = yield* provider.list()
+      const connectedAllowed = Object.fromEntries(Object.entries(connected).filter(([id]) => allowed(id)))
       const providers = Object.assign(
         mapValues(filtered, (item) => Provider.fromModelsDevProvider(item)),
-        connected,
+        connectedAllowed,
       )
       // Chimera: config 声明的 provider（如插件注入的中转站）不在 models.dev 目录中，
       // 也需要出现在目录响应里，否则连接向导拿不到元信息。
       for (const [id, item] of Object.entries(config.provider ?? {})) {
         if (providers[id]) continue
-        if ((enabled && !enabled.has(id)) || disabled.has(id)) continue
+        if (!allowed(id)) continue
         providers[id] = {
           id: ProviderV2.ID.make(id),
           name: item.name ?? id,
@@ -68,7 +74,7 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       return {
         all: Object.values(providers).map(Provider.toPublicInfo),
         default: Provider.defaultModelIDs(providers),
-        connected: Object.keys(connected),
+        connected: Object.keys(connectedAllowed),
       }
     })
 

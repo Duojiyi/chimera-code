@@ -1,10 +1,12 @@
 import { BRAND } from "@chimera/brand"
+import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useFilteredList } from "@opencode-ai/ui/hooks"
 import { Switch } from "@opencode-ai/ui/v2/switch-v2"
 import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
 import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
 import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
 import { type Component, For, Show, createMemo } from "solid-js"
+import { hasChimeraAuth } from "../chimera-keys"
 import { useLanguage } from "@/context/language"
 import { useModels } from "@/context/models"
 import "./settings-v2.css"
@@ -40,7 +42,15 @@ function protocolLabel(item: ModelItem, language: ReturnType<typeof useLanguage>
 
 export const SettingsModelsV2: Component = () => {
   const language = useLanguage()
+  const dialog = useDialog()
   const models = useModels()
+  const signedIn = () => hasChimeraAuth()
+
+  const openConnect = () => {
+    void import("../chimera-connect").then((x) => {
+      void dialog.show(() => <x.ChimeraConnectDialog />)
+    })
+  }
 
   const list = useFilteredList<ModelItem>({
     items: (_filter) => models.list(),
@@ -119,10 +129,24 @@ export const SettingsModelsV2: Component = () => {
           <Show
             when={list.flat().length > 0}
             fallback={
-              <div class="flex h-16 items-center justify-center gap-1 text-[12px] text-v2-text-text-faint">
-                <span>{language.t("dialog.model.empty")}</span>
+              <div class="flex flex-col items-center justify-center gap-3 px-4 py-8">
+                <p class="text-center text-[12.5px] leading-5 text-v2-text-text-faint">
+                  {signedIn() || list.filter()
+                    ? language.t("dialog.model.empty")
+                    : language.t("chimera.models.empty")}
+                </p>
                 <Show when={list.filter()}>
-                  <span>&quot;{list.filter()}&quot;</span>
+                  <span class="text-[12px] text-v2-text-text-faint">&quot;{list.filter()}&quot;</span>
+                </Show>
+                <Show when={!signedIn() && !list.filter()}>
+                  <button
+                    type="button"
+                    class="flex h-8 items-center rounded-[7px] px-3 text-[12.5px] font-[530] transition-[filter] hover:brightness-105"
+                    style={{ background: "var(--chimera-accent)", color: "var(--v2-background-bg-base)" }}
+                    onClick={openConnect}
+                  >
+                    {language.t("chimera.models.connect")}
+                  </button>
                 </Show>
               </div>
             }

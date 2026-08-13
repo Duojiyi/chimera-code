@@ -1,10 +1,14 @@
 import { describe, expect, test } from "bun:test"
 import {
   clampSessionPanelWidth,
+  FILE_TREE_LAYOUT_GAP,
+  FILE_TREE_WIDTH_MIN,
+  fileTreePaneWidth,
   REVIEW_PANE_WIDTH_MIN,
   REVIEW_PANE_WIDTH_MIN_SPLIT,
   SESSION_PANEL_WIDTH_MIN,
   sessionPanelWidthMax,
+  sessionWidthForFileTree,
 } from "./session-panel-width"
 
 describe("sessionPanelWidthMax", () => {
@@ -48,5 +52,21 @@ describe("clampSessionPanelWidth", () => {
 
   test("skips clamping before the layout is measured", () => {
     expect(clampSessionPanelWidth({ width: 1600, available: undefined, split: false })).toBe(1600)
+  })
+})
+
+describe("fileTreePaneWidth", () => {
+  test("never renders narrower than the file tree minimum", () => {
+    expect(fileTreePaneWidth(200)).toBe(FILE_TREE_WIDTH_MIN)
+    expect(fileTreePaneWidth(320)).toBe(320)
+  })
+})
+
+describe("sessionWidthForFileTree", () => {
+  test("reserves the rendered file tree width plus the layout gap", () => {
+    expect(sessionWidthForFileTree({ stored: 200, gap: FILE_TREE_LAYOUT_GAP })).toBe(
+      `calc(100% - ${FILE_TREE_WIDTH_MIN + FILE_TREE_LAYOUT_GAP}px)`,
+    )
+    expect(sessionWidthForFileTree({ stored: 320, gap: 0 })).toBe("calc(100% - 320px)")
   })
 })

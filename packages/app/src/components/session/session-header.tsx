@@ -20,7 +20,7 @@ import { useServer } from "@/context/server"
 import { useSettings } from "@/context/settings"
 import { useSync } from "@/context/sync"
 import { useTerminal } from "@/context/terminal"
-import { focusTerminalById } from "@/pages/session/helpers"
+import { focusTerminalById, toggleProjectFileTree } from "@/pages/session/helpers"
 import { useSessionLayout } from "@/pages/session/session-layout"
 import { messageAgentColor } from "@/utils/agent"
 import { decode64 } from "@/utils/base64"
@@ -485,7 +485,17 @@ export function SessionHeader() {
                         <Button
                           variant="ghost"
                           class="titlebar-icon w-8 h-6 p-0 box-border"
-                          onClick={() => layout.fileTree.toggle()}
+                          onClick={() => {
+                            toggleProjectFileTree({
+                              visible: settings.general.showFileTree(),
+                              setVisible: settings.general.setShowFileTree,
+                              opened: layout.fileTree.opened(),
+                              tab: layout.fileTree.tab(),
+                              open: layout.fileTree.open,
+                              close: layout.fileTree.close,
+                              setTab: layout.fileTree.setTab,
+                            })
+                          }}
                           aria-label={language.t("command.fileTree.toggle")}
                           aria-expanded={layout.fileTree.opened()}
                           aria-controls="file-tree-panel"

@@ -3,9 +3,9 @@ import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useTheme } from "@opencode-ai/ui/theme/context"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
-import { For, Show, createEffect, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
+import { For, Show, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
 import { ChimeraAvatar } from "@/components/chimera-avatar"
-import { activeChimeraKeyName } from "@/components/chimera-keys"
+import { activeChimeraKeyName, hasChimeraAuth } from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
 import { useLanguage } from "@/context/language"
 import { useLayout } from "@/context/layout"
@@ -55,13 +55,27 @@ export const ChimeraRail: Component = () => {
     })
   }
 
+  const openConnect = () => {
+    void import("./chimera-connect").then((x) => {
+      void dialog.show(() => <x.ChimeraConnectDialog />)
+    })
+  }
+
   const openKeys = () => {
+    if (!hasChimeraAuth()) {
+      openConnect()
+      return
+    }
     void import("./chimera-keys").then((x) => {
       void dialog.show(() => <x.ChimeraKeysDialog />)
     })
   }
 
   const openKeysPage = () => {
+    if (!hasChimeraAuth()) {
+      openConnect()
+      return
+    }
     void import("./settings-v2").then((x) => {
       void dialog.show(() => <x.DialogSettings defaultValue="keys" />)
     })

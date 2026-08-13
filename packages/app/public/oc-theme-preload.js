@@ -9,8 +9,8 @@
     localStorage.removeItem("opencode-theme-css-dark")
   }
 
-  // chimera: 默认深色（设计稿以深色为主视觉）
-  var scheme = localStorage.getItem("opencode-color-scheme") || "dark"
+  // chimera: 默认浅色
+  var scheme = localStorage.getItem("opencode-color-scheme") || "light"
   var isDark = scheme === "dark" || (scheme === "system" && matchMedia("(prefers-color-scheme: dark)").matches)
   var mode = isDark ? "dark" : "light"
 

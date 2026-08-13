@@ -9,12 +9,57 @@ import {
   focusTerminalById,
   getTabReorderIndex,
   shouldShowFileTree,
+  toggleProjectFileTree,
 } from "./helpers"
 
 describe("shouldShowFileTree", () => {
   test("does not reserve space for a disabled file tree", () => {
     expect(shouldShowFileTree({ visible: false, opened: true })).toBe(false)
     expect(shouldShowFileTree({ visible: true, opened: true })).toBe(true)
+  })
+})
+
+describe("toggleProjectFileTree", () => {
+  test("opens the project hierarchy when the file tree is hidden", () => {
+    const calls: string[] = []
+    toggleProjectFileTree({
+      visible: false,
+      setVisible: (value) => calls.push(`visible:${value}`),
+      opened: false,
+      tab: "changes",
+      open: () => calls.push("open"),
+      close: () => calls.push("close"),
+      setTab: (tab) => calls.push(`tab:${tab}`),
+    })
+    expect(calls).toEqual(["visible:true", "tab:all", "open"])
+  })
+
+  test("switches from changes to the project hierarchy instead of closing", () => {
+    const calls: string[] = []
+    toggleProjectFileTree({
+      visible: true,
+      setVisible: (value) => calls.push(`visible:${value}`),
+      opened: true,
+      tab: "changes",
+      open: () => calls.push("open"),
+      close: () => calls.push("close"),
+      setTab: (tab) => calls.push(`tab:${tab}`),
+    })
+    expect(calls).toEqual(["tab:all", "open"])
+  })
+
+  test("closes when the project hierarchy is already showing", () => {
+    const calls: string[] = []
+    toggleProjectFileTree({
+      visible: true,
+      setVisible: (value) => calls.push(`visible:${value}`),
+      opened: true,
+      tab: "all",
+      open: () => calls.push("open"),
+      close: () => calls.push("close"),
+      setTab: (tab) => calls.push(`tab:${tab}`),
+    })
+    expect(calls).toEqual(["close"])
   })
 })
 

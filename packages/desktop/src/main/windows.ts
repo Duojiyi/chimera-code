@@ -112,15 +112,15 @@ function overlay(theme: Partial<TitlebarTheme> = {}, zoom = 1) {
   }
 }
 
+let themeReady = false
+
 export function setTitlebar(win: BrowserWindow, theme: Partial<TitlebarTheme> = {}) {
   titlebarThemes.set(win, theme)
-  // macOS draws the window frame hairline and shadow using the NSWindow
-  // appearance, which follows nativeTheme rather than the rendered content.
-  // Align it with the app theme so a light app on a dark system does not get
-  // the dark-appearance border and shadow. A "system" scheme must map to
+  themeReady = true
+  // Align the OS chrome with the rendered theme. A "system" scheme must map to
   // "system" (not the resolved mode) or prefers-color-scheme stops tracking
   // OS appearance changes in the renderer.
-  if (process.platform === "darwin") nativeTheme.themeSource = theme.scheme ?? theme.mode ?? "system"
+  nativeTheme.themeSource = theme.scheme ?? theme.mode ?? "light"
   updateTitlebar(win)
 }
 
@@ -173,6 +173,8 @@ export function createMainWindow(id: string = randomUUID()) {
     defaultHeight: 800,
   })
 
+  // chimera: 首屏默认浅色，避免按系统深色先闪一帧
+  if (!themeReady) nativeTheme.themeSource = "light"
   const mode = tone()
   const win = new BrowserWindow({
     x: state.x,

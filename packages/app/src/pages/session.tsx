@@ -78,8 +78,10 @@ import { useSessionLayout } from "@/pages/session/session-layout"
 import { restorePromptModel, syncPromptModel, syncSessionModel } from "@/pages/session/session-model-helpers"
 import {
   clampSessionPanelWidth,
+  FILE_TREE_LAYOUT_GAP,
   SESSION_PANEL_WIDTH_MIN,
   sessionPanelWidthMax,
+  sessionWidthForFileTree,
 } from "@/pages/session/session-panel-width"
 import { SessionSidePanel } from "@/pages/session/session-side-panel"
 import { sessionPanelLayout } from "@/pages/session/session-panel-layout"
@@ -499,7 +501,10 @@ export default function Page() {
   const sessionPanelWidth = createMemo(() => {
     if (!desktopSidePanelOpen()) return "100%"
     if (desktopSessionResizeOpen()) return `${sessionPanelResizedWidth()}px`
-    return `calc(100% - ${layout.fileTree.width()}px)`
+    return sessionWidthForFileTree({
+      stored: layout.fileTree.width(),
+      gap: newSessionDesign() ? FILE_TREE_LAYOUT_GAP : 0,
+    })
   })
   const centered = createMemo(() => isDesktop() && (newSessionDesign() || !desktopReviewOpen()))
   const desktopV2PanelLayout = createMemo(() =>
@@ -2321,7 +2326,7 @@ export default function Page() {
         </Show>
         <Show when={newSessionDesign()}>
           <Show when={isDesktop() ? desktopV2PanelLayout().visible : terminalOpen()}>
-            <div class="min-w-0 h-full flex flex-1 flex-col">
+            <div class="min-w-0 h-full flex flex-1 flex-col overflow-hidden">
               <Show when={isDesktop() && (desktopV2ReviewOpen() || desktopFileTreeOpen())}>
                 <div class="min-h-0 flex-1">
                   <Suspense>

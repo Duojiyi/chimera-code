@@ -69,7 +69,7 @@ async function officialModels(): Promise<Map<string, OfficialModel>> {
 }
 
 /** 网关模型元数据：官方目录（models.dev）自动识别，缺失字段用保守默认；
- *  用户可在 opencode.json 的 provider.chimera.models.<id> 手动覆盖。 */
+ *  用户可在 chimera.json 的 provider.chimera.models.<id> 手动覆盖。 */
 function gatewayModel(id: string, official?: OfficialModel) {
   const modality = (values: string[] | undefined, key: string, fallback: boolean) =>
     values ? values.includes(key) : fallback
@@ -156,11 +156,9 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       // 会一并放行（此时 config.provider 已含用户配置）。显式配置优先。
       config.enabled_providers ??= Object.keys(config.provider)
 
-      // 内置常用 MCP（用户同名配置优先）：
-      // - context7：官方库文档检索，默认启用（仅模型主动调用时产生开销）。
-      // - deepwiki：GitHub 仓库问答，预置但默认关闭，设置里一键可开。
+      // 内置常用 MCP（用户同名配置优先）：预置但不默认连接，避免未登录就出现「1 MCP」。
       config.mcp ??= {}
-      config.mcp["context7"] ??= { type: "remote", url: "https://mcp.context7.com/mcp", enabled: true }
+      config.mcp["context7"] ??= { type: "remote", url: "https://mcp.context7.com/mcp", enabled: false }
       config.mcp["deepwiki"] ??= { type: "remote", url: "https://mcp.deepwiki.com/mcp", enabled: false }
 
       // 权限默认自动放行（用户产品决策：企业内部工具免打断）；

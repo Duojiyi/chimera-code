@@ -1,7 +1,8 @@
 import { BRAND } from "@chimera/brand"
 import { Spinner } from "@opencode-ai/ui/spinner"
 import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { For, Show, createSignal, type Accessor, type Component } from "solid-js"
+import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { For, Show, createSignal, onCleanup, type Accessor, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
 import { ChimeraAvatar } from "../chimera-avatar"
 import { readChimeraKeys, writeChimeraKeys, type ChimeraKeyEntry } from "../chimera-keys"
@@ -28,6 +29,7 @@ const gatewayHost = (() => {
 
 export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
   const language = useLanguage()
+  const dialog = useDialog()
   const serverSDK = useServerSDK()
   const serverSync = useServerSync()
   const [store, setStore] = createStore(readChimeraKeys())
@@ -36,6 +38,23 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
   const [newName, setNewName] = createSignal("")
   const [newKey, setNewKey] = createSignal("")
   const [pending, setPending] = createSignal("")
+
+  const refresh = () => {
+    const next = readChimeraKeys()
+    setStore("keys", next.keys)
+    setStore("active", next.active)
+    setAccount(localStorage.getItem("chimera-account") ?? "")
+  }
+  window.addEventListener("chimera:keys-changed", refresh)
+  onCleanup(() => window.removeEventListener("chimera:keys-changed", refresh))
+
+  const signedIn = () => !!account() || store.keys.length > 0
+
+  const openConnect = (tab: "device" | "key") => {
+    void import("../chimera-connect").then((x) => {
+      void dialog.show(() => <x.ChimeraConnectDialog directory={props.directory} initialTab={tab} />)
+    })
+  }
 
   const location = () => {
     const value = props.directory?.()
@@ -114,13 +133,15 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
           <h2 class="text-[16px] font-[600] leading-6 text-v2-text-text-base">{language.t("chimera.keys.title")}</h2>
           <p class="text-[12.5px] leading-5 text-v2-text-text-muted">{language.t("chimera.keys.description")}</p>
         </div>
-        <button
-          type="button"
-          class="flex h-8 shrink-0 items-center gap-1 rounded-[7px] border-[0.5px] border-v2-border-border-base px-3 text-[12.5px] font-[530] text-v2-text-text-base transition-colors hover:bg-v2-overlay-simple-overlay-hover"
-          onClick={() => setAdding((v) => !v)}
-        >
-          <span class="text-[14px] leading-none">+</span> {language.t("chimera.keys.add")}
-        </button>
+        <Show when={signedIn()}>
+          <button
+            type="button"
+            class="flex h-8 shrink-0 items-center gap-1 rounded-[7px] border-[0.5px] border-v2-border-border-base px-3 text-[12.5px] font-[530] text-v2-text-text-base transition-colors hover:bg-v2-overlay-simple-overlay-hover"
+            onClick={() => setAdding((v) => !v)}
+          >
+            <span class="text-[14px] leading-none">+</span> {language.t("chimera.keys.add")}
+          </button>
+        </Show>
       </div>
 
       {/* 账号卡（设计稿 S6 顶部）：头像 + 用户名 + 登录状态 + 退出登录 */}
@@ -128,17 +149,15 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
         <ChimeraAvatar size={30} />
         <div class="flex min-w-0 flex-1 flex-col gap-0.5">
           <span class="truncate font-mono text-[13px] font-[600] leading-4 text-v2-text-text-base">
-            {account() || language.t("chimera.keys.connected")}
+            {account() || (signedIn() ? language.t("chimera.keys.connected") : language.t("chimera.keys.disconnected"))}
           </span>
           <span class="font-mono text-[11px] leading-4 text-v2-text-text-faint">
-            {store.keys.length > 0 || account()
-              ? language.t("chimera.keys.signedIn")
-              : language.t("chimera.keys.notSignedIn")}
+            {signedIn() ? language.t("chimera.keys.signedIn") : language.t("chimera.keys.notSignedIn")}
             {" · "}
             {gatewayHost}
           </span>
         </div>
-        <Show when={account() || store.keys.length > 0}>
+        <Show when={signedIn()}>
           <button
             type="button"
             class="flex h-7 shrink-0 items-center rounded-[7px] border-[0.5px] border-v2-border-border-base px-3 text-[12px] text-v2-text-text-muted transition-colors hover:bg-v2-overlay-simple-overlay-hover hover:text-v2-text-text-base"
@@ -195,8 +214,29 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
         <Show
           when={store.keys.length > 0}
           fallback={
-            <div class="flex h-20 items-center justify-center text-[12.5px] text-v2-text-text-faint">
-              {language.t("chimera.keys.empty")}
+            <div class="flex flex-col items-center justify-center gap-3 px-4 py-6">
+              <p class="text-center text-[12.5px] leading-5 text-v2-text-text-faint">
+                {signedIn() ? language.t("chimera.keys.empty") : language.t("chimera.keys.chooseMethod")}
+              </p>
+              <Show when={!signedIn()}>
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    class="flex h-8 items-center rounded-[7px] px-3 text-[12.5px] font-[530] transition-[filter] hover:brightness-105"
+                    style={{ background: "var(--chimera-accent)", color: "var(--v2-background-bg-base)" }}
+                    onClick={() => openConnect("device")}
+                  >
+                    {language.t("chimera.connect.tab.device")}
+                  </button>
+                  <button
+                    type="button"
+                    class="flex h-8 items-center rounded-[7px] border-[0.5px] border-v2-border-border-base px-3 text-[12.5px] font-[530] text-v2-text-text-base transition-colors hover:bg-v2-overlay-simple-overlay-hover"
+                    onClick={() => openConnect("key")}
+                  >
+                    {language.t("chimera.connect.tab.key")}
+                  </button>
+                </div>
+              </Show>
             </div>
           }
         >

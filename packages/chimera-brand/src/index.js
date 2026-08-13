@@ -22,7 +22,12 @@ const homepageHost = new URL(BRAND.homepage).host
  */
 export function brandUserCopy(text) {
   if (typeof text !== "string") return text
-  if (!/OpenCode|opencode\.ai|Discord|opencode is not|opencode is installed|'opencode' command/i.test(text)) return text
+  if (
+    !/OpenCode|opencode\.ai|opencode\.json|Discord|opencode is not|opencode is installed|'opencode' command/i.test(
+      text,
+    )
+  )
+    return text
   return text
     .replaceAll("OpenCode Desktop", BRAND.name)
     .replaceAll("OpenCode Go", BRAND.name)
@@ -30,6 +35,8 @@ export function brandUserCopy(text) {
     .replaceAll("opencode.ai/zen", homepageHost)
     .replaceAll("opencode.ai", homepageHost)
     .replaceAll("OpenCode", BRAND.name)
+    .replaceAll("opencode.jsonc", "chimera.jsonc")
+    .replaceAll("opencode.json", "chimera.json")
     .replaceAll("on Discord", "on GitHub")
     .replaceAll("Discord", "GitHub")
     .replaceAll("'opencode' command", `'${BRAND.nameLower}' command`)

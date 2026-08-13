@@ -28,6 +28,24 @@ export function shouldShowFileTree(input: { visible: boolean; opened: boolean })
   return input.opened && input.visible
 }
 
+export function toggleProjectFileTree(input: {
+  visible: boolean
+  setVisible: (value: boolean) => void
+  opened: boolean
+  tab: "changes" | "all"
+  open: () => void
+  close: () => void
+  setTab: (tab: "changes" | "all") => void
+}) {
+  if (input.visible && input.opened && input.tab === "all") {
+    input.close()
+    return
+  }
+  if (!input.visible) input.setVisible(true)
+  input.setTab("all")
+  input.open()
+}
+
 export const createSessionTabs = (input: TabsInput) => {
   const review = input.review ?? (() => false)
   const hasReview = input.hasReview ?? (() => false)

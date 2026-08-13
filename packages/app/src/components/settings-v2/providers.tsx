@@ -10,6 +10,7 @@ import { useServerProtocol, useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { DialogConnectProvider, useProviderConnectController } from "../dialog-connect-provider"
 import { DialogCustomProvider } from "../dialog-custom-provider"
+import { hasChimeraAuth } from "../chimera-keys"
 import { SettingsListV2 } from "./parts/list"
 import "./settings-v2.css"
 
@@ -42,8 +43,7 @@ export const SettingsProvidersV2: Component<{
   const connect = (provider?: string) => {
     // Chimera：已连接时进入密钥管理器（设计稿 S6），未连接时进入连接流程（设计稿 S5）
     if (provider === "chimera") {
-      const isConnected = connected().some((p) => p.id === "chimera")
-      if (isConnected) {
+      if (hasChimeraAuth()) {
         void import("../chimera-keys").then((x) => {
           void dialog.show(() => <x.ChimeraKeysDialog directory={props.directory} />)
         })
@@ -58,7 +58,9 @@ export const SettingsProvidersV2: Component<{
     void dialog.show(() => <DialogConnectProvider directory={props.directory} controller={providerConnect} />)
   }
 
-  const connected = createMemo(() => providers.connected())
+  const connected = createMemo(() =>
+    providers.connected().filter((item) => item.id !== "chimera" || hasChimeraAuth()),
+  )
 
   const popular = createMemo(() => {
     const connectedIDs = new Set(connected().map((p) => p.id))

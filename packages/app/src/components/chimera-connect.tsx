@@ -188,13 +188,17 @@ async function fetchAccountName(gw: GatewayFetch, accessToken: string): Promise<
     return undefined
   }
 }
-export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | undefined> }> = (props) => {
+
+export const ChimeraConnectDialog: Component<{
+  directory?: Accessor<string | undefined>
+  initialTab?: "device" | "key"
+}> = (props) => {
   const dialog = useDialog()
   const language = useLanguage()
   const platform = usePlatform()
   const serverSDK = useServerSDK()
   const serverSync = useServerSync()
-  const [tab, setTab] = createSignal<"device" | "key">("device")
+  const [tab, setTab] = createSignal<"device" | "key">(props.initialTab ?? "device")
   const [apiKey, setApiKey] = createSignal("")
   const [pending, setPending] = createSignal(false)
   const [error, setError] = createSignal<string>()
