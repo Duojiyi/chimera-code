@@ -486,7 +486,20 @@ bun install && bun typecheck && bun run dev:desktop
     - 实测验证：模型自述"我是 Chimera，企业级 AI 编程助手"并列出
       context7 两个工具（身份注入 + MCP 全链路 ✓）；青金主色/间距/
       密度深色实拍确认
-32. ⏳ 遗留（结构性，需专项决策）：顶栏面包屑（与多会话 tab 栏结构冲突）、
+32. ✅ 十二轮（2026-08-13 上午，产品决策落地）：
+    - 上下文显示去重：状态栏移除上下文条，右上角上游指示器独享
+      （含 Token/使用率/成本弹层）；成本估算确认为 models.dev 官方价
+      （一方厂商优先，merge 已在九轮修正）
+    - 权限默认自动放行（edit/bash/webfetch/external_directory=allow，
+      doom_loop 保留 ask 作失控保护；用户显式配置优先）
+    - 内置工程守则 v2：融合 Karpathy 四原则（forrestchang/
+      andrej-karpathy-skills，111K stars）与 Ponytail YAGNI 决策阶梯
+      （53K stars，JetBrains 实测 -10.3% 成本 p=0.004）——先想后写/
+      写码前六问/外科手术式修改/以验证收尾/永不偷懒的底线/安全红线
+    - dev 任务栏图标修正：Windows 任务栏按 AUMID 匹配开始菜单快捷方式
+      取图标，dev 启动时写入带品牌图标的 Chimera Dev.lnk（writeShortcutLink
+      首次需 create 模式）；排查中处理了端口残留导致的单实例锁退出
+33. ⏳ 遗留（结构性，需专项决策）：顶栏面包屑（与多会话 tab 栏结构冲突）、
     输入框下排「附件 / @ 上下文」文字按钮（需动上游 ui 核心组件插槽）、
     设置弹窗 vs 设计稿全屏页、S2 项目平铺列表（上游为下拉）、
     右侧文件面板默认常驻（上游为按需开关，已接线图标栏）、
