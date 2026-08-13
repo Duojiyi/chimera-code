@@ -145,6 +145,16 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       config.mcp ??= {}
       config.mcp["context7"] ??= { type: "remote", url: "https://mcp.context7.com/mcp", enabled: true }
       config.mcp["deepwiki"] ??= { type: "remote", url: "https://mcp.deepwiki.com/mcp", enabled: false }
+
+      // 权限默认自动放行（用户产品决策：企业内部工具免打断）；
+      // doom_loop 保留询问作为失控保护。用户显式配置优先。
+      config.permission ??= {
+        edit: "allow",
+        bash: "allow",
+        webfetch: "allow",
+        external_directory: "allow",
+        doom_loop: "ask",
+      }
     },
 
     // 模型列表由中转站下发（GET {gateway}/v1/models），登录/保存密钥后自动同步。
@@ -198,15 +208,18 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       output.system.push(
         `You are ${BRAND.name}, an enterprise AI coding agent. When asked who you are, identify yourself as ${BRAND.name}. Do not claim to be any other product.`,
       )
+      // 融合 Karpathy 四原则（forrestchang/andrej-karpathy-skills）与
+      // Ponytail YAGNI 决策阶梯的精华，控制在 ~250 token。
       output.system.push(
         [
           "工程守则：",
-          "- 用用户使用的语言回复；注释与提交信息遵循仓库既有惯例。",
-          "- 动手前先读相关代码；改动保持最小且聚焦，不顺手重构无关代码。",
-          "- 遵循项目现有风格、依赖与架构约定，不引入未经讨论的新依赖。",
-          "- 不确定的事实（API、版本、路径）先查证再下结论，不要编造。",
-          "- 绝不在代码、日志或回复中泄露密钥、令牌等敏感信息。",
-          "- 删除、覆盖、强推等破坏性操作，先说明影响并征得确认。",
+          "【先想后写】不假设需求，有困惑直接问；关键取舍摆到明面说。",
+          "【写码前自查】按序问：真的需要写吗（YAGNI）→ 代码库已有吗 → 标准库/平台原生能做吗 → 已装依赖能做吗 → 一行能解决吗；都不行才写最少必要代码，不做投机性设计。",
+          "【外科手术式修改】只动任务必须动的代码；不顺手重构无关代码；遵循项目既有风格与架构，不引入未经讨论的新依赖。",
+          "【以验证收尾】先定成功标准，改完用测试或检查证实达标再交付；不确定的事实（API、版本、路径）先查证，不编造。",
+          "【永不偷懒的底线】信任边界的输入校验、防数据丢失的错误处理、安全、无障碍、用户明确提出的要求。",
+          "【安全红线】绝不泄露密钥令牌等敏感信息；删除、覆盖、强推等破坏性操作先说明影响并确认。",
+          "【语言】用用户使用的语言回复；注释与提交信息遵循仓库惯例。",
         ].join("\n"),
       )
     },

@@ -6,7 +6,7 @@ import { homedir, tmpdir } from "node:os"
 import { join } from "node:path"
 import { getCACertificates, setDefaultCACertificates } from "node:tls"
 import type { Event } from "electron"
-import { app, BrowserWindow } from "electron"
+import { app, BrowserWindow, shell } from "electron"
 
 import { BRAND } from "@chimera/brand"
 import { Deferred, Effect, Fiber } from "effect"
@@ -141,6 +141,27 @@ const main = Effect.gen(function* () {
   })()
   app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : `${BRAND.name} Dev`)
   app.setAppUserModelId(appId)
+  // dev 模式任务栏图标：Windows 任务栏按 AUMID 匹配开始菜单快捷方式取图标，
+  // 无快捷方式时回落 electron.exe 默认图标。写入带品牌图标的快捷方式修正。
+  if (!app.isPackaged && process.platform === "win32") {
+    try {
+      const shortcut = join(
+        app.getPath("appData"),
+        "Microsoft",
+        "Windows",
+        "Start Menu",
+        "Programs",
+        `${BRAND.name} Dev.lnk`,
+      )
+      shell.writeShortcutLink(shortcut, "create", {
+        target: process.execPath,
+        cwd: process.cwd(),
+        appUserModelId: appId,
+        icon: join(app.getAppPath(), "resources", "icons", "icon.ico"),
+        iconIndex: 0,
+      })
+    } catch {}
+  }
   app.setPath(
     "userData",
     onboardingTestRoot ? join(onboardingTestRoot, "desktop") : join(app.getPath("appData"), appId),

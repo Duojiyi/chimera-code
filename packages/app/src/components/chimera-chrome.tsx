@@ -9,7 +9,6 @@ import { activeChimeraKeyName } from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
 import { useLanguage } from "@/context/language"
 import { useLayout } from "@/context/layout"
-import { useModels } from "@/context/models"
 import { usePlatform } from "@/context/platform"
 import { useServerSync } from "@/context/server-sync"
 import { useTabs } from "@/context/tabs"
@@ -216,39 +215,7 @@ export const ChimeraStatusBar: Component = () => {
     return serverSync().child(dir)[0].vcs?.branch
   })
 
-  // 会话消息在 session 服务 store（serverSync().session.data.message），
-  // 目录 child store 的 message 是另一份按需数据，这里不用。
-  const sessionMessages = createMemo(() => {
-    const route = layout.route()
-    if (route.type !== "session") return []
-    return serverSync().session.data.message?.[route.sessionId] ?? []
-  })
-
-  // 上下文占用（设计稿 S1 渐变用量条）：最近一次请求 tokens ÷ 模型上下文窗口
-  const models = useModels()
-  const context = createMemo(() => {
-    const messages = sessionMessages()
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const item = messages[i] as {
-        role: string
-        providerID?: string
-        modelID?: string
-        tokens?: { input: number; output: number; reasoning: number; cache?: { read: number; write: number } }
-      }
-      if (item.role !== "assistant" || !item.tokens) continue
-      const used = item.tokens.input + item.tokens.output + item.tokens.reasoning + (item.tokens.cache?.read ?? 0)
-      if (used <= 0) continue
-      const limit =
-        item.providerID && item.modelID
-          ? models.find({ providerID: item.providerID, modelID: item.modelID })?.limit?.context
-          : undefined
-      if (!limit) return undefined
-      return { used, limit, pct: Math.min(100, Math.round((used / limit) * 100)) }
-    }
-    return undefined
-  })
-
-  const compact = (n: number) => (n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`)
+  // 上下文用量已由会话右上角上游指示器承载（含 Token/成本），状态栏不再计算。
 
   // 当前会话变更统计（设计稿 S1 状态栏左侧 +44 -214 · 3 处更改）
   const sessionDiff = createMemo(() => {
@@ -304,29 +271,8 @@ export const ChimeraStatusBar: Component = () => {
             {language.t("chimera.status.key", { name: keyName()! })}
           </span>
         </Show>
-        <Show when={context()}>
-          {(ctx) => (
-            <span
-              class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint"
-              title={language.t("chimera.status.context.tooltip", {
-                used: compact(ctx().used),
-                limit: compact(ctx().limit),
-              })}
-            >
-              {language.t("chimera.status.context")}
-              <span class="relative inline-block h-[3px] w-[44px] overflow-hidden rounded-full bg-v2-background-bg-layer-03">
-                <span
-                  class="absolute inset-y-0 left-0 rounded-full"
-                  style={{
-                    width: `${Math.max(2, ctx().pct)}%`,
-                    background: "linear-gradient(90deg, #DEA54C, #46C39A)",
-                  }}
-                />
-              </span>
-              {ctx().pct}%
-            </span>
-          )}
-        </Show>
+        {/* 上下文用量改由会话右上角上游指示器承载（含 Token/成本详情），
+            状态栏不再重复展示 */}
         {/* 设计稿 S1：● 网关 42ms（悬浮显示完整域名与上游版本） */}
         <span
           class="flex items-center gap-1.5 font-mono text-[10.5px] text-v2-text-text-faint"
