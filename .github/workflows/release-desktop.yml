@@ -84,7 +84,7 @@ jobs:
           - host: macos-latest
             target: x86_64-apple-darwin
             platform_flag: --mac --x64
-            bun_install_flags: --os=darwin --cpu=x64
+            bun_install_flags: --os=darwin --cpu=arm64
           - host: windows-latest
             target: x86_64-pc-windows-msvc
             platform_flag: --win --x64
