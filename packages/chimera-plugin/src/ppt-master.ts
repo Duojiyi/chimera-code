@@ -77,7 +77,7 @@ async function findVendorSource(dest: string) {
     if (path.resolve(dir) === path.resolve(dest)) continue
     if (await isPptMaster(dir)) return dir
   }
-  return (await downloadSkillZip(dest)) ?? (await cloneRelease(dest))
+  return downloadSkillZip(dest)
 }
 
 async function downloadSkillZip(dest: string) {
@@ -85,12 +85,14 @@ async function downloadSkillZip(dest: string) {
   const staging = path.join(path.dirname(dest), `ppt-master.src-${process.pid}`)
   const zipPath = `${staging}.zip`
   console.log(`downloading ${url}`)
-  const res = await fetch(url, { redirect: "follow" })
-  if (!res.ok) {
-    console.error(`download failed: ${res.status} ${url}`)
+  if (!(await curlDownload(url, zipPath))) return
+  const size = Bun.file(zipPath).size
+  console.log(`downloaded ${SKILL_ZIP} (${size} bytes)`)
+  if (size < 1_000_000) {
+    console.error(`download too small: ${size} bytes`)
+    await rm(zipPath, { force: true })
     return
   }
-  await Bun.write(zipPath, res)
   await mkdir(staging, { recursive: true })
   const extract = Bun.spawnSync(["tar", "-xf", zipPath, "-C", staging], {
     stdout: "inherit",
@@ -106,19 +108,29 @@ async function downloadSkillZip(dest: string) {
   await rm(staging, { recursive: true, force: true })
 }
 
-async function cloneRelease(dest: string) {
-  const staging = path.join(path.dirname(dest), `ppt-master.src-${process.pid}`)
-  const clone = Bun.spawnSync(
-    ["git", "clone", "--depth", "1", "--branch", PPT_MASTER_TAG, `${PPT_MASTER_REPO}.git`, staging],
+async function curlDownload(url: string, zipPath: string) {
+  const curl = process.platform === "win32" ? "curl.exe" : "curl"
+  const proc = Bun.spawn(
+    [
+      curl,
+      "-fL",
+      "--retry",
+      "5",
+      "--retry-delay",
+      "2",
+      "--connect-timeout",
+      "20",
+      "--max-time",
+      "180",
+      "-#",
+      "-o",
+      zipPath,
+      url,
+    ],
     { stdout: "inherit", stderr: "inherit" },
   )
-  if (clone.exitCode !== 0) {
-    await rm(staging, { recursive: true, force: true })
-    return
-  }
-  const root = await resolveSkillRoot(staging)
-  if (root) return root
-  await rm(staging, { recursive: true, force: true })
+  const code = await proc.exited
+  return code === 0 && (await Bun.file(zipPath).exists())
 }
 
 async function rmStaging(source: string) {
