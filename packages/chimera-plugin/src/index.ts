@@ -27,6 +27,8 @@ type OfficialModel = {
   temperature?: boolean
   modalities?: { input?: string[]; output?: string[] }
   release_date?: string
+  /** 思考强度选项（effort/budget/toggle），驱动上游生成模型 variants 与前端强度选择 */
+  reasoning_options?: Array<Record<string, unknown>>
 }
 
 let officialCatalog: Map<string, OfficialModel> | undefined
@@ -108,8 +110,23 @@ function gatewayModel(id: string, official?: OfficialModel) {
       interleaved: false,
     },
     release_date: official?.release_date ?? "",
-    variants: {},
+    // 思考强度变体：插件模型不经过上游 reasoningVariants 管道（provider.ts
+    // 对 plugin models 原样入库），按 openai-compatible 的 effort 映射
+    // （{ reasoningEffort }，网关透传 reasoning_effort）在此直接生成。
+    variants: gatewayVariants(official),
   }
+}
+
+/** 从官方 reasoning_options 生成 effort 变体（low/medium/high/xhigh/max）。 */
+function gatewayVariants(official?: OfficialModel): Record<string, Record<string, unknown>> {
+  const effort = official?.reasoning_options?.find((option) => option["type"] === "effort")
+  const values = effort?.["values"]
+  if (!Array.isArray(values)) return {}
+  return Object.fromEntries(
+    values
+      .filter((value): value is string => typeof value === "string" && value !== "none")
+      .map((value) => [value, { reasoningEffort: value }]),
+  )
 }
 
 /**

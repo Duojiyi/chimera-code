@@ -1248,5 +1248,9 @@ export const dict = {
   "chimera.newSession.hints": "Enter Start · Esc Back",
   "chimera.status.gateway.latency": "Gateway {{ms}}ms",
   "chimera.nav.theme": "Toggle light/dark",
+  "ui.chimera.effort.title": "Thinking depth",
+  "ui.chimera.effort.faster": "Faster",
+  "ui.chimera.effort.smarter": "Smarter",
+  "ui.chimera.effort.default": "Auto",
   "ui.chimera.duration": "Took {{time}}",
 }

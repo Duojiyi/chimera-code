@@ -1323,5 +1323,9 @@ export const dict = {
   "chimera.newSession.hints": "Enter 开始 · Esc 返回",
   "chimera.status.gateway.latency": "网关 {{ms}}ms",
   "chimera.nav.theme": "切换深浅色",
+  "ui.chimera.effort.title": "思考深度",
+  "ui.chimera.effort.faster": "更快",
+  "ui.chimera.effort.smarter": "更强",
+  "ui.chimera.effort.default": "标准",
   "ui.chimera.duration": "耗时 {{time}}",
 } satisfies Partial<Record<Keys, string>>

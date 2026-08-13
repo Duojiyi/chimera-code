@@ -1,4 +1,4 @@
-import { createEffect, createMemo, For, Show, type Accessor, type JSX } from "solid-js"
+import { createEffect, createMemo, createSignal, For, onCleanup, Show, type Accessor, type JSX } from "solid-js"
 import { FileIcon } from "@opencode-ai/ui/file-icon"
 import { Icon } from "@opencode-ai/ui/icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
@@ -242,14 +242,12 @@ export function PromptInputV2(props: PromptInputV2Props) {
             >
               {props.modelControl}
             </Show>
+            {/* chimera: 思考深度滑条弹层（Claude Code 式 Faster↔Smarter），
+                替换上游 variant 下拉 */}
             <Show when={(props.variantControlVisible ?? true) && view.variant} keyed>
               {(control) => (
                 <Show when={control.options().length > 1}>
-                  <PromptInputV2ConfiguredSelect
-                    title={i18n.t("ui.promptInput.chooseVariant")}
-                    keybind={["Shift", "Mod", "D"]}
-                    control={control}
-                  />
+                  <ChimeraEffortControl control={control} />
                 </Show>
               )}
             </Show>
@@ -528,6 +526,97 @@ export function PromptInputV2AddMenu(props: {
         </MenuV2.Portal>
       </MenuV2>
     </TooltipV2>
+  )
+}
+
+/**
+ * chimera: 思考深度控件（Claude Code 同款交互）。
+ * 触发胶囊显示当前档位；弹层为 Faster↔Smarter 点位滑条，点击点位切换；
+ * 选中最高档时轨道与拖柄流光呼吸（keyframes 在 chimera-ui overrides.css）。
+ */
+function ChimeraEffortControl(props: { control: PromptInputV2SelectControl }) {
+  const i18n = useI18n()
+  const [open, setOpen] = createSignal(false)
+  let rootRef: HTMLDivElement | undefined
+
+  const options = () => props.control.options()
+  const current = () => props.control.current()
+  const index = () => {
+    const found = options().findIndex((option) => option.id === current())
+    return found === -1 ? 0 : found
+  }
+  const atTop = () => options().length > 1 && index() === options().length - 1
+  const label = (id: string) => (id === "default" ? i18n.t("ui.chimera.effort.default") : id)
+
+  const onDocClick = (event: MouseEvent) => {
+    if (rootRef && !rootRef.contains(event.target as Node)) setOpen(false)
+  }
+  createEffect(() => {
+    if (!open()) return
+    document.addEventListener("mousedown", onDocClick)
+    onCleanup(() => document.removeEventListener("mousedown", onDocClick))
+  })
+
+  return (
+    <div ref={rootRef} class="relative">
+      <TooltipV2 placement="top" value={i18n.t("ui.chimera.effort.title")}>
+        <ButtonV2
+          variant="ghost-muted"
+          size="normal"
+          data-action="chimera-effort"
+          data-top={atTop() ? "" : undefined}
+          class="justify-start ![font-weight:440]"
+          aria-label={i18n.t("ui.chimera.effort.title")}
+          onClick={() => setOpen((value) => !value)}
+        >
+          <Icon name="brain" size="small" class="shrink-0" />
+          <span class="truncate capitalize leading-5">{label(current())}</span>
+        </ButtonV2>
+      </TooltipV2>
+      <Show when={open()}>
+        <div
+          data-component="chimera-effort-popover"
+          class="absolute bottom-full left-0 z-50 mb-2 w-[240px] rounded-[12px] border-[0.5px] border-v2-border-border-base bg-v2-background-bg-base p-4 shadow-[var(--v2-elevation-floating)]"
+        >
+          <div class="flex items-center gap-1.5 pb-3 text-[13px] font-[600] text-v2-text-text-base">
+            {i18n.t("ui.chimera.effort.title")}
+            <span class="capitalize text-v2-text-text-muted">{label(current())}</span>
+          </div>
+          <div class="flex items-center justify-between pb-1.5 font-mono text-[10.5px] text-v2-text-text-faint">
+            <span>{i18n.t("ui.chimera.effort.faster")}</span>
+            <span>{i18n.t("ui.chimera.effort.smarter")}</span>
+          </div>
+          <div class="relative flex h-6 items-center" data-component="chimera-effort-track" data-top={atTop() ? "" : undefined}>
+            <span class="absolute inset-x-1 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-v2-background-bg-layer-03" data-slot="effort-rail" />
+            <div class="relative flex w-full items-center justify-between">
+              <For each={options()}>
+                {(option, position) => (
+                  <button
+                    type="button"
+                    class="relative flex size-6 items-center justify-center"
+                    aria-label={label(option.id)}
+                    title={label(option.id)}
+                    onClick={() => {
+                      props.control.onSelect(option.id)
+                    }}
+                  >
+                    <span
+                      class="rounded-full transition-all duration-150"
+                      data-slot="effort-dot"
+                      classList={{
+                        "size-[14px] bg-[var(--chimera-accent)] shadow-[0_0_8px_-1px_var(--chimera-accent)]":
+                          position() === index(),
+                        "size-[5px] bg-v2-icon-icon-faint": position() !== index(),
+                      }}
+                    />
+                  </button>
+                )}
+              </For>
+            </div>
+          </div>
+        </div>
+      </Show>
+    </div>
   )
 }
 
