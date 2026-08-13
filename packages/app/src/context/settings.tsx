@@ -195,7 +195,8 @@ const defaultSettings: Settings = {
     showReasoningSummaries: false,
     shellToolPartsExpanded: false,
     editToolPartsExpanded: false,
-    showCustomAgents: false,
+    // chimera: 构建/计划模式切换默认露出（产品决策：模式系统是一等公民）
+    showCustomAgents: true,
     mobileTitlebarPosition: "top",
   },
   appearance: {

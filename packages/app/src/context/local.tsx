@@ -69,7 +69,11 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
 
     const id = createMemo(() => params.id || undefined)
     const list = createMemo(() => sync().data.agent.filter((item) => item.mode !== "subagent" && !item.hidden))
-    const agentsVisible = createMemo(() => settings.visibility.customAgents() || hasCustomAgent(list()))
+    // chimera: 构建/计划等模式切换常驻露出（产品决策：模式系统是一等公民；
+    // 上游仅在存在自定义 agent 或设置开启时显示）
+    const agentsVisible = createMemo(
+      () => list().length > 1 || settings.visibility.customAgents() || hasCustomAgent(list()),
+    )
     const connected = createMemo(() => new Set(providers.connected().map((item) => item.id)))
 
     const [saved, setSaved, , savedReady] = persisted(

@@ -144,10 +144,16 @@
   align-items: flex-start;
 }
 
+/* 内层文字气泡去底：上游 text 层自带深色气泡背景，与外层全宽卡叠成
+   双重背景（用户实拍反馈）；卡片角色由 body 层独占 */
 [data-component="user-message"] [data-slot="user-message-text"],
 [data-component="user-message"] [data-component="user-message-text"] {
   text-align: left;
   margin-left: 0;
+  background: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
 }
 
 /* 用户卡内行内代码去底色：卡底 + code 底形成"一层套一层"（用户反馈），
@@ -260,14 +266,14 @@
   border-radius: 7px;
 }
 
-/* 输入区发送按钮：青金实心圆形。上游用双层 background-image 渐变
-   （高光 + 实心灰）画按钮主体，会盖住 background-color，必须显式接管
+/* 输入区发送按钮：品牌渐变圆形（熔金 → 青金，同品牌头像）。上游用双层
+   background-image 渐变画按钮主体会盖住 background-color，必须显式接管
    image 层（"灰按钮"的真因）。与左侧快捷键提示留出间距。 */
 [data-component="icon-button"][aria-label="发送"],
 [data-component="icon-button"][aria-label="Send"] {
   background-color: var(--chimera-accent) !important;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%) !important;
-  color: var(--chimera-accent-contrast);
+  background-image: linear-gradient(135deg, #dea54c 0%, #46c39a 100%) !important;
+  color: #10231d;
   border-radius: 999px;
   box-shadow: none;
   margin-left: 10px;
@@ -278,12 +284,52 @@
   filter: brightness(1.08);
 }
 
-/* 禁用态：满色实体、仅降箭头对比。按钮任何状态都保持干净的品牌青金。 */
+/* 禁用态：保持品牌渐变实体、仅降箭头对比。 */
 [data-component="icon-button"][aria-label="发送"]:disabled,
 [data-component="icon-button"][aria-label="Send"]:disabled {
   background-color: var(--chimera-accent) !important;
-  color: color-mix(in srgb, var(--v2-background-bg-base) 52%, var(--chimera-accent));
+  color: rgba(16, 35, 29, 0.55);
   opacity: 1;
+}
+
+/* ===== 思考深度控件（Claude Code 式滑条弹层）===== */
+
+/* 最高档：触发胶囊与滑条轨道流光呼吸（品牌渐变流动） */
+@keyframes chimera-effort-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+[data-action="chimera-effort"][data-top] {
+  border: 0.5px solid transparent;
+  background:
+    linear-gradient(var(--v2-background-bg-base), var(--v2-background-bg-base)) padding-box,
+    linear-gradient(90deg, #dea54c, #46c39a, #dea54c) border-box;
+  background-size:
+    100% 100%,
+    200% 100%;
+  animation: chimera-effort-flow 2.6s linear infinite;
+}
+
+[data-component="chimera-effort-track"][data-top] [data-slot="effort-rail"] {
+  background: linear-gradient(90deg, #dea54c, #46c39a, #dea54c);
+  background-size: 200% 100%;
+  animation: chimera-effort-flow 2.2s linear infinite;
+}
+
+[data-component="chimera-effort-track"][data-top] [data-slot="effort-dot"] {
+  background: linear-gradient(135deg, #dea54c, #46c39a);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-action="chimera-effort"][data-top],
+  [data-component="chimera-effort-track"][data-top] [data-slot="effort-rail"] {
+    animation: none;
+  }
 }
 
 /* ===== 微动效（品牌手感）：主操作按压回弹 + 统一过渡曲线 ===== */
