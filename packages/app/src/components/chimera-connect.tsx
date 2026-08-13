@@ -21,7 +21,7 @@ const FieldInput: Component<{
   onInput: (value: string) => void
   trailing?: JSX.Element
 }> = (props) => (
-  <div class="flex h-9 w-full items-center gap-2 rounded-[8px] border-[0.5px] border-v2-border-border-base bg-v2-background-bg-layer-01 px-3 transition-colors focus-within:border-[var(--v2-state-fg-warning)]">
+  <div class="flex h-9 w-full items-center gap-2 rounded-[8px] border-[0.5px] border-v2-border-border-base bg-v2-background-bg-layer-01 px-3 transition-colors focus-within:border-[var(--chimera-accent)]">
     <span class="shrink-0 text-v2-icon-icon-faint">{props.icon}</span>
     <input
       type={props.type ?? "text"}
@@ -330,8 +330,8 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
             class="flex size-10 items-center justify-center rounded-[10px] border-[0.5px] border-v2-border-border-base"
             style={{
               background: "var(--v2-background-bg-layer-02)",
-              "--icon-strong-base": "var(--v2-state-fg-warning)",
-              "--icon-base": "var(--v2-state-fg-warning)",
+              "--icon-strong-base": "var(--chimera-accent)",
+              "--icon-base": "var(--chimera-accent)",
             }}
           >
             <Mark class="size-6" />
@@ -415,8 +415,8 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
                           <div
                             class="w-full rounded-[10px] border border-dashed px-4 py-3 text-center font-mono text-[22px] font-[600] tracking-[4px]"
                             style={{
-                              color: "var(--v2-state-fg-warning)",
-                              "border-color": "color-mix(in srgb, var(--v2-state-fg-warning) 45%, transparent)",
+                              color: "var(--chimera-accent)",
+                              "border-color": "color-mix(in srgb, var(--chimera-accent) 45%, transparent)",
                             }}
                           >
                             {state.grant.user_code}
@@ -468,7 +468,7 @@ export const ChimeraConnectDialog: Component<{ directory?: Accessor<string | und
               type="submit"
               disabled={pending()}
               class="flex h-9 w-full items-center justify-center gap-2 rounded-[8px] text-[13px] font-[530] transition-[filter] hover:brightness-105 disabled:opacity-60"
-              style={{ background: "var(--v2-state-fg-warning)", color: "var(--v2-background-bg-base)" }}
+              style={{ background: "var(--chimera-accent)", color: "var(--v2-background-bg-base)" }}
             >
               <Show when={pending()} fallback={icons.arrow}>
                 <Spinner class="size-4" />

@@ -6,9 +6,9 @@
 /* 主操作按钮（上游 neutral 变体）：熔金实心（设计稿的主按钮语言）。
    上游 neutral = 半透明灰黑（bg-button-neutral），与品牌视觉不符。 */
 [data-component="button-v2"][data-variant="neutral"][data-variant] {
-  background-color: var(--v2-state-fg-warning);
+  background-color: var(--chimera-accent);
   background-image: none;
-  color: var(--v2-background-bg-base);
+  color: var(--chimera-accent-contrast);
   box-shadow: none;
 }
 
@@ -22,13 +22,12 @@
   filter: brightness(0.94);
 }
 
-/* 首页"新建会话"主操作：熔金实心按钮（设计稿 S0）。
-   --v2-state-fg-warning 在 chimera 主题下即熔金/深金，深浅主题自适应。
+/* 首页"新建会话"主操作：青金实心按钮。
    三重属性选择器确保胜过上游 variant 样式的层叠顺序。 */
 [data-component="button-v2"][data-action="home-new-session"][data-action] {
-  background: var(--v2-state-fg-warning);
+  background: var(--chimera-accent);
   background-image: none;
-  color: var(--v2-background-bg-base);
+  color: var(--chimera-accent-contrast);
   box-shadow: none;
 }
 
@@ -50,52 +49,82 @@
 
 /* --- 排版密度：设计稿为窄列紧凑排版 --- */
 
-/* 内容列 760px：设计稿卡宽按含右侧文件面板的布局折算；无常驻右面板时
-   640 两侧留白过大（用户实拍反馈），放宽至 760 维持同等呼吸感 */
+/* 内容列 860px：两轮用户反馈两侧留白过大后的定值（760 仍偏窄） */
 [data-timeline-row][data-timeline-row] {
-  max-width: 760px;
+  max-width: 860px;
   margin-inline: auto;
 }
 
 /* 输入区与内容列同轴同宽（上游 dock 内层为 800px，与内容列错位） */
 [data-component="session-prompt-dock"] > div {
-  max-width: 760px;
+  max-width: 860px;
 }
 
 /* 正文字号 13.5px、行高收紧（设计稿正文密度） */
 [data-component="text-part"] [data-slot="text-part-body"] {
   font-size: 13.5px;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 [data-component="text-part"] [data-slot="text-part-body"] p {
-  margin-block-end: 8px;
+  margin-block-end: 6px;
 }
 
 [data-component="text-part"] [data-slot="text-part-body"] > *:last-child {
   margin-block-end: 0;
 }
 
-/* 消息行间距收紧：AssistantPart 行的续行间距减半 */
+/* 消息行间距收紧：AssistantPart 行的续行间距（设计稿紧凑段距，用户反馈松散） */
 [data-timeline-row][data-timeline-row].pt-3 {
-  padding-top: 8px;
+  padding-top: 4px;
 }
 
-/* --- 输入区：熔金描边视觉焦点（设计稿 S1 输入卡） --- */
+/* 回复头与正文贴近（设计稿 AI 头下即正文，无大空行） */
+[data-slot="chimera-turn-header"][data-slot] {
+  padding-bottom: 2px;
+  padding-top: 0;
+}
+
+/* 正文块自身的上下留白收紧 */
+[data-slot="session-turn-assistant-content"] > [data-component="text-part-wrapper"],
+[data-slot="session-turn-assistant-content"] > [data-component="text-part"] {
+  padding-block: 2px;
+}
+
+/* --- 输入区：青金呼吸光（静止时缓慢脉动，聚焦时常亮收拢） --- */
+@keyframes chimera-breathe {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--chimera-accent) 26%, var(--v2-border-border-base));
+    box-shadow: 0 0 14px -8px color-mix(in srgb, var(--chimera-accent) 22%, transparent);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--chimera-accent) 55%, var(--v2-border-border-base));
+    box-shadow: 0 0 24px -6px color-mix(in srgb, var(--chimera-accent) 50%, transparent);
+  }
+}
+
 [data-component="prompt-input-v2"] {
-  border: 1px solid color-mix(in srgb, var(--v2-state-fg-warning) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chimera-accent) 30%, var(--v2-border-border-base));
   border-radius: 12px;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--v2-state-fg-warning) 10%, transparent);
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease;
+  animation: chimera-breathe 4.2s ease-in-out infinite;
 }
 
 [data-component="prompt-input-v2"]:focus-within {
-  border-color: color-mix(in srgb, var(--v2-state-fg-warning) 75%, transparent);
+  animation: none;
+  border-color: color-mix(in srgb, var(--chimera-accent) 70%, transparent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--v2-state-fg-warning) 16%, transparent),
-    0 0 18px -6px color-mix(in srgb, var(--v2-state-fg-warning) 35%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--chimera-accent) 14%, transparent),
+    0 0 20px -6px color-mix(in srgb, var(--chimera-accent) 40%, transparent);
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-component="prompt-input-v2"] {
+    animation: none;
+  }
 }
 
 /* 用户消息：右侧气泡改为全宽安静卡片（设计稿为深底无边框、紧凑内边距、13px） */
@@ -119,6 +148,18 @@
 [data-component="user-message"] [data-component="user-message-text"] {
   text-align: left;
   margin-left: 0;
+}
+
+/* 用户卡内行内代码去底色：卡底 + code 底形成"一层套一层"（用户反馈），
+   改为无底色、青金 mono 文字区分 */
+[data-component="user-message"] [data-slot="user-message-body"] code,
+[data-component="user-message"] [data-component="user-message-body"] code {
+  background: transparent;
+  border: none;
+  padding: 0 1px;
+  color: var(--chimera-accent);
+  font-family: var(--font-family-mono);
+  font-size: 12.5px;
 }
 
 /* 活动行：动作名 13px 次级色，文件名/参数等宽（设计稿活动卡的行语法） */
@@ -210,7 +251,7 @@
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--v2-state-fg-warning);
+  background: var(--chimera-accent);
 }
 
 /* 输入区附件按钮：描边圆角（设计稿 S1 工具条按钮语法） */
@@ -219,16 +260,17 @@
   border-radius: 7px;
 }
 
-/* 输入区发送按钮：熔金实心圆形（设计稿 S1 右下角 ● ↑ 按钮）。
-   上游用双层 background-image 渐变（高光 + 实心灰）画按钮主体，会盖住
-   background-color，必须显式清掉 image 层（用户"灰按钮"反馈的真因）。 */
+/* 输入区发送按钮：青金实心圆形。上游用双层 background-image 渐变
+   （高光 + 实心灰）画按钮主体，会盖住 background-color，必须显式接管
+   image 层（"灰按钮"的真因）。与左侧快捷键提示留出间距。 */
 [data-component="icon-button"][aria-label="发送"],
 [data-component="icon-button"][aria-label="Send"] {
-  background-color: var(--v2-state-fg-warning) !important;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 100%) !important;
-  color: var(--v2-background-bg-base);
+  background-color: var(--chimera-accent) !important;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%) !important;
+  color: var(--chimera-accent-contrast);
   border-radius: 999px;
   box-shadow: none;
+  margin-left: 10px;
 }
 
 [data-component="icon-button"][aria-label="发送"]:hover:not(:disabled),
@@ -236,12 +278,52 @@
   filter: brightness(1.08);
 }
 
-/* 禁用态：满金实体、仅降箭头对比。按钮任何状态都保持干净的品牌金。 */
+/* 禁用态：满色实体、仅降箭头对比。按钮任何状态都保持干净的品牌青金。 */
 [data-component="icon-button"][aria-label="发送"]:disabled,
 [data-component="icon-button"][aria-label="Send"]:disabled {
-  background-color: var(--v2-state-fg-warning) !important;
-  color: color-mix(in srgb, var(--v2-background-bg-base) 55%, var(--v2-state-fg-warning));
+  background-color: var(--chimera-accent) !important;
+  color: color-mix(in srgb, var(--v2-background-bg-base) 52%, var(--chimera-accent));
   opacity: 1;
+}
+
+/* ===== 微动效（品牌手感）：主操作按压回弹 + 统一过渡曲线 ===== */
+
+/* 金色主按钮 / 发送按钮 / 图标栏：按压轻缩，回弹 160ms 平滑曲线 */
+[data-component="button-v2"][data-variant="neutral"],
+[data-component="button-v2"][data-action="home-new-session"],
+[data-component="icon-button"][aria-label="发送"],
+[data-component="icon-button"][aria-label="Send"] {
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.3, 0.64, 1),
+    filter 140ms ease,
+    background-color 140ms ease;
+}
+
+[data-component="button-v2"][data-variant="neutral"]:active:not(:disabled),
+[data-component="button-v2"][data-action="home-new-session"]:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+[data-component="icon-button"][aria-label="发送"]:active:not(:disabled),
+[data-component="icon-button"][aria-label="Send"]:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+/* 左侧图标栏与主题切换：按压缩放 */
+[data-component="chimera-rail"] button {
+  transition:
+    transform 150ms cubic-bezier(0.34, 1.3, 0.64, 1),
+    background-color 130ms ease,
+    color 130ms ease;
+}
+
+[data-component="chimera-rail"] button:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+/* 模型 pill 与描边按钮：hover 提边框对比 */
+[data-component="button-v2"][data-action="prompt-model"]:hover:not(:disabled) {
+  border-color: var(--v2-border-border-strong);
 }
 
 /* 设置页搜索框（模型表右上）：透明底细描边胶囊，与表格视觉同语言 */
@@ -269,7 +351,7 @@
 }
 
 [data-slot="switch-control"][data-checked] {
-  background: var(--v2-state-fg-warning) !important;
+  background: var(--chimera-accent) !important;
 }
 
 [data-slot="switch-thumb"] {

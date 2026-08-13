@@ -248,11 +248,11 @@
 /* chimera: 设计稿 S4——选中行为熔金调高亮 */
 .command-palette-v2-row[data-active],
 .command-palette-v2-row:focus-visible {
-  background: color-mix(in srgb, var(--v2-state-fg-warning) 9%, transparent);
+  background: color-mix(in srgb, var(--chimera-accent) 9%, transparent);
 }
 
 .command-palette-v2-row[data-active] .command-palette-v2-row-icon {
-  color: var(--v2-state-fg-warning);
+  color: var(--chimera-accent);
 }
 
 /* chimera: 设计稿 S4——快捷键为细边框等宽小徽标（⌘N 样式） */

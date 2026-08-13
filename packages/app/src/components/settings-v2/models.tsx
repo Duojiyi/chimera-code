@@ -172,8 +172,8 @@ export const SettingsModelsV2: Component = () => {
                         }
                         class="flex size-[18px] items-center justify-center rounded-full border-[1.5px] transition-colors"
                         style={{
-                          "border-color": isDefault() ? "var(--v2-state-fg-warning)" : "var(--v2-border-border-base)",
-                          color: "var(--v2-state-fg-warning)",
+                          "border-color": isDefault() ? "var(--chimera-accent)" : "var(--v2-border-border-base)",
+                          color: "var(--chimera-accent)",
                         }}
                         disabled={!visible()}
                         onClick={() => models.recent.push(key)}

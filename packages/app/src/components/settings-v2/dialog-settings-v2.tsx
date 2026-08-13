@@ -1,3 +1,4 @@
+import { BRAND } from "@chimera/brand"
 import { Component, createMemo, createSignal, startTransition } from "solid-js"
 import { Dialog } from "@opencode-ai/ui/v2/dialog-v2"
 import { TabsV2 } from "@opencode-ai/ui/v2/tabs-v2"
@@ -94,7 +95,8 @@ export const DialogSettings: Component<{
             </div>
             <div class="settings-v2-nav-footer">
               <span>{language.t("app.name.desktop")}</span>
-              <span>v{platform.version}</span>
+              {/* 品牌版本为主，上游内核版本收进悬浮提示 */}
+              <span title={`opencode v${platform.version}`}>v{BRAND.version}</span>
             </div>
           </div>
         </TabsV2.List>

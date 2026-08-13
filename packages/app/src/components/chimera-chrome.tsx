@@ -120,7 +120,7 @@ export const ChimeraRail: Component = () => {
           }}
           style={
             entry.active?.()
-              ? { background: "color-mix(in srgb, var(--v2-state-fg-warning) 14%, transparent)", color: "var(--v2-state-fg-warning)" }
+              ? { background: "color-mix(in srgb, var(--chimera-accent) 14%, transparent)", color: "var(--chimera-accent)" }
               : { color: disabled() ? undefined : "var(--v2-icon-icon-muted)" }
           }
           onClick={onClick}

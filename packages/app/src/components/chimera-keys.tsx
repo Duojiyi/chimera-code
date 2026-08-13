@@ -179,7 +179,7 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
                         </>
                       }
                     >
-                      <span class="flex items-center gap-1.5 text-[11px] font-[530]" style={{ color: "var(--v2-state-fg-warning)" }}>
+                      <span class="flex items-center gap-1.5 text-[11px] font-[530]" style={{ color: "var(--chimera-accent)" }}>
                         <span
                           class="inline-block size-1.5 rounded-full"
                           style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}
@@ -224,7 +224,7 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
               <button
                 type="submit"
                 class="flex h-9 w-full items-center justify-center rounded-[8px] text-[13px] font-[530] hover:brightness-105"
-                style={{ background: "var(--v2-state-fg-warning)", color: "var(--v2-background-bg-base)" }}
+                style={{ background: "var(--chimera-accent)", color: "var(--v2-background-bg-base)" }}
               >
                 {language.t("chimera.keys.save")}
               </button>

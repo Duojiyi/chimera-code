@@ -171,7 +171,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
           <button
             type="submit"
             class="flex h-9 shrink-0 items-center rounded-[8px] px-4 text-[13px] font-[530] transition-[filter] hover:brightness-105"
-            style={{ background: "var(--v2-state-fg-warning)", color: "var(--v2-background-bg-base)" }}
+            style={{ background: "var(--chimera-accent)", color: "var(--v2-background-bg-base)" }}
           >
             {language.t("chimera.keys.save")}
           </button>
@@ -214,8 +214,8 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                       <span
                         class="shrink-0 rounded-[4px] px-1.5 py-[1px] font-mono text-[10px] font-[560]"
                         style={{
-                          color: "var(--v2-state-fg-warning)",
-                          background: "color-mix(in srgb, var(--v2-state-fg-warning) 15%, transparent)",
+                          color: "var(--chimera-accent)",
+                          background: "color-mix(in srgb, var(--chimera-accent) 15%, transparent)",
                         }}
                       >
                         {language.t("chimera.keys.current")}
@@ -269,7 +269,7 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
                     >
                       <span
                         class="flex items-center gap-1.5 font-mono text-[11px] font-[560]"
-                        style={{ color: "var(--v2-state-fg-warning)" }}
+                        style={{ color: "var(--chimera-accent)" }}
                       >
                         <span
                           class="inline-block size-1.5 rounded-full"

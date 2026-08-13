@@ -12,4 +12,14 @@
   --font-family-mono:
     "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --chimera-font-display: "Space Grotesk", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+
+  /* 品牌主操作色（青金绿）：金黄系三轮反馈后弃用；青金本就是品牌渐变的
+     另一端（tokens.viridian），主按钮/选中态/强调统一走这个变量。 */
+  --chimera-accent: #1e8e6a;
+  --chimera-accent-contrast: #ffffff;
+}
+
+:root[data-color-scheme="dark"] {
+  --chimera-accent: #3bae8c;
+  --chimera-accent-contrast: #0c100f;
 }
