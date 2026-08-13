@@ -96,7 +96,7 @@
     },
     "packages/chimera-brand": {
       "name": "@chimera/brand",
-      "version": "0.1.0",
+      "version": "0.1.1",
     },
     "packages/chimera-plugin": {
       "name": "@chimera/plugin",

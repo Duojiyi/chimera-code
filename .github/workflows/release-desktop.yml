@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version without the v prefix"
         required: true
-        default: "0.1.0"
+        default: "0.1.1"
   push:
     tags:
       - "v*"
@@ -54,7 +54,9 @@ jobs:
             --target "${{ github.sha }}" \
             --draft \
             --notes "$(cat <<EOF
-          First Chimera Desktop release for Windows, macOS, and Linux.
+          Chimera Desktop ${TAG}
+
+          First-launch UX, file-tree layout, and OpenCode 1.18.18 (retry jitter, compaction, reasoning-effort).
 
           ### Downloads
           - **Windows:** \`chimera-desktop-win-x64.exe\`
@@ -65,7 +67,7 @@ jobs:
 
           ---
 
-          首个 Chimera 桌面版，覆盖 Windows、macOS、Linux。
+          首启体验、文件树布局，以及 OpenCode 1.18.18（重试抖动、压缩、推理强度）。
 
           macOS 安装包暂未公证。若系统提示无法打开，请右键选择打开。
           EOF
