@@ -1,6 +1,6 @@
-# OpenCode Desktop
+# Chimera Desktop
 
-The OpenCode Desktop app, built with Electron.
+Chimera desktop app, built with Electron.
 
 ## Development
 

@@ -75,7 +75,12 @@ export function createShellSettingsController() {
 export function createAppearanceSettingsController() {
   const settings = useSettings()
   const theme = useTheme()
-  const themes = createMemo(() => theme.ids().map((id) => ({ id, name: theme.name(id) })))
+  const themes = createMemo(() =>
+    theme
+      .ids()
+      .filter((id) => id !== "opencode" || id === theme.themeId())
+      .map((id) => ({ id, name: theme.name(id) })),
+  )
 
   onMount(() => void theme.loadThemes())
 

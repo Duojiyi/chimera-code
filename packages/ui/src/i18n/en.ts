@@ -75,7 +75,7 @@ export const dict: Record<string, string> = {
 
   "dialog.usageExceeded.freeTier.title": "Free limit reached",
   "dialog.usageExceeded.freeTier.description":
-    "Subscribe to OpenCode Go for reliable access to the best open-source models, starting at $5/month.",
+    "Subscribe for reliable access to models, starting at $5/month.",
   "dialog.usageExceeded.freeTier.actionLabel": "Subscribe",
   "dialog.usageExceeded.accountRateLimit.title": "Go limit reached",
   "dialog.usageExceeded.accountRateLimit.description":
@@ -217,4 +217,16 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Select all answers that apply",
   "ui.question.singleHint": "Select one answer",
   "ui.question.custom.placeholder": "Type your answer...",
+
+  "ui.chimera.effort.title": "Thinking depth",
+  "ui.chimera.effort.faster": "Faster",
+  "ui.chimera.effort.smarter": "Smarter",
+  "ui.chimera.effort.low": "Low",
+  "ui.chimera.effort.medium": "Medium",
+  "ui.chimera.effort.high": "High",
+  "ui.chimera.effort.extra": "Extra",
+  "ui.chimera.effort.max": "Max",
+  "ui.chimera.effort.help": "Higher gears think longer and more carefully. Max uses the strongest reasoning and takes the most time.",
+  "ui.chimera.generating": "Generating",
+  "ui.chimera.duration": "Took {{time}}",
 }

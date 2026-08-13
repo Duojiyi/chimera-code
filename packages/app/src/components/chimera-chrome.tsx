@@ -286,7 +286,7 @@ export const ChimeraStatusBar: Component = () => {
             {language.t("chimera.status.gateway.latency", { ms: `${latency()}` })}
           </Show>
         </span>
-        <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={`opencode v${platform.version}`}>
+        <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={platform.version}>
           v{BRAND.version}
         </span>
       </div>

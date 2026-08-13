@@ -29,6 +29,34 @@ for (const channel of channels) {
   })
 }
 
+test("skips Apple notarize without credentials", async () => {
+  const previous = {
+    channel: process.env.OPENCODE_CHANNEL,
+    key: process.env.APPLE_API_KEY,
+    keyId: process.env.APPLE_API_KEY_ID,
+    issuer: process.env.APPLE_API_ISSUER,
+  }
+  process.env.OPENCODE_CHANNEL = "prod"
+  delete process.env.APPLE_API_KEY
+  delete process.env.APPLE_API_KEY_ID
+  delete process.env.APPLE_API_ISSUER
+
+  const module = await import("./electron-builder.config.ts?notarize=off")
+  const config = module.default as Configuration
+
+  if (previous.channel === undefined) delete process.env.OPENCODE_CHANNEL
+  else process.env.OPENCODE_CHANNEL = previous.channel
+  if (previous.key === undefined) delete process.env.APPLE_API_KEY
+  else process.env.APPLE_API_KEY = previous.key
+  if (previous.keyId === undefined) delete process.env.APPLE_API_KEY_ID
+  else process.env.APPLE_API_KEY_ID = previous.keyId
+  if (previous.issuer === undefined) delete process.env.APPLE_API_ISSUER
+  else process.env.APPLE_API_ISSUER = previous.issuer
+
+  expect(config.mac?.notarize).toBe(false)
+  expect(config.dmg?.sign).toBe(false)
+})
+
 test("brands the protocol scheme and artifact name", async () => {
   const previous = process.env.OPENCODE_CHANNEL
   process.env.OPENCODE_CHANNEL = "prod"

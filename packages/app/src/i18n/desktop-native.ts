@@ -1,3 +1,5 @@
+import { brandUserCopy, brandUserDict } from "@chimera/brand"
+
 export const DESKTOP_NATIVE_LOCALES = [
   "en",
   "zh",
@@ -221,7 +223,7 @@ function locale(value: string) {
   }
 }
 
-export const DESKTOP_NATIVE_ENGLISH = {
+export const DESKTOP_NATIVE_ENGLISH = brandUserDict({
   "desktop.menu.app": "OpenCode",
   "desktop.menu.file": "File",
   "desktop.menu.edit": "Edit",
@@ -302,13 +304,13 @@ export const DESKTOP_NATIVE_ENGLISH = {
   "desktop.wsl.error.executeDistro": "Cannot execute commands in distro",
   "desktop.wsl.error.installWsl": "WSL installation failed",
   "desktop.wsl.error.installDistro": "Failed to install distro: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode installation failed",
+  "desktop.wsl.error.installOpencode": "This app does not install a Linux CLI into WSL",
   "desktop.wsl.error.alreadyAdded": "{{distro}} is already added",
-  "desktop.wsl.error.opencodeMissing": "opencode is not installed in this distro",
-  "desktop.wsl.error.opencodeCannotRun": "opencode is installed but could not run",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode is not installed in {{distro}}",
+  "desktop.wsl.error.opencodeMissing": "the engine is not installed in this distro",
+  "desktop.wsl.error.opencodeCannotRun": "the engine is installed but could not run",
+  "desktop.wsl.error.opencodeNotInstalled": "Chimera CLI is not installed in {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode update finished but {{distro}} still reports {{installed}}; expected {{expected}}",
+    "Update finished but {{distro}} still reports {{installed}}; expected {{expected}}",
   "desktop.wsl.error.noVersion": "no version",
   "desktop.wsl.error.serverExited": "WSL server exited after startup (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -319,7 +321,7 @@ export const DESKTOP_NATIVE_ENGLISH = {
 
   "desktop.picker.error.notSelected": "File was not selected by the picker",
   "desktop.picker.error.sizeLimit": "Selected attachments exceed the {{limit}} MB limit",
-} as const
+})
 
 export type DesktopNativeKey = keyof typeof DESKTOP_NATIVE_ENGLISH
 export type DesktopNativeMessages = Record<DesktopNativeKey, string>
@@ -357,9 +359,11 @@ export function parseDesktopNativeBundle(value: unknown): DesktopNativeBundle | 
 }
 
 export function formatDesktopNativeMessage(message: string, params?: Record<string, string | number>) {
-  if (!params) return message
-  return message.replace(/\{\{([^{}]+)\}\}/g, (match, key: string) => {
-    const value = params[key]
-    return value === undefined ? match : String(value)
-  })
+  const resolved = params
+    ? message.replace(/\{\{([^{}]+)\}\}/g, (match, key: string) => {
+        const value = params[key]
+        return value === undefined ? match : String(value)
+      })
+    : message
+  return brandUserCopy(resolved)
 }

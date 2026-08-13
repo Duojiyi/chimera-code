@@ -1,3 +1,4 @@
+import { BRAND } from "@chimera/brand"
 import { createEffect, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createSimpleContext } from "@opencode-ai/ui/context"
@@ -7,7 +8,7 @@ import { useSettings } from "@/context/settings"
 import { persisted } from "@/utils/persist"
 import { DialogReleaseNotes, type Highlight } from "@/components/dialog-release-notes"
 
-const CHANGELOG_URL = "https://opencode.ai/changelog.json"
+const CHANGELOG_URL = `https://api.github.com/repos/${BRAND.github.owner}/${BRAND.github.repo}/releases`
 
 type Store = {
   version?: string
@@ -66,7 +67,10 @@ function parseRelease(value: unknown): ParsedRelease | undefined {
   const tag = getText(value.tag) ?? getText(value.tag_name) ?? getText(value.name)
 
   if (!Array.isArray(value.highlights)) {
-    return { tag, highlights: [] }
+    const title = getText(value.name) ?? tag
+    const description = getText(value.body)
+    if (!title || !description) return { tag, highlights: [] }
+    return { tag, highlights: [{ title, description }] }
   }
 
   const highlights = value.highlights.flatMap((group) => {
@@ -179,7 +183,10 @@ export const { use: useHighlights, provider: HighlightsProvider } = createSimple
 
       fetcher(CHANGELOG_URL, {
         signal: controller.signal,
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/vnd.github+json",
+          "User-Agent": `${BRAND.name}-Desktop`,
+        },
       })
         .then((response) => (response.ok ? (response.json() as Promise<unknown>) : undefined))
         .then((json) => {

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, Show, type Accessor, type JSX } from "solid-js"
+import { createEffect, createMemo, For, Show, type Accessor, type JSX } from "solid-js"
 import { FileIcon } from "@opencode-ai/ui/file-icon"
 import { Icon } from "@opencode-ai/ui/icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
@@ -245,11 +245,7 @@ export function PromptInputV2(props: PromptInputV2Props) {
             {/* chimera: 思考深度滑条弹层（Claude Code 式 Faster↔Smarter），
                 替换上游 variant 下拉 */}
             <Show when={(props.variantControlVisible ?? true) && view.variant} keyed>
-              {(control) => (
-                <Show when={control.options().length > 1}>
-                  <ChimeraEffortControl control={control} />
-                </Show>
-              )}
+              {(control) => <ChimeraEffortControl control={control} />}
             </Show>
           </div>
           {/* chimera: 设计稿 S1 输入区快捷键提示 */}
@@ -531,93 +527,122 @@ export function PromptInputV2AddMenu(props: {
 
 /**
  * chimera: 思考深度控件（Claude Code 同款交互）。
- * 触发胶囊显示当前档位；弹层为 Faster↔Smarter 点位滑条，点击点位切换；
- * 选中最高档时轨道与拖柄流光呼吸（keyframes 在 chimera-ui overrides.css）。
+ * 弹层经 Portal 挂到 body，避免被输入区 overflow-clip 裁切遮挡；
+ * Faster↔Smarter 点位滑条，最高档轨道流光（keyframes 在 chimera-ui overrides.css）。
  */
 function ChimeraEffortControl(props: { control: PromptInputV2SelectControl }) {
   const i18n = useI18n()
-  const [open, setOpen] = createSignal(false)
-  let rootRef: HTMLDivElement | undefined
-
-  const options = () => props.control.options()
-  const current = () => props.control.current()
+  const options = () =>
+    props.control.options().filter((option) => option.id !== "default" && option.id !== "none")
+  const current = () => {
+    const id = props.control.current()
+    if (options().some((option) => option.id === id)) return id
+    return effortFallback(options().map((option) => option.id))
+  }
   const index = () => {
     const found = options().findIndex((option) => option.id === current())
     return found === -1 ? 0 : found
   }
   const atTop = () => options().length > 1 && index() === options().length - 1
-  const label = (id: string) => (id === "default" ? i18n.t("ui.chimera.effort.default") : id)
-
-  const onDocClick = (event: MouseEvent) => {
-    if (rootRef && !rootRef.contains(event.target as Node)) setOpen(false)
-  }
-  createEffect(() => {
-    if (!open()) return
-    document.addEventListener("mousedown", onDocClick)
-    onCleanup(() => document.removeEventListener("mousedown", onDocClick))
-  })
+  const label = (id: string) => effortLabel(i18n.t, id)
 
   return (
-    <div ref={rootRef} class="relative">
+    <Show when={options().length > 1}>
       <TooltipV2 placement="top" value={i18n.t("ui.chimera.effort.title")}>
-        <ButtonV2
-          variant="ghost-muted"
-          size="normal"
-          data-action="chimera-effort"
-          data-top={atTop() ? "" : undefined}
-          class="justify-start ![font-weight:440]"
-          aria-label={i18n.t("ui.chimera.effort.title")}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <Icon name="brain" size="small" class="shrink-0" />
-          <span class="truncate capitalize leading-5">{label(current())}</span>
-        </ButtonV2>
-      </TooltipV2>
-      <Show when={open()}>
-        <div
-          data-component="chimera-effort-popover"
-          class="absolute bottom-full left-0 z-50 mb-2 w-[240px] rounded-[12px] border-[0.5px] border-v2-border-border-base bg-v2-background-bg-base p-4 shadow-[var(--v2-elevation-floating)]"
-        >
-          <div class="flex items-center gap-1.5 pb-3 text-[13px] font-[600] text-v2-text-text-base">
-            {i18n.t("ui.chimera.effort.title")}
-            <span class="capitalize text-v2-text-text-muted">{label(current())}</span>
-          </div>
-          <div class="flex items-center justify-between pb-1.5 font-mono text-[10.5px] text-v2-text-text-faint">
-            <span>{i18n.t("ui.chimera.effort.faster")}</span>
-            <span>{i18n.t("ui.chimera.effort.smarter")}</span>
-          </div>
-          <div class="relative flex h-6 items-center" data-component="chimera-effort-track" data-top={atTop() ? "" : undefined}>
-            <span class="absolute inset-x-1 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-v2-background-bg-layer-03" data-slot="effort-rail" />
-            <div class="relative flex w-full items-center justify-between">
-              <For each={options()}>
-                {(option, position) => (
+        <MenuV2 gutter={8} modal={false} placement="top-start">
+          <MenuV2.Trigger
+            as={ButtonV2}
+            type="button"
+            variant="ghost-muted"
+            size="normal"
+            data-action="chimera-effort"
+            data-top={atTop() ? "" : undefined}
+            class="justify-start ![font-weight:440]"
+            aria-label={i18n.t("ui.chimera.effort.title")}
+          >
+            <Icon name="brain" size="small" class="shrink-0" />
+            <span class="truncate leading-5">{label(current())}</span>
+          </MenuV2.Trigger>
+          <MenuV2.Portal>
+            <MenuV2.Content data-slot="chimera-effort-popover">
+              <div class="flex items-center justify-between pb-2.5">
+                <div class="flex min-w-0 items-baseline gap-1.5">
+                  <span class="text-[13px] font-[530] text-v2-text-text-muted">
+                    {i18n.t("ui.chimera.effort.title")}
+                  </span>
+                  <span class="text-[13px] font-[600] text-v2-text-text-base">{label(current())}</span>
+                </div>
+                <TooltipV2 placement="top" value={i18n.t("ui.chimera.effort.help")}>
                   <button
                     type="button"
-                    class="relative flex size-6 items-center justify-center"
-                    aria-label={label(option.id)}
-                    title={label(option.id)}
-                    onClick={() => {
-                      props.control.onSelect(option.id)
-                    }}
+                    class="flex size-5 items-center justify-center rounded-full text-v2-icon-icon-faint hover:text-v2-icon-icon-base"
+                    aria-label={i18n.t("ui.chimera.effort.help")}
+                    onClick={(event) => event.stopPropagation()}
                   >
-                    <span
-                      class="rounded-full transition-all duration-150"
-                      data-slot="effort-dot"
-                      classList={{
-                        "size-[14px] bg-[var(--chimera-accent)] shadow-[0_0_8px_-1px_var(--chimera-accent)]":
-                          position() === index(),
-                        "size-[5px] bg-v2-icon-icon-faint": position() !== index(),
-                      }}
-                    />
+                    <IconV2 name="help" size="small" />
                   </button>
-                )}
-              </For>
-            </div>
-          </div>
-        </div>
-      </Show>
-    </div>
+                </TooltipV2>
+              </div>
+              <div class="flex items-center justify-between pb-1.5 text-[11px] text-v2-text-text-faint">
+                <span>{i18n.t("ui.chimera.effort.faster")}</span>
+                <span>{i18n.t("ui.chimera.effort.smarter")}</span>
+              </div>
+              <div
+                class="relative flex h-[22px] items-center"
+                data-component="chimera-effort-track"
+                data-top={atTop() ? "" : undefined}
+              >
+                <span data-slot="effort-rail">
+                  <span data-slot="effort-fill" />
+                </span>
+                <div class="relative z-[1] flex w-full items-center justify-between">
+                  <For each={options()}>
+                    {(option, position) => (
+                      <button
+                        type="button"
+                        class="relative flex h-7 w-7 items-center justify-center"
+                        aria-label={label(option.id)}
+                        aria-pressed={position() === index()}
+                        title={label(option.id)}
+                        onClick={() => props.control.onSelect(option.id)}
+                      >
+                        <Show
+                          when={position() === index()}
+                          fallback={
+                            <span
+                              data-slot="effort-dot"
+                              data-max={position() === options().length - 1 ? "" : undefined}
+                            />
+                          }
+                        >
+                          <span data-slot="effort-thumb" />
+                        </Show>
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </div>
+            </MenuV2.Content>
+          </MenuV2.Portal>
+        </MenuV2>
+      </TooltipV2>
+    </Show>
   )
+}
+
+function effortFallback(ids: string[]) {
+  if (ids.includes("high")) return "high"
+  if (ids.includes("medium")) return "medium"
+  return ids[Math.floor((ids.length - 1) / 2)] ?? ids[0] ?? ""
+}
+
+function effortLabel(t: (key: string) => string, id: string) {
+  if (id === "low") return t("ui.chimera.effort.low")
+  if (id === "medium") return t("ui.chimera.effort.medium")
+  if (id === "high") return t("ui.chimera.effort.high")
+  if (id === "xhigh" || id === "extra") return t("ui.chimera.effort.extra")
+  if (id === "max") return t("ui.chimera.effort.max")
+  return id
 }
 
 function PromptInputV2ConfiguredSelect(props: {

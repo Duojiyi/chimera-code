@@ -29,7 +29,6 @@ import {
 } from "@/context/settings"
 import { decode64 } from "@/utils/base64"
 import { playSoundById, SOUND_OPTIONS } from "@/utils/sound"
-import { ExternalLink } from "./external-link"
 import { SettingsList } from "./settings-list"
 
 let demoSoundState = {
@@ -121,7 +120,12 @@ export const SettingsGeneral: Component = () => {
   }
   const desktop = createMemo(() => platform.platform === "desktop")
 
-  const themeOptions = createMemo<ThemeOption[]>(() => theme.ids().map((id) => ({ id, name: theme.name(id) })))
+  const themeOptions = createMemo<ThemeOption[]>(() =>
+    theme
+      .ids()
+      .filter((id) => id !== "opencode" || id === theme.themeId())
+      .map((id) => ({ id, name: theme.name(id) })),
+  )
 
   const serverSync = useServerSync()
   const serverSdk = useServerSDK()
@@ -479,12 +483,7 @@ export const SettingsGeneral: Component = () => {
 
         <SettingsRow
           title={language.t("settings.general.row.theme.title")}
-          description={
-            <>
-              {language.t("settings.general.row.theme.description")}{" "}
-              <ExternalLink href="https://opencode.ai/docs/themes/">{language.t("common.learnMore")}</ExternalLink>
-            </>
-          }
+          description={language.t("settings.general.row.theme.description")}
         >
           <Select
             data-action="settings-theme"

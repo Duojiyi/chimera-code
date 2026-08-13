@@ -2,14 +2,12 @@ import { useServerSync } from "@/context/server-sync"
 import { decode64 } from "@/utils/base64"
 import { useParams } from "@solidjs/router"
 import { Iterable, pipe } from "effect"
-import { createEffect, createMemo, type Accessor } from "solid-js"
+import { type Accessor } from "solid-js"
 import { selectProviderCatalog } from "./provider-catalog"
 
 export const popularProviders = [
   // Chimera 中转站是品牌核心提供商，断开后仍应置顶展示（设计稿 S5 入口）
   "chimera",
-  "opencode",
-  "opencode-go",
   "anthropic",
   "github-copilot",
   "openai",
@@ -17,6 +15,10 @@ export const popularProviders = [
   "openrouter",
   "vercel",
 ]
+
+export function isUpstreamZenProvider(id: string) {
+  return id === "opencode" || id === "opencode-go"
+}
 const popularProviderSet = new Set(popularProviders)
 
 export function useProviders(directory: Accessor<string | undefined>) {
@@ -26,18 +28,24 @@ export function useProviders(directory: Accessor<string | undefined>) {
   const providers = () => {
     const value = dir()
     const projectStore = value ? serverSync().child(value)[0] : undefined
-    if (value)
-      return selectProviderCatalog({
-        explicit: true,
-        directory: value,
-        catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-      })
-    return selectProviderCatalog({
-      explicit: false,
-      directory: value,
-      catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-      global: serverSync().data.provider,
-    })
+    const catalog = value
+      ? selectProviderCatalog({
+          explicit: true,
+          directory: value,
+          catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
+        })
+      : selectProviderCatalog({
+          explicit: false,
+          directory: value,
+          catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
+          global: serverSync().data.provider,
+        })
+    const all = new Map([...catalog.all].filter(([id]) => !isUpstreamZenProvider(id)))
+    return {
+      ...catalog,
+      all,
+      connected: catalog.connected.filter((id) => !isUpstreamZenProvider(id)),
+    }
   }
 
   return {
@@ -62,15 +70,7 @@ export function useProviders(directory: Accessor<string | undefined>) {
     },
     paid: () => {
       const connected = new Set(providers().connected)
-      const paid = [
-        ...Iterable.filter(
-          providers().all,
-          ([id]) =>
-            connected.has(id) &&
-            (id !== "opencode" || Object.values(providers().all.get(id)?.models ?? {}).some((m) => m.cost?.input)),
-        ),
-      ]
-      return paid
+      return [...Iterable.filter(providers().all, ([id]) => connected.has(id))]
     },
   }
 }

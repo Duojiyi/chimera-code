@@ -32,6 +32,10 @@ const channel = (() => {
   return "dev"
 })()
 
+const appleNotarize = Boolean(
+  process.env.APPLE_API_KEY && process.env.APPLE_API_KEY_ID && process.env.APPLE_API_ISSUER,
+)
+
 const APP_IDS = {
   dev: `${BRAND.appId}.dev`,
   beta: `${BRAND.appId}.beta`,
@@ -76,11 +80,11 @@ const getBase = (appId: string): Configuration => ({
     gatekeeperAssess: false,
     entitlements: "resources/entitlements.plist",
     entitlementsInherit: "resources/entitlements.plist",
-    notarize: true,
+    notarize: appleNotarize,
     target: ["dmg", "zip"],
   },
   dmg: {
-    sign: true,
+    sign: appleNotarize,
   },
   protocols: {
     name: BRAND.name,

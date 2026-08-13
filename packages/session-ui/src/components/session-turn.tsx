@@ -20,7 +20,6 @@ import { Accordion } from "@opencode-ai/ui/accordion"
 import { StickyAccordionHeader } from "@opencode-ai/ui/sticky-accordion-header"
 import { DiffChanges } from "@opencode-ai/ui/diff-changes"
 import { Icon } from "@opencode-ai/ui/icon"
-import { TextShimmer } from "@opencode-ai/ui/text-shimmer"
 import { SessionRetry } from "./session-retry"
 import { TextReveal } from "@opencode-ai/ui/text-reveal"
 import { createAutoScroll } from "@opencode-ai/ui/hooks"
@@ -95,23 +94,6 @@ type SummaryDiff = (SnapshotFileDiff & { file: string }) | FileDiffInfo
 
 function summaryDiff(value: SnapshotFileDiff): value is SummaryDiff {
   return typeof value.file === "string"
-}
-
-const hidden = new Set(["todowrite"])
-
-function partState(part: PartType, showReasoningSummaries: boolean) {
-  if (part.type === "tool") {
-    if (hidden.has(part.tool)) return
-    if (part.tool === "question" && (part.state.status === "pending" || part.state.status === "running")) return
-    return "visible" as const
-  }
-  if (part.type === "text") return part.text?.trim() ? ("visible" as const) : undefined
-  if (part.type === "reasoning") {
-    if (showReasoningSummaries && part.text?.trim()) return "visible" as const
-    return
-  }
-  if (PART_MAPPING[part.type]) return "visible" as const
-  return
 }
 
 function clean(value: string) {
@@ -360,29 +342,20 @@ export function SessionTurn(
     }
     return { tokens, cost }
   })
-  const assistantDerived = createMemo(() => {
-    let visible = 0
+  const reasoningHeading = createMemo(() => {
     let reason: string | undefined
-    const show = showReasoningSummaries()
     for (const message of assistantMessages()) {
       for (const part of list(data.store.part?.[message.id], emptyParts)) {
-        if (partState(part, show) === "visible") {
-          visible++
-        }
-        if (part.type === "reasoning" && part.text) {
-          const h = heading(part.text)
-          if (h) reason = h
-        }
+        if (part.type !== "reasoning" || !part.text) continue
+        const next = heading(part.text)
+        if (next) reason = next
       }
     }
-    return { visible, reason }
+    return reason
   })
-  const assistantVisible = createMemo(() => assistantDerived().visible)
-  const reasoningHeading = createMemo(() => assistantDerived().reason)
   const showThinking = createMemo(() => {
     if (!working() || !!error()) return false
     if (status().type === "retry") return false
-    if (showReasoningSummaries()) return assistantVisible() === 0
     return true
   })
 
@@ -432,7 +405,10 @@ export function SessionTurn(
               </Show>
               <Show when={showThinking()}>
                 <div data-slot="session-turn-thinking">
-                  <TextShimmer text={i18n.t("ui.sessionTurn.status.thinking")} />
+                  <div data-slot="chimera-generating">
+                    <span data-slot="chimera-generating-rail" />
+                    <span data-slot="chimera-generating-label">{i18n.t("ui.chimera.generating")}</span>
+                  </div>
                   <Show when={!showReasoningSummaries()}>
                     <TextReveal
                       text={reasoningHeading()}

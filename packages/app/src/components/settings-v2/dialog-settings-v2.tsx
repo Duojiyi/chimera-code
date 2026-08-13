@@ -94,9 +94,8 @@ export const DialogSettings: Component<{
               </div>
             </div>
             <div class="settings-v2-nav-footer">
-              <span>{language.t("app.name.desktop")}</span>
-              {/* 品牌版本为主，上游内核版本收进悬浮提示 */}
-              <span title={`opencode v${platform.version}`}>v{BRAND.version}</span>
+              <span>{BRAND.name}</span>
+              <span title={platform.version}>v{BRAND.version}</span>
             </div>
           </div>
         </TabsV2.List>

@@ -3,7 +3,7 @@ import { dict as en } from "./en"
 type Keys = keyof typeof en
 
 export const dict = {
-  "desktop.menu.app": "OpenCode",
+  "desktop.menu.app": "Chimera",
   "desktop.menu.file": "文件",
   "desktop.menu.edit": "编辑",
   "desktop.menu.view": "视图",
@@ -43,7 +43,7 @@ export const dict = {
   "desktop.menu.nextProject": "下一个项目",
   "desktop.menu.minimize": "最小化",
   "desktop.menu.maximize": "最大化",
-  "desktop.menu.documentation": "OpenCode 文档",
+  "desktop.menu.documentation": "Chimera 文档",
   "desktop.menu.supportForum": "支持论坛",
   "desktop.menu.shareFeedback": "提供反馈",
   "desktop.menu.reportBug": "报告错误",
@@ -272,7 +272,7 @@ export const dict = {
   "provider.connect.opencodeZen.line1": "OpenCode Zen 为你提供一组精选的可靠优化模型，用于代码智能体。",
   "provider.connect.opencodeZen.line2": "只需一个 API 密钥，你就能使用 Claude、GPT、Gemini、GLM 等模型。",
   "provider.connect.opencodeZen.visit.prefix": "访问 ",
-  "provider.connect.opencodeZen.visit.link": "opencode.ai/zen",
+  "provider.connect.opencodeZen.visit.link": "chimerahub.org",
   "provider.connect.opencodeZen.visit.suffix": " 获取你的 API 密钥。",
   "provider.connect.oauth.code.visit.prefix": "访问 ",
   "provider.connect.oauth.code.visit.link": "此链接",
@@ -459,7 +459,7 @@ export const dict = {
   "dialog.directory.readError": "无法读取此文件夹",
 
   "dialog.server.title": "服务器",
-  "dialog.server.description": "切换此应用连接的 OpenCode 服务器。",
+  "dialog.server.description": "切换此应用连接的服务器。",
   "dialog.server.search.placeholder": "搜索服务器",
   "dialog.server.empty": "暂无服务器",
   "dialog.server.add.title": "添加服务器",
@@ -558,7 +558,7 @@ export const dict = {
   "help.tabs.title": "标签页功能介绍",
   "help.tabs.description": "使用标签页整理工作和进行中的会话",
   "help.tabs.date": "7 月 14 日",
-  "help.tabs.introduction": "OpenCode Desktop 现已采用以标签页为核心的设计。",
+  "help.tabs.introduction": "Chimera 现已采用以标签页为核心的设计。",
   "help.tabs.sessions":
     "在标签页中开始新会话，或从任意项目打开现有会话。开始处理新任务时打开新标签页，完成后将其关闭。",
   "help.tabs.organize":
@@ -668,7 +668,7 @@ export const dict = {
 
   "toast.session.listFailed.title": "无法加载 {{project}} 的会话",
   "toast.update.title": "有可用更新",
-  "toast.update.description": "OpenCode 有新版本 ({{version}}) 可安装。",
+  "toast.update.description": "Chimera 有新版本 ({{version}}) 可安装。",
   "toast.update.action.installRestart": "安装并重启",
   "toast.update.action.notYet": "稍后",
 
@@ -683,8 +683,8 @@ export const dict = {
   "error.page.action.checking": "检查中...",
   "error.page.action.checkUpdates": "检查更新",
   "error.page.action.updateTo": "更新到 {{version}}",
-  "error.page.report.prefix": "请将此错误报告给 OpenCode 团队",
-  "error.page.report.discord": "在 Discord 上",
+  "error.page.report.prefix": "请将此错误报告给 Chimera 团队",
+  "error.page.report.discord": "在 GitHub 上",
   "error.page.version": "版本：{{version}}",
   "error.dev.rootNotFound": "未找到根元素。你是不是忘了把它添加到 index.html？或者 id 属性拼写错了？",
   "error.serverSync.connectFailed": "无法连接到服务器。是否有服务器正在 `{{url}}` 运行？",
@@ -700,7 +700,7 @@ export const dict = {
   "error.chain.didYouMean": "你是不是想输入：{{suggestions}}",
   "error.chain.modelNotFound": "未找到模型：{{provider}}/{{model}}",
   "error.chain.checkConfig": "请检查你的配置 (opencode.json) 中的 provider/model 名称",
-  "error.chain.mcpFailed": 'MCP 服务器 "{{name}}" 启动失败。注意：OpenCode 暂不支持 MCP 认证。',
+  "error.chain.mcpFailed": 'MCP 服务器 "{{name}}" 启动失败。注意：Chimera 暂不支持 MCP 认证。',
   "error.chain.providerAuthFailed": "提供商认证失败（{{provider}}）：{{message}}",
   "error.chain.providerInitFailed": '无法初始化提供商 "{{provider}}"。请检查凭据和配置。',
   "error.chain.configJsonInvalid": "配置文件 {{path}} 不是有效的 JSON(C)",
@@ -867,7 +867,7 @@ export const dict = {
   "sidebar.workspaces.enable": "启用工作区",
   "sidebar.workspaces.disable": "禁用工作区",
   "sidebar.gettingStarted.title": "入门",
-  "sidebar.gettingStarted.line1": "OpenCode 提供免费模型，你可以立即开始使用。",
+  "sidebar.gettingStarted.line1": "Chimera 提供可用模型，你可以立即开始使用。",
   "sidebar.gettingStarted.line2": "连接任意提供商即可使用更多模型，如 Claude、GPT、Gemini 等。",
   "sidebar.project.recentSessions": "最近会话",
   "sidebar.project.viewAllSessions": "查看全部会话",
@@ -875,7 +875,7 @@ export const dict = {
   "sidebar.empty.title": "没有打开的项目",
   "sidebar.empty.description": "打开一个项目以开始使用",
 
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "Chimera",
 
   "settings.section.desktop": "桌面",
   "settings.section.server": "服务器",
@@ -885,7 +885,7 @@ export const dict = {
 
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL 集成",
-  "settings.desktop.wsl.description": "在 Windows 的 WSL 环境中运行 OpenCode 服务器。",
+  "settings.desktop.wsl.description": "在 Windows 上管理 WSL 发行版。Chimera 不会在 WSL 中安装第二套编码代理。",
 
   "settings.general.section.appearance": "外观",
   "settings.general.section.advanced": "高级",
@@ -895,17 +895,17 @@ export const dict = {
   "settings.general.section.feed": "动态",
   "settings.general.section.display": "显示",
   "settings.general.row.language.title": "语言",
-  "settings.general.row.language.description": "更改 OpenCode 的显示语言",
+  "settings.general.row.language.description": "更改 Chimera 的显示语言",
   "settings.general.row.shell.title": "终端 Shell",
   "settings.general.row.shell.description": "选择终端使用的 shell。兼容的 shell 也会用于智能体工具调用。",
   "settings.general.row.shell.autoDefault": "自动（默认）",
   "settings.general.row.shell.terminalOnly": "仅终端",
   "settings.general.row.appearance.title": "外观",
-  "settings.general.row.appearance.description": "自定义 OpenCode 在你的设备上的外观",
+  "settings.general.row.appearance.description": "自定义 Chimera 在你的设备上的外观",
   "settings.general.row.colorScheme.title": "配色方案",
-  "settings.general.row.colorScheme.description": "选择 OpenCode 跟随系统、浅色或深色主题",
+  "settings.general.row.colorScheme.description": "选择 Chimera 跟随系统、浅色或深色主题",
   "settings.general.row.theme.title": "主题",
-  "settings.general.row.theme.description": "自定义 OpenCode 的主题。",
+  "settings.general.row.theme.description": "自定义 Chimera 的主题。",
   "settings.general.row.font.title": "代码字体",
   "settings.general.row.font.description": "自定义代码块使用的字体",
   "settings.general.row.terminalFont.title": "终端字体",
@@ -951,7 +951,7 @@ export const dict = {
   "settings.general.row.releaseNotes.description": "更新后显示“新功能”弹窗",
 
   "settings.updates.row.startup.title": "启动时检查更新",
-  "settings.updates.row.startup.description": "在 OpenCode 启动时自动检查更新",
+  "settings.updates.row.startup.description": "在 Chimera 启动时自动检查更新",
   "settings.updates.row.check.title": "检查更新",
   "settings.updates.row.check.description": "手动检查更新并在有更新时安装",
   "settings.updates.action.checkNow": "立即检查",
@@ -959,7 +959,7 @@ export const dict = {
   "settings.updates.action.downloading": "正在下载...",
   "settings.updates.action.installing": "正在安装...",
   "settings.updates.toast.latest.title": "已是最新版本",
-  "settings.updates.toast.latest.description": "你正在使用最新版本的 OpenCode。",
+  "settings.updates.toast.latest.description": "你正在使用最新版本的 Chimera。",
 
   "sound.option.none": "无",
   "sound.option.alert01": "警报 01",
@@ -1226,6 +1226,8 @@ export const dict = {
   "terminal.connectionLost.abnormalClose": "WebSocket 异常关闭：{{code}}",
 
   // chimera：品牌骨架、密钥管理、网关连接、模型表
+  "chimera.wsl.noInstall": "不会在 WSL 中安装或挂载第二套编码代理，请使用本机应用。",
+  "chimera.wsl.distroMissingEngine": "已禁用 WSL 编码代理挂载",
   "chimera.nav.label": "{{name}} 导航",
   "chimera.nav.sessions": "会话",
   "chimera.nav.fileTree": "文件树",
@@ -1327,5 +1329,14 @@ export const dict = {
   "ui.chimera.effort.faster": "更快",
   "ui.chimera.effort.smarter": "更强",
   "ui.chimera.effort.default": "标准",
+  "ui.chimera.effort.low": "Low",
+  "ui.chimera.effort.medium": "Medium",
+  "ui.chimera.effort.high": "High",
+  "ui.chimera.effort.extra": "Extra",
+  "ui.chimera.effort.max": "Max",
+  "ui.chimera.effort.help": "档位越高，思考越久、越仔细。最高档会显著增加耗时。",
+  "ui.chimera.agent.build": "构建模式",
+  "ui.chimera.agent.plan": "计划模式",
+  "ui.chimera.generating": "生成中",
   "ui.chimera.duration": "耗时 {{time}}",
 } satisfies Partial<Record<Keys, string>>

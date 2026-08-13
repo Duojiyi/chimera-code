@@ -51,10 +51,8 @@ function isHiddenDistro(name: string) {
 export const wslRuntimeRetryable = (runtime: WslServerRuntime) =>
   runtime.kind === "failed" || runtime.kind === "stopped"
 
-export function wslOpencodeAction(check?: WslOpencodeCheck) {
-  if (!check) return
-  if (!check.resolvedPath) return "wsl.onboarding.installOpencode"
-  if (check.matchesDesktop === false) return "wsl.onboarding.updateOpencode"
+export function wslOpencodeAction(_check?: WslOpencodeCheck): string | undefined {
+  return undefined
 }
 
 export function wslDistroReady(state: WslServersState | undefined, name: string) {
@@ -165,17 +163,7 @@ function addServerDistroStatus(input: {
   if (!probe.hasBash || !probe.hasCurl) {
     return { label: { key: "wsl.onboarding.distroStatus.missingTools" }, tone: "warning" }
   }
-  const check = input.state?.opencodeChecks[input.name]
-  if (!check) {
-    if (input.probingAddable || (job?.kind === "probe-addable" && job.distros.includes(input.name))) {
-      return checkingStatus()
-    }
-    return
-  }
-  if (check.matchesDesktop === false) return { label: { key: "wsl.onboarding.updateOpencode" }, tone: "warning" }
-  if (!check.resolvedPath) return { label: { key: "wsl.onboarding.distroStatus.opencodeMissing" }, tone: "warning" }
-  if (check.error) return { label: { key: "wsl.onboarding.installOpencode" }, tone: "warning" }
-  return { label: { key: "wsl.onboarding.distroStatus.ready" }, tone: "success" }
+  return { label: { key: "chimera.wsl.distroMissingEngine" }, tone: "muted" }
 }
 
 function checkingStatus(): DistroStatus {
@@ -191,16 +179,7 @@ function addServerPrimaryButton(input: {
 }): AddServerPrimaryButton {
   const ready = !!input.selectedDistro && wslDistroReady(input.state, input.selectedDistro)
   const probingSelected = input.probingAddable && !addServerSelectedDistroSettled(input.state, input.selectedDistro)
-  const probingOpencode =
-    probingSelected ||
-    (ready &&
-      (!input.opencodeCheck ||
-        (!!input.selectedDistro &&
-          input.state?.job?.kind === "probe-addable" &&
-          input.state.job.distros.includes(input.selectedDistro))))
-  const installingOpencode =
-    input.state?.job?.kind === "install-opencode" && input.state.job.distro === input.selectedDistro
-  if (!ready || probingOpencode) {
+  if (!ready || probingSelected) {
     return {
       variant: "contrast",
       label: probingSelected ? { key: "wsl.onboarding.distroStatus.checking" } : { key: "wsl.server.add" },
@@ -210,42 +189,21 @@ function addServerPrimaryButton(input: {
       width: null,
     }
   }
-  if (!addServerOpencodeReady(input.opencodeCheck)) {
-    const update = !!input.opencodeCheck?.resolvedPath && input.opencodeCheck.matchesDesktop === false
-    return {
-      variant: "neutral",
-      label: installingOpencode
-        ? { key: "wsl.onboarding.updatingOpencode" }
-        : update
-          ? { key: "wsl.onboarding.updateOpencode" }
-          : { key: "wsl.onboarding.installOpencode" },
-      disabled: !!input.state?.job || input.adding,
-      action: "install-opencode",
-      loading: installingOpencode,
-      width: update ? "138px" : "129px",
-    }
-  }
   return {
-    variant: "contrast",
-    label: input.adding ? { key: "wsl.onboarding.adding" } : { key: "wsl.server.add" },
-    disabled: input.adding || !!input.state?.job,
-    action: "add",
-    loading: input.adding,
+    variant: "neutral",
+    label: { key: "chimera.wsl.noInstall" },
+    disabled: true,
+    action: null,
+    loading: false,
     width: null,
   }
-}
-
-function addServerOpencodeReady(check: WslOpencodeCheck | null) {
-  return !!check?.resolvedPath && check.matchesDesktop !== false && !check.error
 }
 
 function addServerSelectedDistroSettled(state: WslServersState | undefined, selectedDistro: string | null) {
   if (!selectedDistro) return false
   const installed = state?.installed.find((item) => item.name === selectedDistro)
   if (installed?.version === 1) return false
-  if (!state?.distroProbes[selectedDistro]) return false
-  if (!wslDistroReady(state, selectedDistro)) return true
-  return !!state.opencodeChecks[selectedDistro]
+  return !!state?.distroProbes[selectedDistro]
 }
 
 function addServerInstallableDistros(installedDistros: WslInstalledDistro[], onlineDistros: WslOnlineDistro[]) {
@@ -286,7 +244,6 @@ export function addableProbePlan(input: {
   const pending = ordered.flatMap((item) => {
     if (item.version === 1) return []
     if (!state.distroProbes[item.name]) return [`distro:${item.name}`]
-    if (wslDistroReady(state, item.name) && !state.opencodeChecks[item.name]) return [`opencode:${item.name}`]
     return []
   })
   if (!pending.length) return

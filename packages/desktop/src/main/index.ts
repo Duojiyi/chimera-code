@@ -291,6 +291,7 @@ const main = Effect.gen(function* () {
     ),
   )
   app.setAsDefaultProtocolClient(BRAND.scheme)
+  pendingDeepLinks.push(...process.argv.filter((arg: string) => arg.startsWith(`${BRAND.scheme}://`)))
   registerRendererProtocol()
   setDockIcon()
   const updater = setupAutoUpdater(stopSidecars)

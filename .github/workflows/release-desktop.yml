@@ -1,0 +1,225 @@
+name: release-desktop
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without the v prefix"
+        required: true
+        default: "0.1.0"
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-desktop-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Resolve version
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "Missing release version"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.meta.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists"
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --title "Chimera Desktop ${TAG}" \
+            --target "${{ github.sha }}" \
+            --draft \
+            --notes "$(cat <<EOF
+          First Chimera Desktop release for Windows, macOS, and Linux.
+
+          ### Downloads
+          - **Windows:** \`chimera-desktop-win-x64.exe\`
+          - **macOS:** \`chimera-desktop-mac-arm64.dmg\` (Apple Silicon), \`chimera-desktop-mac-x64.dmg\` (Intel)
+          - **Linux:** \`.AppImage\` / \`.deb\` / \`.rpm\` (x64 and arm64)
+
+          macOS builds are not Apple-notarized yet. If Gatekeeper blocks the app, right-click it and choose Open.
+
+          ---
+
+          首个 Chimera 桌面版，覆盖 Windows、macOS、Linux。
+
+          macOS 安装包暂未公证。若系统提示无法打开，请右键选择打开。
+          EOF
+          )"
+
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: macos-latest
+            target: aarch64-apple-darwin
+            platform_flag: --mac --arm64
+            bun_install_flags: --os=darwin --cpu=arm64
+          - host: macos-latest
+            target: x86_64-apple-darwin
+            platform_flag: --mac --x64
+            bun_install_flags: --os=darwin --cpu=x64
+          - host: windows-latest
+            target: x86_64-pc-windows-msvc
+            platform_flag: --win --x64
+            bun_install_flags: --os=win32 --cpu=x64
+          - host: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            platform_flag: --linux --x64
+            bun_install_flags: --os=linux --cpu=x64
+          - host: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            platform_flag: --linux --arm64
+            bun_install_flags: --os=linux --cpu=arm64
+    runs-on: ${{ matrix.host }}
+    timeout-minutes: 90
+    env:
+      OPENCODE_VERSION: ${{ needs.prepare.outputs.version }}
+      OPENCODE_CHANNEL: prod
+      RUST_TARGET: ${{ matrix.target }}
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: ./.github/actions/setup-bun
+        with:
+          install-flags: ${{ matrix.bun_install_flags }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+
+      - name: Install rpm tooling
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends rpm
+
+      - name: Prepare
+        working-directory: packages/desktop
+        run: bun ./scripts/prepare.ts
+
+      - name: Build
+        working-directory: packages/desktop
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: bun run build
+
+      - name: Package
+        working-directory: packages/desktop
+        timeout-minutes: 60
+        run: npx electron-builder ${{ matrix.platform_flag }} --publish never --config electron-builder.config.ts
+
+      - name: Create macOS .app.tar.gz
+        if: runner.os == 'macOS'
+        working-directory: packages/desktop/dist
+        run: |
+          if [[ "${{ matrix.target }}" == "x86_64-apple-darwin" ]]; then
+            APP_DIR="mac"
+            OUT_NAME="chimera-desktop-mac-x64.app.tar.gz"
+          elif [[ "${{ matrix.target }}" == "aarch64-apple-darwin" ]]; then
+            APP_DIR="mac-arm64"
+            OUT_NAME="chimera-desktop-mac-arm64.app.tar.gz"
+          else
+            echo "Unknown macOS target: ${{ matrix.target }}"
+            exit 1
+          fi
+          APP_PATH=$(find "$APP_DIR" -maxdepth 1 -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app bundle found in $APP_DIR"
+            exit 1
+          fi
+          tar -czf "$OUT_NAME" -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: chimera-desktop-${{ matrix.target }}
+          path: |
+            packages/desktop/dist/*.exe
+            packages/desktop/dist/*.blockmap
+            packages/desktop/dist/*.dmg
+            packages/desktop/dist/*.zip
+            packages/desktop/dist/*.AppImage
+            packages/desktop/dist/*.deb
+            packages/desktop/dist/*.rpm
+            packages/desktop/dist/*.app.tar.gz
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: latest-yml-${{ matrix.target }}
+          path: packages/desktop/dist/latest*.yml
+          if-no-files-found: warn
+
+  publish:
+    needs:
+      - prepare
+      - build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: ./.github/actions/setup-bun
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: chimera-desktop-*
+          path: /tmp/desktop
+          merge-multiple: true
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: latest-yml-*
+          path: /tmp/latest-yml
+
+      - name: Upload desktop release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          files=(/tmp/desktop/*.{exe,blockmap,dmg,zip,AppImage,deb,rpm} /tmp/desktop/*.app.tar.gz)
+          if (( ${#files[@]} == 0 )); then
+            echo "No desktop release assets found"
+            ls -la /tmp/desktop || true
+            exit 1
+          fi
+          gh release upload "v${{ needs.prepare.outputs.version }}" "${files[@]}" --clobber --repo "${{ github.repository }}"
+
+      - name: Upload updater metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          OPENCODE_VERSION: ${{ needs.prepare.outputs.version }}
+          LATEST_YML_DIR: /tmp/latest-yml
+        run: bun ./packages/desktop/scripts/finalize-latest-yml.ts
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "v${{ needs.prepare.outputs.version }}" --draft=false --latest

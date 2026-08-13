@@ -318,7 +318,16 @@ export function usePromptInputV2Controller(props: PromptInputV2ControllerProps):
       keybind: command.keybindParts(item.id),
     })),
   )
-  const variants = createMemo(() => ["default", ...props.controls.model.selection.variant.list()])
+  const variants = createMemo(() =>
+    props.controls.model.selection.variant.list().filter((id) => id !== "default" && id !== "none"),
+  )
+  createEffect(() => {
+    const ids = variants()
+    if (!ids.includes("high")) return
+    const selected = props.controls.model.selection.variant.current()
+    if (selected && ids.includes(selected)) return
+    props.controls.model.selection.variant.set("high")
+  })
   const controller = createPromptInputV2Controller({
     store: () => prompt.capture().store,
     state: interaction,
@@ -387,7 +396,11 @@ export function usePromptInputV2Controller(props: PromptInputV2ControllerProps):
       get agent() {
         return props.controls.agents.visible && props.controls.agents.options.length > 0
           ? {
-              options: () => props.controls.agents.options.map((name) => ({ id: name, label: name })),
+              options: () =>
+                props.controls.agents.options.map((name) => ({
+                  id: name,
+                  label: agentLabel(language.t, name),
+                })),
               current: () => props.controls.agents.current,
               onSelect: (value: string) => props.controls.agents.select(value),
               keybind: () => command.keybindParts("agent.cycle"),
@@ -396,8 +409,13 @@ export function usePromptInputV2Controller(props: PromptInputV2ControllerProps):
       },
       variant: {
         options: () => variants().map((value) => ({ id: value, label: value })),
-        current: () => props.controls.model.selection.variant.current() ?? "default",
-        onSelect: (value) => props.controls.model.selection.variant.set(value === "default" ? undefined : value),
+        current: () => {
+          const selected = props.controls.model.selection.variant.current()
+          if (selected && variants().includes(selected)) return selected
+          if (variants().includes("high")) return "high"
+          return ""
+        },
+        onSelect: (value) => props.controls.model.selection.variant.set(value),
         keybind: () => command.keybindParts("model.variant.cycle"),
       },
       submit: {
@@ -586,4 +604,10 @@ function openComment(
   void props.controls.session.tabs.open(tab)
   props.controls.session.tabs.setActive(tab)
   void Promise.resolve(files.load(item.path)).finally(() => queueFocus())
+}
+
+function agentLabel(t: (key: "ui.chimera.agent.build" | "ui.chimera.agent.plan") => string, name: string) {
+  if (name === "build") return t("ui.chimera.agent.build")
+  if (name === "plan") return t("ui.chimera.agent.plan")
+  return name
 }

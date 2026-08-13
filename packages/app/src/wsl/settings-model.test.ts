@@ -37,7 +37,7 @@ describe("WSL server settings presentation", () => {
     expect(wslRuntimeRetryable({ kind: "stopped" })).toBe(true)
   })
 
-  test("offers install and update only when OpenCode needs attention", () => {
+  test("never installs or attaches an upstream coding-agent CLI", () => {
     expect(wslOpencodeAction(undefined)).toBeUndefined()
     expect(
       wslOpencodeAction({
@@ -48,7 +48,7 @@ describe("WSL server settings presentation", () => {
         matchesDesktop: null,
         error: null,
       }),
-    ).toBe("wsl.onboarding.installOpencode")
+    ).toBeUndefined()
     expect(
       wslOpencodeAction({
         distro: "Debian",
@@ -58,7 +58,7 @@ describe("WSL server settings presentation", () => {
         matchesDesktop: false,
         error: null,
       }),
-    ).toBe("wsl.onboarding.updateOpencode")
+    ).toBeUndefined()
     expect(
       wslOpencodeAction({
         distro: "Debian",
@@ -179,7 +179,7 @@ describe("WSL server settings presentation", () => {
     expect(model.busy).toBe(true)
   })
 
-  test("does not report ready when OpenCode is present but cannot run", () => {
+  test("does not install or attach a coding-agent CLI when a distro is ready", () => {
     const model = addServerViewModel({
       state: {
         ...readyWslState,
@@ -195,7 +195,7 @@ describe("WSL server settings presentation", () => {
             version: null,
             expectedVersion: "1.2.3",
             matchesDesktop: null,
-            error: "opencode is installed but could not run",
+            error: "the engine is installed but could not run",
           },
         },
       },
@@ -208,10 +208,49 @@ describe("WSL server settings presentation", () => {
     })
 
     expect(model.distroStatuses.Debian).toEqual({
-      label: { key: "wsl.onboarding.installOpencode" },
-      tone: "warning",
+      label: { key: "chimera.wsl.distroMissingEngine" },
+      tone: "muted",
     })
-    expect(model.primaryButton.action).toBe("install-opencode")
+    expect(model.primaryButton.action).toBeNull()
+    expect(model.primaryButton.disabled).toBe(true)
+    expect(model.primaryButton.label).toEqual({ key: "chimera.wsl.noInstall" })
+  })
+
+  test("does not attach an existing CLI even when a binary is already present", () => {
+    const model = addServerViewModel({
+      state: {
+        ...readyWslState,
+        installed: [{ name: "Debian", version: 2, isDefault: true }],
+        online: [{ name: "Ubuntu", label: "Ubuntu" }],
+        distroProbes: {
+          Debian: { name: "Debian", canExecute: true, hasBash: true, hasCurl: true, error: null },
+        },
+        opencodeChecks: {
+          Debian: {
+            distro: "Debian",
+            resolvedPath: "/home/me/.local/share/chimera/bin/chimera",
+            version: "0.1.0",
+            expectedVersion: "1.2.3",
+            matchesDesktop: false,
+            error: null,
+          },
+        },
+      },
+      view: "main",
+      selectedDistro: null,
+      catalogSearch: "",
+      catalogTarget: null,
+      adding: false,
+      probingAddable: false,
+    })
+
+    expect(model.distroStatuses.Debian).toEqual({
+      label: { key: "chimera.wsl.distroMissingEngine" },
+      tone: "muted",
+    })
+    expect(model.primaryButton.action).toBeNull()
+    expect(model.primaryButton.disabled).toBe(true)
+    expect(model.primaryButton.label).toEqual({ key: "chimera.wsl.noInstall" })
   })
 
   test("delegates addable probe plans to one batch command", async () => {
