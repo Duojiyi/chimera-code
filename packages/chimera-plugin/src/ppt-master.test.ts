@@ -2,7 +2,7 @@ import { afterAll, expect, test } from "bun:test"
 import { mkdtemp, rm } from "node:fs/promises"
 import os from "os"
 import path from "path"
-import { isPptMaster, pptMasterSkillDir } from "./ppt-master"
+import { isPptMaster, pptMasterSkillDir, resolveSkillRoot } from "./ppt-master"
 import { extraSkillDirs } from "./skills"
 
 const tmp = await mkdtemp(path.join(os.tmpdir(), "chimera-ppt-master-"))
@@ -37,6 +37,18 @@ test("pptMasterSkillDir honors CHIMERA_PPT_MASTER_DIR", async () => {
     if (previous === undefined) delete process.env.CHIMERA_PPT_MASTER_DIR
     else process.env.CHIMERA_PPT_MASTER_DIR = previous
   }
+})
+
+test("resolveSkillRoot finds a nested official skill", async () => {
+  const root = path.join(tmp, "repo")
+  const nested = path.join(root, "skills", "ppt-master")
+  await Bun.write(
+    path.join(nested, "SKILL.md"),
+    ["---", "name: ppt-master", "metadata:", '  official_repository: "https://github.com/hugohe3/ppt-master"', "---", ""].join(
+      "\n",
+    ),
+  )
+  expect(await resolveSkillRoot(root)).toBe(nested)
 })
 
 test("discovers a real ppt-master tree when one is installed", async () => {
