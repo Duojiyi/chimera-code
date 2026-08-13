@@ -7,8 +7,19 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "test": "bun test --timeout 15000 --only-failures src",
+    "vendor:ppt-master": "bun ./script/vendor-ppt-master.ts"
+  },
   "dependencies": {
-    "@chimera/brand": "workspace:*"
+    "@chimera/brand": "workspace:*",
+    "docx": "9.5.1",
+    "exceljs": "4.4.0",
+    "jszip": "3.10.1",
+    "mammoth": "1.9.1",
+    "pdf-lib": "1.17.1",
+    "pptxgenjs": "4.0.1",
+    "unpdf": "1.8.0"
   },
   "devDependencies": {
     "@opencode-ai/plugin": "workspace:*",

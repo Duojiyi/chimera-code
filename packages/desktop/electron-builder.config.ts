@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process"
+import { existsSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { promisify } from "node:util"
@@ -11,6 +12,7 @@ const execFileAsync = promisify(execFile)
 const packageDir = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(packageDir, "../..")
 const signScript = path.join(rootDir, "script", "sign-windows.ps1")
+const pptMasterDir = path.join(rootDir, "packages/chimera-plugin/skills/ppt-master")
 
 const metainfoFpm = (appId: string) =>
   `${path.join(packageDir, "resources", `${appId}.metainfo.xml`)}=/usr/share/metainfo/${appId}.metainfo.xml`
@@ -72,6 +74,14 @@ const getBase = (appId: string): Configuration => ({
       to: "native/",
       filter: ["index.js", "index.d.ts", "build/Release/mac_window.node", "swift-build/**"],
     },
+    ...(existsSync(path.join(pptMasterDir, "SKILL.md"))
+      ? [
+          {
+            from: "../chimera-plugin/skills/ppt-master",
+            to: "ppt-master",
+          },
+        ]
+      : []),
   ],
   mac: {
     category: "public.app-category.developer-tools",

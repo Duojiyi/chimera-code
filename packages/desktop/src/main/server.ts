@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { app, utilityProcess } from "electron"
@@ -51,6 +52,8 @@ export function preferAppEnv(userDataPath: string) {
     OPENCODE_CLIENT: "desktop",
     XDG_STATE_HOME: process.env.XDG_STATE_HOME ?? userDataPath,
   })
+  const ppt = pptMasterResourceDir()
+  if (ppt) process.env.CHIMERA_PPT_MASTER_DIR = ppt
   return shellEnv
 }
 
@@ -210,12 +213,21 @@ export async function checkHealth(url: string, password?: string | null): Promis
   return false
 }
 
+function pptMasterResourceDir() {
+  const dir = app.isPackaged
+    ? join(process.resourcesPath, "ppt-master")
+    : join(dirname(fileURLToPath(import.meta.url)), "../../../chimera-plugin/skills/ppt-master")
+  if (existsSync(join(dir, "SKILL.md"))) return dir
+}
+
 function createSidecarEnv(): Record<string, string> {
   const env = Object.fromEntries(
     Object.entries(process.env).flatMap(([key, value]) => (value === undefined ? [] : [[key, String(value)]])),
   )
   delete env.DEBUG
   if (process.platform === "linux") delete env.LD_PRELOAD
+  const ppt = pptMasterResourceDir()
+  if (ppt) env.CHIMERA_PPT_MASTER_DIR = ppt
   return env
 }
 

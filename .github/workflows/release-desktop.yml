@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version without the v prefix"
         required: true
-        default: "0.1.1"
+        default: "0.1.2"
   push:
     tags:
       - "v*"
@@ -56,7 +56,7 @@ jobs:
             --notes "$(cat <<EOF
           Chimera Desktop ${TAG}
 
-          First-launch UX, file-tree layout, and OpenCode 1.18.18 (retry jitter, compaction, reasoning-effort).
+          Built-in office skills and tools for Excel, Word, PowerPoint, and PDF (inspect/read/write in-process). Designed decks use the bundled MIT ppt-master skill. OpenCode 1.18.18.
 
           ### Downloads
           - **Windows:** \`chimera-desktop-win-x64.exe\`
@@ -67,7 +67,7 @@ jobs:
 
           ---
 
-          首启体验、文件树布局，以及 OpenCode 1.18.18（重试抖动、压缩、推理强度）。
+          内置表格 / Word / PPT / PDF 技能与原生读写工具；精美 PPT 走打包进安装包的 ppt-master（MIT）。上游 OpenCode 1.18.18。
 
           macOS 安装包暂未公证。若系统提示无法打开，请右键选择打开。
           EOF

@@ -32,3 +32,6 @@ UPCOMING_CHANGELOG.md
 logs/
 *.bun-build
 tsconfig.tsbuildinfo
+
+# Vendored MIT skill (bun run --cwd packages/chimera-plugin vendor:ppt-master)
+packages/chimera-plugin/skills/ppt-master/

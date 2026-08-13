@@ -1,5 +1,7 @@
 import type { Hooks, PluginInput } from "@opencode-ai/plugin"
 import { BRAND } from "@chimera/brand"
+import { officeTools } from "./office"
+import { bundledSkillsDir, extraSkillDirs } from "./skills"
 
 /** Chimera 网关 provider 的固定 ID，同时用于 auth 存储与 UI 展示。 */
 export const PROVIDER_ID = BRAND.nameLower
@@ -156,6 +158,14 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       // 会一并放行（此时 config.provider 已含用户配置）。显式配置优先。
       config.enabled_providers ??= Object.keys(config.provider)
 
+      const skillsDir = await bundledSkillsDir()
+      config.skills ??= {}
+      config.skills.paths ??= []
+      if (!config.skills.paths.includes(skillsDir)) config.skills.paths.push(skillsDir)
+      for (const dir of await extraSkillDirs()) {
+        if (!config.skills.paths.includes(dir)) config.skills.paths.push(dir)
+      }
+
       // 内置常用 MCP（用户同名配置优先）：预置但不默认连接，避免未登录就出现「1 MCP」。
       config.mcp ??= {}
       config.mcp["context7"] ??= { type: "remote", url: "https://mcp.context7.com/mcp", enabled: false }
@@ -168,9 +178,12 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
         bash: "allow",
         webfetch: "allow",
         external_directory: "allow",
+        skill: "allow",
         doom_loop: "ask",
       }
     },
+
+    tool: officeTools,
 
     // 模型列表由中转站下发（GET {gateway}/v1/models），登录/保存密钥后自动同步。
     provider: {
@@ -235,6 +248,7 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
           "【永不偷懒的底线】信任边界的输入校验、防数据丢失的错误处理、安全、无障碍、用户明确提出的要求。",
           "【安全红线】绝不泄露密钥令牌等敏感信息；删除、覆盖、强推等破坏性操作先说明影响并确认。",
           "【语言】用用户使用的语言回复；注释与提交信息遵循仓库惯例。",
+          "【运行时】bash 是本机 shell（Windows 上为 PowerShell），不是只能写 bash 脚本。写完 .py/.js 后用 PATH 上的 python 或 bun 执行；Chimera 不随安装包提供 CPython 或系统 Node。高质量 PPT 用 ppt-master（其脚本是 Python，没有解释器就先说明）；简单条目页用 office_write。",
         ].join("\n"),
       )
     },
