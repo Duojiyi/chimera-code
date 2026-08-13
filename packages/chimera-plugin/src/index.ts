@@ -138,6 +138,13 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       // 品牌定制：预置供应商只有中转站一个；用户在配置中自定义的 provider
       // 会一并放行（此时 config.provider 已含用户配置）。显式配置优先。
       config.enabled_providers ??= Object.keys(config.provider)
+
+      // 内置常用 MCP（用户同名配置优先）：
+      // - context7：官方库文档检索，默认启用（仅模型主动调用时产生开销）。
+      // - deepwiki：GitHub 仓库问答，预置但默认关闭，设置里一键可开。
+      config.mcp ??= {}
+      config.mcp["context7"] ??= { type: "remote", url: "https://mcp.context7.com/mcp", enabled: true }
+      config.mcp["deepwiki"] ??= { type: "remote", url: "https://mcp.deepwiki.com/mcp", enabled: false }
     },
 
     // 模型列表由中转站下发（GET {gateway}/v1/models），登录/保存密钥后自动同步。
@@ -186,9 +193,21 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
 
     // 身份注入：经由中转站的上游通道可能透传其他产品的系统身份，
     // 在系统提示末尾显式声明 Chimera 身份，保证自我认知一致。
+    // 另附产品内置工程守则（精炼版，控制每轮 token 开销）。
     "experimental.chat.system.transform": async (_input, output) => {
       output.system.push(
         `You are ${BRAND.name}, an enterprise AI coding agent. When asked who you are, identify yourself as ${BRAND.name}. Do not claim to be any other product.`,
+      )
+      output.system.push(
+        [
+          "工程守则：",
+          "- 用用户使用的语言回复；注释与提交信息遵循仓库既有惯例。",
+          "- 动手前先读相关代码；改动保持最小且聚焦，不顺手重构无关代码。",
+          "- 遵循项目现有风格、依赖与架构约定，不引入未经讨论的新依赖。",
+          "- 不确定的事实（API、版本、路径）先查证再下结论，不要编造。",
+          "- 绝不在代码、日志或回复中泄露密钥、令牌等敏感信息。",
+          "- 删除、覆盖、强推等破坏性操作，先说明影响并征得确认。",
+        ].join("\n"),
       )
     },
   }

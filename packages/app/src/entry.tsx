@@ -68,9 +68,9 @@ const notify: Platform["notify"] = async (title, description, onClick) => {
   const inView = document.visibilityState === "visible" && document.hasFocus()
   if (inView) return
 
+  // chimera: 不指定 icon，桌面端回落到应用自身图标（移除上游 opencode.ai favicon）
   const notification = new Notification(title, {
     body: description ?? "",
-    icon: "https://opencode.ai/favicon-96x96-v3.png",
   })
 
   notification.onclick = () => {

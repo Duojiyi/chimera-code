@@ -234,9 +234,9 @@ const createPlatform = (windowState: DesktopWindowState): Platform => {
       const focused = await window.api.getWindowFocused().catch(() => document.hasFocus())
       if (focused) return
 
+      // chimera: 不指定 icon，Electron 通知回落到应用图标（移除上游 favicon）
       const notification = new Notification(title, {
         body: description ?? "",
-        icon: "https://opencode.ai/favicon-96x96-v3.png",
       })
       notification.onclick = () => {
         void window.api.showWindow()

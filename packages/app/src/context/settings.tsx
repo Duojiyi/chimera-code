@@ -137,9 +137,11 @@ const sansFallback = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFon
 const terminalFallback =
   '"JetBrainsMono Nerd Font Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
 
-const monoBase = monoFallback
-const sansBase = sansFallback
-const terminalBase = terminalFallback
+// chimera: 内置字体优先（@fontsource 随应用分发，离线一致）。用户在
+// 外观设置中的自定义字体仍会前置于这些默认栈（见 stack()）。
+const monoBase = `"JetBrains Mono", ${monoFallback}`
+const sansBase = `"Noto Sans SC", ${sansFallback}`
+const terminalBase = `"JetBrains Mono", ${terminalFallback}`
 
 function input(font: string | undefined) {
   return font ?? ""
