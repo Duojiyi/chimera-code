@@ -499,7 +499,21 @@ bun install && bun typecheck && bun run dev:desktop
     - dev 任务栏图标修正：Windows 任务栏按 AUMID 匹配开始菜单快捷方式
       取图标，dev 启动时写入带品牌图标的 Chimera Dev.lnk（writeShortcutLink
       首次需 create 模式）；排查中处理了端口残留导致的单实例锁退出
-33. ⏳ 遗留（结构性，需专项决策）：顶栏面包屑（与多会话 tab 栏结构冲突）、
+33. ✅ 十三轮（2026-08-13 上午，思考深度 + 模式系统 + 品牌渐变）：
+    - 思考深度选择器（Claude Code 同款）：数据链路——插件模型不经过上游
+      reasoningVariants 管道（provider.ts 对 plugin models 原样入库），
+      插件按 openai-compatible 映射（{ reasoningEffort }，网关透传
+      reasoning_effort）从官方 reasoning_options 生成 effort 变体
+      （claude-opus-5 五档 low→max）；UI——session-ui 新增
+      ChimeraEffortControl 替换上游 variant 下拉：脑图标触发胶囊 +
+      Faster↔Smarter 点位滑条弹层 + 最高档流光呼吸（触发胶囊渐变描边
+      流动 + 轨道渐变流动，prefers-reduced-motion 降级）
+    - 模式系统露出：build/plan 切换常驻输入条（上游内置 agent 系统 +
+      选择控件均已存在，仅默认隐藏；改 agentsVisible 常驻 + 默认值）
+    - 发送按钮品牌渐变（熔金→青金 135deg，同品牌头像）
+    - 用户消息双重背景修复：上游 text 层自带深色气泡底与外层全宽卡
+      叠加（用户实拍反馈），内层透明化
+34. ⏳ 遗留（结构性，需专项决策）：顶栏面包屑（与多会话 tab 栏结构冲突）、
     输入框下排「附件 / @ 上下文」文字按钮（需动上游 ui 核心组件插槽）、
     设置弹窗 vs 设计稿全屏页、S2 项目平铺列表（上游为下拉）、
     右侧文件面板默认常驻（上游为按需开关，已接线图标栏）、
