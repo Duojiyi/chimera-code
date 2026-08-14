@@ -28,8 +28,11 @@ Load this skill before Word work.
 
 ## `office_write` payload
 
-```json
-{ "path": "out.docx", "paragraphs": ["Title", "Body paragraph"] }
+`sheets`, `rows`, `paragraphs`, and `slides` are **JSON strings** (the tool schema is string). Do not pass a raw array.
+
+```
+path: out.docx
+paragraphs: "[\"Title\", \"Body paragraph\"]"
 ```
 
 ## Fallback

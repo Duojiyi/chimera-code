@@ -1,11 +1,18 @@
 import { BRAND } from "@chimera/brand"
-import { Spinner } from "@opencode-ai/ui/spinner"
 import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { For, Show, createSignal, onCleanup, type Accessor, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
 import { ChimeraAvatar } from "../chimera-avatar"
-import { readChimeraKeys, writeChimeraKeys, type ChimeraKeyEntry } from "../chimera-keys"
+import {
+  ChimeraKeyRow,
+  nextActiveKey,
+  readChimeraKeys,
+  showChimeraKeyDeleteConfirm,
+  switchChimeraKey,
+  writeChimeraKeys,
+  type ChimeraKeyEntry,
+} from "../chimera-keys"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
@@ -13,11 +20,6 @@ import { showToast } from "@/utils/toast"
 
 // 设置 · 密钥（设计稿 S6）：账号卡 + 中转站多密钥表格。
 // 前后端对齐：切换=服务端 auth 保存并刷新实例；退出登录=服务端 DELETE /auth。
-
-const mask = (key: string) => {
-  if (key.length <= 10) return "••••••"
-  return `${key.slice(0, 8)}••••••${key.slice(-2)}`
-}
 
 const gatewayHost = (() => {
   try {
@@ -56,28 +58,24 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     })
   }
 
-  const location = () => {
-    const value = props.directory?.()
-    return value ? { directory: value } : undefined
-  }
-
   const persist = () => writeChimeraKeys({ keys: [...store.keys], active: store.active })
 
-  const activate = async (entry: ChimeraKeyEntry) => {
-    if (pending()) return
+  const activate = async (entry: ChimeraKeyEntry, opts?: { quiet?: boolean }) => {
+    if (pending()) return false
     setPending(entry.key)
     try {
-      await serverSDK().api.integration.connect.key({
-        integrationID: BRAND.nameLower,
-        key: entry.key,
-        location: location(),
+      await switchChimeraKey({
+        entry,
+        sdk: serverSDK(),
+        directory: props.directory?.(),
       })
       setStore("active", entry.key)
-      persist()
       void serverSync().refreshProviders()
-      showToast({ title: language.t("chimera.keys.switched", { name: entry.name }), variant: "default" })
+      if (!opts?.quiet) showToast({ title: language.t("chimera.keys.switched", { name: entry.name }), variant: "default" })
+      return true
     } catch {
       showToast({ title: language.t("chimera.keys.switchFailed"), variant: "default" })
+      return false
     } finally {
       setPending("")
     }
@@ -88,12 +86,51 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     showToast({ title: language.t("chimera.keys.copied"), variant: "default" })
   }
 
-  const remove = (entry: ChimeraKeyEntry) => {
+  const rename = (entry: ChimeraKeyEntry, name: string) => {
+    const trimmed = name.trim()
+    if (!trimmed || trimmed === entry.name) return
+    const index = store.keys.findIndex((item) => item.key === entry.key)
+    if (index < 0) return
+    setStore("keys", index, "name", trimmed)
+    persist()
+    showToast({ title: language.t("chimera.keys.renamed", { name: trimmed }), variant: "default" })
+  }
+
+  const remove = async (entry: ChimeraKeyEntry) => {
+    const nextKey = nextActiveKey(store.keys, store.active, entry.key)
+    const next = store.keys.find((item) => item.key === nextKey)
+    if (store.active === entry.key && next) {
+      const ok = await activate(next, { quiet: true })
+      if (!ok) return
+    }
+    if (store.active === entry.key && !next) {
+      try {
+        await fetch(`${serverSDK().url}/auth/${BRAND.nameLower}`, { method: "DELETE" })
+      } catch {
+        // 服务端不可达时仍清理本地状态
+      }
+      setStore("active", "")
+      void serverSync().refreshProviders()
+    }
     setStore(
       "keys",
       store.keys.filter((item) => item.key !== entry.key),
     )
     persist()
+    showToast({ title: language.t("chimera.keys.deleted"), variant: "default" })
+  }
+
+  const confirmRemove = (entry: ChimeraKeyEntry) => {
+    const nextKey = nextActiveKey(store.keys, store.active, entry.key)
+    showChimeraKeyDeleteConfirm({
+      dialog,
+      language,
+      entry,
+      last: store.keys.length === 1,
+      inUse: store.active === entry.key,
+      nextName: store.keys.find((item) => item.key === nextKey)?.name,
+      onConfirm: () => void remove(entry),
+    })
   }
 
   const signOut = async () => {
@@ -241,87 +278,18 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
           }
         >
           <For each={store.keys}>
-            {(entry, index) => {
-              const active = () => store.active === entry.key
-              return (
-                <div
-                  class="group flex h-10 w-full items-center gap-3 px-4 transition-colors hover:bg-v2-overlay-simple-overlay-hover"
-                  classList={{ "border-t-[0.5px] border-v2-border-border-muted": index() > 0 }}
-                >
-                  <span class="flex w-[210px] shrink-0 items-center gap-2 truncate">
-                    <span class="truncate text-[13px] font-[560] text-v2-text-text-base">{entry.name}</span>
-                    <Show when={active()}>
-                      <span
-                        class="shrink-0 rounded-[4px] px-1.5 py-[1px] font-mono text-[10px] font-[560]"
-                        style={{
-                          color: "var(--chimera-accent)",
-                          background: "color-mix(in srgb, var(--chimera-accent) 15%, transparent)",
-                        }}
-                      >
-                        {language.t("chimera.keys.current")}
-                      </span>
-                    </Show>
-                  </span>
-                  <span class="flex w-[260px] shrink-0 items-center gap-1.5">
-                    <span class="truncate font-mono text-[11.5px] text-v2-text-text-muted">{mask(entry.key)}</span>
-                    <button
-                      type="button"
-                      aria-label={language.t("chimera.keys.copy")}
-                      title={language.t("chimera.keys.copy")}
-                      class="flex size-5 shrink-0 items-center justify-center rounded-[4px] text-v2-icon-icon-faint transition-colors hover:bg-v2-overlay-simple-overlay-hover hover:text-v2-icon-icon-base"
-                      onClick={() => void copy(entry)}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                      </svg>
-                    </button>
-                  </span>
-                  <div class="flex-1" />
-                  <div class="flex shrink-0 items-center gap-1.5">
-                    <Show
-                      when={active()}
-                      fallback={
-                        <>
-                          <button
-                            type="button"
-                            aria-label={language.t("chimera.keys.deleteNamed", { name: entry.name })}
-                            title={language.t("chimera.keys.delete")}
-                            class="flex size-6 items-center justify-center rounded-[6px] text-v2-icon-icon-faint opacity-0 transition-all hover:text-v2-state-fg-danger group-hover:opacity-100"
-                            onClick={() => remove(entry)}
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5">
-                              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            class="flex h-6 items-center rounded-[6px] border-[0.5px] border-v2-border-border-base px-2.5 font-mono text-[11px] text-v2-text-text-base transition-colors hover:bg-v2-overlay-simple-overlay-hover"
-                            disabled={!!pending()}
-                            onClick={() => void activate(entry)}
-                          >
-                            <Show when={pending() === entry.key} fallback={language.t("chimera.keys.switch")}>
-                              <Spinner class="size-3" />
-                            </Show>
-                          </button>
-                        </>
-                      }
-                    >
-                      <span
-                        class="flex items-center gap-1.5 font-mono text-[11px] font-[560]"
-                        style={{ color: "var(--chimera-accent)" }}
-                      >
-                        <span
-                          class="inline-block size-1.5 rounded-full"
-                          style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}
-                        />
-                        {language.t("chimera.keys.inUse")}
-                      </span>
-                    </Show>
-                  </div>
-                </div>
-              )
-            }}
+            {(entry, index) => (
+              <ChimeraKeyRow
+                entry={entry}
+                active={store.active === entry.key}
+                pending={pending() === entry.key}
+                bordered={index() > 0}
+                onActivate={() => void activate(entry)}
+                onRename={(name) => rename(entry, name)}
+                onCopy={() => void copy(entry)}
+                onDelete={() => confirmRemove(entry)}
+              />
+            )}
           </For>
         </Show>
       </div>

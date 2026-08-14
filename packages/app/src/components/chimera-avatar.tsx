@@ -16,7 +16,7 @@ export const ChimeraAvatar: Component<{ size?: number; class?: string }> = (prop
       }}
       aria-hidden="true"
     >
-      <Mark class="size-[62%]" />
+      <Mark class={size() <= 18 ? "size-[72%]" : "size-[62%]"} />
     </span>
   )
 }

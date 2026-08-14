@@ -1,6 +1,7 @@
 import type { Hooks, PluginInput } from "@opencode-ai/plugin"
 import { BRAND } from "@chimera/brand"
 import { officeTools } from "./office"
+import { applyChimeraSystem } from "./prompt"
 import { bundledSkillsDir, extraSkillDirs } from "./skills"
 
 /** Chimera 网关 provider 的固定 ID，同时用于 auth 存储与 UI 展示。 */
@@ -229,28 +230,11 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       output.headers["x-chimera-client"] = `${BRAND.nameLower}-desktop`
     },
 
-    // 身份注入：经由中转站的上游通道可能透传其他产品的系统身份，
-    // 在系统提示末尾显式声明 Chimera 身份，保证自我认知一致。
-    // 另附产品内置工程守则（精炼版，控制每轮 token 开销）。
+    // 覆盖上游 OpenCode 身份/CLI 文风，再附产品工程守则（幂等，控制每轮 token）。
     "experimental.chat.system.transform": async (_input, output) => {
-      output.system.push(
-        `You are ${BRAND.name}, an enterprise AI coding agent. When asked who you are, identify yourself as ${BRAND.name}. Do not claim to be any other product.`,
-      )
-      // 融合 Karpathy 四原则（forrestchang/andrej-karpathy-skills）与
-      // Ponytail YAGNI 决策阶梯的精华，控制在 ~250 token。
-      output.system.push(
-        [
-          "工程守则：",
-          "【先想后写】不假设需求，有困惑直接问；关键取舍摆到明面说。",
-          "【写码前自查】按序问：真的需要写吗（YAGNI）→ 代码库已有吗 → 标准库/平台原生能做吗 → 已装依赖能做吗 → 一行能解决吗；都不行才写最少必要代码，不做投机性设计。",
-          "【外科手术式修改】只动任务必须动的代码；不顺手重构无关代码；遵循项目既有风格与架构，不引入未经讨论的新依赖。",
-          "【以验证收尾】先定成功标准，改完用测试或检查证实达标再交付；不确定的事实（API、版本、路径）先查证，不编造。",
-          "【永不偷懒的底线】信任边界的输入校验、防数据丢失的错误处理、安全、无障碍、用户明确提出的要求。",
-          "【安全红线】绝不泄露密钥令牌等敏感信息；删除、覆盖、强推等破坏性操作先说明影响并确认。",
-          "【语言】用用户使用的语言回复；注释与提交信息遵循仓库惯例。",
-          "【运行时】bash 是本机 shell（Windows 上为 PowerShell），不是只能写 bash 脚本。写完 .py/.js 后用 PATH 上的 python 或 bun 执行；Chimera 不随安装包提供 CPython 或系统 Node。高质量 PPT 用 ppt-master（其脚本是 Python，没有解释器就先说明）；简单条目页用 office_write。",
-        ].join("\n"),
-      )
+      const next = applyChimeraSystem(output.system)
+      output.system.length = 0
+      output.system.push(...next)
     },
   }
 }

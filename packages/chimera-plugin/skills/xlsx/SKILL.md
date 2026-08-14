@@ -31,10 +31,10 @@ Load this skill before doing spreadsheet work so the constraints below stay in c
 
 ## `office_write` payload
 
-Path extension selects the format (`out.xlsx` / `out.csv` / `out.tsv`). There is no required `format` field.
+Path extension selects the format (`out.xlsx` / `out.csv` / `out.tsv`). There is no required `format` field. `sheets` and `rows` are **JSON strings**.
 
-- **xlsx:** `sheets` = `[{ "name": "Sheet1", "rows": [["A", "B"], [1, 2]] }]`
-- **csv/tsv:** `rows` = `[["A", "B"], [1, 2]]`
+- **xlsx:** `sheets` = `'[{"name":"Sheet1","rows":[["A","B"],[1,2]]}]'`
+- **csv/tsv:** `rows` = `'[["A","B"],[1,2]]'`
 - Strings starting with `=` become formulas.
 
 ## Fallback

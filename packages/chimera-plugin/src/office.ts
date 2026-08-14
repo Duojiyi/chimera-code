@@ -58,14 +58,14 @@ export const officeTools = {
       sheets: tool.schema
         .string()
         .optional()
-        .describe('xlsx: JSON array of { "name": string, "rows": (string|number|null)[][] }'),
-      rows: tool.schema.string().optional().describe("csv/tsv: JSON 2D array of values"),
-      paragraphs: tool.schema.string().optional().describe("docx: JSON array of paragraph strings"),
+        .describe('xlsx: JSON string of [{ "name": string, "rows": (string|number|null)[][] }]. Pass a string, not a raw array.'),
+      rows: tool.schema.string().optional().describe("csv/tsv: JSON string of a 2D array. Pass a string, not a raw array."),
+      paragraphs: tool.schema.string().optional().describe("docx: JSON string of paragraph strings. Pass a string, not a raw array."),
       title: tool.schema.string().optional().describe("pptx: optional title-slide text"),
       slides: tool.schema
         .string()
         .optional()
-        .describe('pptx: JSON array of { "title": string, "bullets"?: string[] }'),
+        .describe('pptx: JSON string of [{ "title": string, "bullets"?: string[] }]. Pass a string, not a raw array.'),
     },
     execute: (args, ctx) =>
       run(async () => {
@@ -303,11 +303,11 @@ async function writeFile(
   filepath: string,
   args: {
     format?: "xlsx" | "csv" | "tsv" | "docx" | "pptx"
-    sheets?: string
-    rows?: string
-    paragraphs?: string
+    sheets?: unknown
+    rows?: unknown
+    paragraphs?: unknown
     title?: string
-    slides?: string
+    slides?: unknown
   },
 ) {
   await mkdir(path.dirname(filepath), { recursive: true })
@@ -448,8 +448,10 @@ function colNumber(letters: string) {
   return n
 }
 
-function jsonArray<T>(raw: string | undefined, name: string): T[] {
-  if (!raw?.trim()) return []
+function jsonArray<T>(raw: unknown, name: string): T[] {
+  if (raw == null || raw === "") return []
+  if (Array.isArray(raw)) return raw as T[]
+  if (typeof raw !== "string") throw new Error(`${name} must be a JSON array`)
   const parsed: unknown = JSON.parse(raw)
   if (!Array.isArray(parsed)) throw new Error(`${name} must be a JSON array`)
   return parsed as T[]

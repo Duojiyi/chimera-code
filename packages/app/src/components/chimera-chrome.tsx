@@ -2,16 +2,25 @@ import { BRAND } from "@chimera/brand"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useTheme } from "@opencode-ai/ui/theme/context"
 import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
 import { useLocation, useNavigate } from "@solidjs/router"
 import { For, Show, createMemo, createSignal, onCleanup, type Component, type JSX } from "solid-js"
 import { ChimeraAvatar } from "@/components/chimera-avatar"
-import { activeChimeraKeyName, hasChimeraAuth } from "@/components/chimera-keys"
+import {
+  hasChimeraAuth,
+  readChimeraKeys,
+  requestChimeraKeyPicker,
+  switchChimeraKey,
+  type ChimeraKeyEntry,
+} from "@/components/chimera-keys"
 import { useCommand } from "@/context/command"
 import { useLanguage } from "@/context/language"
 import { useLayout } from "@/context/layout"
 import { usePlatform } from "@/context/platform"
+import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { useTabs } from "@/context/tabs"
+import { showToast } from "@/utils/toast"
 
 // Chimera 应用骨架（设计稿 S1）：左侧图标栏 + 底部状态栏。
 // 纯新增组件，仅在 layout 挂载一行；图标为内嵌 SVG，避免依赖上游图标清单。
@@ -61,16 +70,6 @@ export const ChimeraRail: Component = () => {
     })
   }
 
-  const openKeys = () => {
-    if (!hasChimeraAuth()) {
-      openConnect()
-      return
-    }
-    void import("./chimera-keys").then((x) => {
-      void dialog.show(() => <x.ChimeraKeysDialog />)
-    })
-  }
-
   const openKeysPage = () => {
     if (!hasChimeraAuth()) {
       openConnect()
@@ -81,7 +80,7 @@ export const ChimeraRail: Component = () => {
     })
   }
 
-  // ⌘⇧K / Ctrl+Shift+K：任意界面快速切换密钥（设计稿 S6）
+  // ⌘⇧K / Ctrl+Shift+K：任意界面打开密钥快速切换菜单
   const command = useCommand()
   command.register(() => [
     {
@@ -89,7 +88,17 @@ export const ChimeraRail: Component = () => {
       title: language.t("chimera.command.switchKey.title"),
       description: language.t("chimera.command.switchKey.description"),
       keybind: "ctrl+shift+k,meta+shift+k",
-      onSelect: openKeys,
+      onSelect: () => {
+        if (!hasChimeraAuth()) {
+          openConnect()
+          return
+        }
+        if (readChimeraKeys().keys.length === 0) {
+          openKeysPage()
+          return
+        }
+        requestChimeraKeyPicker()
+      },
     },
   ])
 
@@ -185,6 +194,8 @@ export const ChimeraStatusBar: Component = () => {
   const platform = usePlatform()
   const layout = useLayout()
   const tabs = useTabs()
+  const dialog = useDialog()
+  const serverSDK = useServerSDK()
   const serverSync = useServerSync()
   const language = useLanguage()
 
@@ -244,11 +255,45 @@ export const ChimeraStatusBar: Component = () => {
     }
   })
 
-  // 当前密钥名：chimera-keys 写入时广播事件，这里保持同步
-  const [keyName, setKeyName] = createSignal(activeChimeraKeyName())
-  const onKeysChanged = () => setKeyName(activeChimeraKeyName())
+  const [keysState, setKeysState] = createSignal(readChimeraKeys())
+  const [pickerOpen, setPickerOpen] = createSignal(false)
+  const [pending, setPending] = createSignal("")
+  const keyName = () => keysState().keys.find((item) => item.key === keysState().active)?.name
+  const onKeysChanged = () => setKeysState(readChimeraKeys())
+  const onKeysPicker = () => {
+    if (readChimeraKeys().keys.length === 0) return
+    setPickerOpen(true)
+  }
   window.addEventListener("chimera:keys-changed", onKeysChanged)
-  onCleanup(() => window.removeEventListener("chimera:keys-changed", onKeysChanged))
+  window.addEventListener("chimera:keys-picker", onKeysPicker)
+  onCleanup(() => {
+    window.removeEventListener("chimera:keys-changed", onKeysChanged)
+    window.removeEventListener("chimera:keys-picker", onKeysPicker)
+  })
+
+  const activate = async (entry: ChimeraKeyEntry) => {
+    if (pending() || entry.key === keysState().active) return
+    setPending(entry.key)
+    try {
+      await switchChimeraKey({
+        entry,
+        sdk: serverSDK(),
+        directory: directory(),
+      })
+      void serverSync().refreshProviders()
+      showToast({ title: language.t("chimera.keys.switched", { name: entry.name }), variant: "default" })
+    } catch {
+      showToast({ title: language.t("chimera.keys.switchFailed"), variant: "default" })
+    } finally {
+      setPending("")
+    }
+  }
+
+  const openKeysPage = () => {
+    void import("./settings-v2").then((x) => {
+      void dialog.show(() => <x.DialogSettings defaultValue="keys" />)
+    })
+  }
 
   return (
     <footer
@@ -280,10 +325,44 @@ export const ChimeraStatusBar: Component = () => {
         </Show>
       </div>
       <div class="flex items-center gap-3">
-        <Show when={keyName()}>
-          <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={language.t("chimera.status.key.tooltip")}>
-            {language.t("chimera.status.key", { name: keyName()! })}
-          </span>
+        <Show when={keysState().keys.length > 0}>
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-[10.5px] text-v2-text-text-muted">{language.t("chimera.status.key.label")}</span>
+            <MenuV2 gutter={6} modal={false} placement="top-end" open={pickerOpen()} onOpenChange={setPickerOpen}>
+              <MenuV2.Trigger
+                class="inline-flex h-5 max-w-[160px] cursor-pointer appearance-none items-center gap-1 rounded-[4px] border border-v2-border-border-strong bg-v2-background-bg-layer-01 px-1.5 font-mono text-[10.5px] text-v2-text-text-base hover:bg-v2-overlay-simple-overlay-hover focus-visible:outline-none data-[expanded]:bg-v2-overlay-simple-overlay-hover"
+                aria-label={language.t("chimera.status.key.tooltip")}
+                title={language.t("chimera.status.key.tooltip")}
+              >
+                <span class="truncate">{keyName() ?? language.t("chimera.keys.disconnected")}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-2.5 shrink-0 text-v2-icon-icon-muted" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </MenuV2.Trigger>
+              <MenuV2.Portal>
+                <MenuV2.Content>
+                  <MenuV2.Group>
+                    <MenuV2.GroupLabel>{language.t("chimera.command.switchKey.title")}</MenuV2.GroupLabel>
+                    <MenuV2.RadioGroup value={keysState().active}>
+                      <For each={keysState().keys}>
+                        {(entry) => (
+                          <MenuV2.RadioItem
+                            value={entry.key}
+                            disabled={pending() !== "" && pending() !== entry.key}
+                            onSelect={() => void activate(entry)}
+                          >
+                            {entry.name}
+                          </MenuV2.RadioItem>
+                        )}
+                      </For>
+                    </MenuV2.RadioGroup>
+                  </MenuV2.Group>
+                  <MenuV2.Separator />
+                  <MenuV2.Item onSelect={openKeysPage}>{language.t("chimera.status.key.manage")}</MenuV2.Item>
+                </MenuV2.Content>
+              </MenuV2.Portal>
+            </MenuV2>
+          </div>
         </Show>
         {/* 上下文用量改由会话右上角上游指示器承载（含 Token/成本详情），
             状态栏不再重复展示 */}

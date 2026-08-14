@@ -3,23 +3,33 @@
  * - 界面：Noto Sans SC（中文为主的 UI 文本）
  * - 数据/代码：JetBrains Mono
  * - 品牌字标：Space Grotesk（--chimera-font-display，供水印/品牌组件使用）
+ * 同时覆盖上游 v2 的 --font-family-text / --v2-font-family-sans（原先写死 Inter，
+ * 且未随应用分发，新布局会掉回系统黑体）。
  * 使用 :root:root 提升优先级，确保晚加载的上游 theme.css 不会覆盖回系统字体。
  */
 :root:root {
   --font-family-sans:
-    "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI",
-    sans-serif;
+    "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei UI", "Noto Sans CJK SC", sans-serif;
+  --font-family-text: var(--font-family-sans);
+  --v2-font-family-sans: var(--font-family-sans);
   --font-family-mono:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    "JetBrains Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    "PingFang SC", "Microsoft YaHei UI", monospace;
+  --font-family-mono--font-feature-settings: "liga" 1, "calt" 1;
   --chimera-font-display: "Space Grotesk", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
 
   /* 品牌主操作色（青金绿）：金黄系三轮反馈后弃用；青金本就是品牌渐变的
      另一端（tokens.viridian），主按钮/选中态/强调统一走这个变量。 */
   --chimera-accent: #1e8e6a;
   --chimera-accent-contrast: #ffffff;
+  --chimera-strand-from: #9a681b;
+  --chimera-strand-to: #1e8e6a;
 }
 
 :root[data-color-scheme="dark"] {
   --chimera-accent: #3bae8c;
   --chimera-accent-contrast: #0c100f;
+  --chimera-strand-from: #dea54c;
+  --chimera-strand-to: #46c39a;
 }

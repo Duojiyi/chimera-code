@@ -39,6 +39,7 @@ export type PromptInputV2Props = {
   disabled?: boolean
   readOnly?: boolean
   borderUnderlay?: boolean
+  live?: boolean
   class?: string
   modelControl?: JSX.Element
   variantControlVisible?: boolean
@@ -110,6 +111,7 @@ export function PromptInputV2(props: PromptInputV2Props) {
       <form
         data-component="prompt-input-v2"
         data-dock-border-underlay={props.borderUnderlay ? "v2" : undefined}
+        data-live={props.live ? "" : undefined}
         class="group/prompt-input relative min-h-[96px] w-full overflow-clip rounded-xl bg-v2-background-bg-base"
         classList={{
           "shadow-[var(--v2-elevation-raised)]": !props.borderUnderlay,

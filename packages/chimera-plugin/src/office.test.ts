@@ -121,6 +121,15 @@ test("pdf inspect and read", async () => {
   expect(readJson.text.join(" ")).toContain("Hello Chimera")
 })
 
+test("docx write accepts a native paragraph array", async () => {
+  const file = path.join(tmp, "array.docx")
+  await officeTools.office_write.execute({ path: file, paragraphs: ["Heading", "Body"] }, ctx)
+  const inspected = await officeTools.office_inspect.execute({ path: file }, ctx)
+  const json = JSON.parse(typeof inspected === "string" ? inspected : inspected.output)
+  expect(json.kind).toBe("docx")
+  expect(json.paragraphs).toBeGreaterThan(0)
+})
+
 test("docx write then inspect", async () => {
   const file = path.join(tmp, "note.docx")
   await officeTools.office_write.execute(

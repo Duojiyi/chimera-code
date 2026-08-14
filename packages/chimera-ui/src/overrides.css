@@ -91,39 +91,60 @@
   padding-block: 2px;
 }
 
-/* --- 输入区：青金呼吸光（静止时缓慢脉动，聚焦时常亮收拢） --- */
-@keyframes chimera-breathe {
-  0%,
-  100% {
-    border-color: color-mix(in srgb, var(--chimera-accent) 26%, var(--v2-border-border-base));
-    box-shadow: 0 0 14px -8px color-mix(in srgb, var(--chimera-accent) 22%, transparent);
-  }
-  50% {
-    border-color: color-mix(in srgb, var(--chimera-accent) 55%, var(--v2-border-border-base));
-    box-shadow: 0 0 24px -6px color-mix(in srgb, var(--chimera-accent) 50%, transparent);
+/* --- 输入区描边：空闲安静，聚焦常亮，会话忙碌才走品牌流光 --- */
+@property --chimera-border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes chimera-border-flow {
+  to {
+    --chimera-border-angle: 360deg;
   }
 }
 
 [data-component="prompt-input-v2"] {
-  border: 1px solid color-mix(in srgb, var(--chimera-accent) 30%, var(--v2-border-border-base));
+  border: 1px solid color-mix(in srgb, var(--chimera-accent) 22%, var(--v2-border-border-base));
   border-radius: 12px;
-  animation: chimera-breathe 4.2s ease-in-out infinite;
 }
 
 [data-component="prompt-input-v2"]:focus-within {
-  animation: none;
-  border-color: color-mix(in srgb, var(--chimera-accent) 70%, transparent);
+  border-color: color-mix(in srgb, var(--chimera-accent) 58%, transparent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--chimera-accent) 14%, transparent),
-    0 0 20px -6px color-mix(in srgb, var(--chimera-accent) 40%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--chimera-accent) 12%, transparent),
+    0 0 18px -8px color-mix(in srgb, var(--chimera-accent) 32%, transparent);
   transition:
     border-color 200ms ease,
     box-shadow 200ms ease;
 }
 
+[data-component="prompt-input-v2"][data-live] {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--v2-background-bg-base), var(--v2-background-bg-base)) padding-box,
+    conic-gradient(
+      from var(--chimera-border-angle),
+      color-mix(in srgb, var(--chimera-strand-from) 18%, transparent),
+      var(--chimera-strand-from) 16%,
+      var(--chimera-strand-to) 40%,
+      color-mix(in srgb, var(--chimera-strand-to) 22%, transparent) 64%,
+      color-mix(in srgb, var(--chimera-strand-from) 18%, transparent)
+    )
+    border-box;
+  box-shadow: 0 0 20px -8px color-mix(in srgb, var(--chimera-strand-to) 42%, transparent);
+  animation: chimera-border-flow 3.2s linear infinite;
+}
+
+[data-component="prompt-input-v2"][data-live]:focus-within {
+  animation: chimera-border-flow 3.2s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  [data-component="prompt-input-v2"] {
+  [data-component="prompt-input-v2"][data-live] {
     animation: none;
+    border-color: color-mix(in srgb, var(--chimera-strand-to) 55%, var(--v2-border-border-base));
+    background: var(--v2-background-bg-base);
   }
 }
 

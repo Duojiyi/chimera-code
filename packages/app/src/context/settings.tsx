@@ -54,9 +54,9 @@ export interface Settings {
   sounds: SoundSettings
 }
 
-export const monoDefault = "System Mono"
-export const sansDefault = "System Sans"
-export const terminalDefault = "JetBrainsMono Nerd Font Mono"
+export const monoDefault = "JetBrains Mono"
+export const sansDefault = "Noto Sans SC"
+export const terminalDefault = "JetBrains Mono"
 const legacyNewLayoutDesignsDefault = import.meta.env.VITE_OPENCODE_CHANNEL !== "prod"
 export const newLayoutDesignsDefault = true
 // Existing users can switch layouts until local midnight on this date. Set new Date(YYYY, M-1, D) to show.
@@ -131,17 +131,18 @@ export function resolveNewLayoutDesigns(retired: boolean, preference: boolean | 
   return preference ?? fallback
 }
 
-const monoFallback =
-  'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-const sansFallback = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-const terminalFallback =
-  '"JetBrainsMono Nerd Font Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+const cjkFallback = '"PingFang SC", "Microsoft YaHei UI", "Noto Sans CJK SC"'
+const monoFallback = `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", ${cjkFallback}, monospace`
+const sansFallback = `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", ${cjkFallback}, sans-serif`
+const nerdMono =
+  '"JetBrainsMono Nerd Font Mono", "JetBrainsMono Nerd Font", "CaskaydiaCove Nerd Font Mono", "Cascadia Code"'
 
 // chimera: 内置字体优先（@fontsource 随应用分发，离线一致）。用户在
 // 外观设置中的自定义字体仍会前置于这些默认栈（见 stack()）。
-const monoBase = `"JetBrains Mono", ${monoFallback}`
+const monoBase = `"JetBrains Mono", "Cascadia Code", ${monoFallback}`
 const sansBase = `"Noto Sans SC", ${sansFallback}`
-const terminalBase = `"JetBrains Mono", ${terminalFallback}`
+const terminalBase = `${nerdMono}, "JetBrains Mono", ${monoFallback}`
+const monoFeatures = '"liga" 1, "calt" 1'
 
 function input(font: string | undefined) {
   return font ?? ""
@@ -349,8 +350,13 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
     createEffect(() => {
       if (typeof document === "undefined") return
       const root = document.documentElement
-      root.style.setProperty("--font-family-mono", monoFontFamily(store.appearance?.mono))
-      root.style.setProperty("--font-family-sans", sansFontFamily(store.appearance?.sans))
+      const sans = sansFontFamily(store.appearance?.sans)
+      const mono = monoFontFamily(store.appearance?.mono)
+      root.style.setProperty("--font-family-sans", sans)
+      root.style.setProperty("--font-family-text", sans)
+      root.style.setProperty("--v2-font-family-sans", sans)
+      root.style.setProperty("--font-family-mono", mono)
+      root.style.setProperty("--font-family-mono--font-feature-settings", monoFeatures)
     })
 
     createEffect(() => {

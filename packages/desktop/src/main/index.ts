@@ -114,7 +114,13 @@ function ensureLoopbackNoProxy() {
 }
 
 const main = Effect.gen(function* () {
-  contextMenu({ showSaveImageAs: true, showLookUpSelection: false, showSearchWithGoogle: false })
+  contextMenu({
+    showSaveImageAs: true,
+    showLookUpSelection: false,
+    showSearchWithGoogle: false,
+    shouldShowMenu: (_event, params) =>
+      params.isEditable || params.selectionText.length > 0 || params.mediaType === "image",
+  })
 
   // on macOS apps run in `/` which can cause issues with ripgrep
   try {

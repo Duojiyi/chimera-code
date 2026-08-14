@@ -3,7 +3,7 @@ export declare const BRAND: {
   readonly nameLower: "chimera"
   readonly appId: "io.chimera.desktop"
   readonly scheme: "chimera"
-  readonly version: "0.1.5"
+  readonly version: "0.1.6"
   readonly gatewayUrl: "https://api.chimerahub.org/"
   readonly homepage: "https://chimerahub.org"
   readonly github: { readonly owner: "Duojiyi"; readonly repo: "chimera-code" }

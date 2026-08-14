@@ -5,11 +5,17 @@ import {
   isAppUpgrade,
   layoutTransitionState,
   maximumSunsetTimeout,
+  monoDefault,
+  monoFontFamily,
   newLayoutDesignsDefault,
   nextSunsetCheckDelay,
   resolveNewLayoutDesigns,
+  sansDefault,
+  sansFontFamily,
   shouldDisplayTabsToast,
   shouldEnableNewLayout,
+  terminalDefault,
+  terminalFontFamily,
 } from "./settings"
 
 describe("agent visibility", () => {
@@ -92,5 +98,29 @@ describe("layout transition", () => {
     expect(shouldEnableNewLayout("1.17.20", "1.17.21")).toBe(false)
     expect(shouldEnableNewLayout(undefined, "1.17.19")).toBe(false)
     expect(shouldEnableNewLayout("dev", "1.17.20")).toBe(false)
+  })
+})
+
+describe("appearance fonts", () => {
+  test("defaults name the bundled Chimera faces", () => {
+    expect(sansDefault).toBe("Noto Sans SC")
+    expect(monoDefault).toBe("JetBrains Mono")
+    expect(terminalDefault).toBe("JetBrains Mono")
+  })
+
+  test("empty UI and code settings keep the bundled stacks", () => {
+    expect(sansFontFamily("")).toContain("Noto Sans SC")
+    expect(monoFontFamily("")).toContain("JetBrains Mono")
+    expect(monoFontFamily("")).toContain("Cascadia Code")
+  })
+
+  test("terminal prefers an installed nerd font before the bundled mono", () => {
+    expect(terminalFontFamily("")).toMatch(/^"JetBrainsMono Nerd Font Mono"/)
+    expect(terminalFontFamily("")).toContain("JetBrains Mono")
+  })
+
+  test("a custom face is prepended without dropping the Chimera fallbacks", () => {
+    expect(sansFontFamily("LXGW WenKai")).toMatch(/^"LXGW WenKai", "Noto Sans SC"/)
+    expect(monoFontFamily("Iosevka")).toMatch(/^Iosevka, "JetBrains Mono"/)
   })
 })

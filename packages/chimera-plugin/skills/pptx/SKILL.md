@@ -30,14 +30,12 @@ Chimera does not ship CPython. If `python` / `python3` is not on PATH, tell the 
 
 ## `office_write` payload
 
-```json
-{
-  "path": "out.pptx",
-  "title": "Q3 Review",
-  "slides": [
-    { "title": "Agenda", "bullets": ["Results", "Risks", "Next steps"] }
-  ]
-}
+`slides` is a **JSON string**:
+
+```
+path: out.pptx
+title: Q3 Review
+slides: "[{\"title\":\"Agenda\",\"bullets\":[\"Results\",\"Risks\",\"Next steps\"]}]"
 ```
 
 After writing, `office_inspect` and confirm slide count and titles.

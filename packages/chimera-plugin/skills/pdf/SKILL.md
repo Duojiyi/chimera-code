@@ -12,7 +12,7 @@ Prefer Chimera native tools for inspection and text extraction:
 | Page count / size | `office_inspect` |
 | Extract text (per page) | `office_read` (`max_rows` = max pages) |
 
-`office_write` does **not** create PDFs. For generation, merging, forms, or OCR, use a short Python (`pypdf`) or Node script only if those tools are already available.
+`office_write` does **not** create PDFs. Chimera already bundles `pdf-lib` (write/merge/split) and `unpdf` (text extract). For generation, merging, or forms, write a short **Node/bun** script that imports those packages — do not `npm install` them into the user's project. Use Python `pypdf` only if Node is unavailable.
 
 ## Rules
 
@@ -23,12 +23,15 @@ Prefer Chimera native tools for inspection and text extraction:
 
 ## Fallback
 
-Merge/split/forms (only if `pypdf` imports):
+Simple new PDF with the bundled `pdf-lib` (do not `npm install`):
 
-```python
-from pypdf import PdfReader
-reader = PdfReader("document.pdf")
-text = "\n".join(page.extract_text() or "" for page in reader.pages)
+```js
+import { PDFDocument, StandardFonts } from "pdf-lib"
+const doc = await PDFDocument.create()
+const page = doc.addPage()
+const font = await doc.embedFont(StandardFonts.Helvetica)
+page.drawText("Hello", { x: 48, y: 720, size: 18, font })
+await Bun.write("out.pdf", await doc.save())
 ```
 
-Only `pip install pypdf` if the import fails.
+OCR is not bundled. Scanned pages stay empty until the user provides an OCR tool.

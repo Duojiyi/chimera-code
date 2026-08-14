@@ -70,6 +70,7 @@ import { legacySessionHref, requireServerKey, sessionHref } from "@/utils/sessio
 import { useSDK } from "@/context/sdk"
 import { useSync } from "@/context/sync"
 import { notifySessionTabsRemoved } from "@/components/titlebar-session-events"
+import { ChimeraAvatar } from "@/components/chimera-avatar"
 import { sessionTitle } from "@/utils/session-title"
 import { scheduleConnectedMeasure } from "./measure"
 import { observeElementOffsetReconnectAware } from "./observe-element-offset"
@@ -1152,10 +1153,7 @@ export function MessageTimeline(props: {
         <Show when={turnHeaderMessage()}>
           {(msg) => (
               <div data-slot="chimera-turn-header" class="flex items-center gap-2 px-4 pb-1.5 pt-0.5 md:px-5">
-              <span
-                class="inline-block size-[14px] shrink-0 rounded-[4px]"
-                style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}
-              />
+              <ChimeraAvatar size={16} />
               <span class="text-[12.5px] font-[600] tracking-[0.2px] text-v2-text-text-base">Chimera</span>
               <span class="font-mono text-[11px] text-v2-text-text-faint">
                 {msg().modelID}
