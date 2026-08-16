@@ -1,7 +1,6 @@
 import { execFile } from "node:child_process"
 import { stat } from "node:fs/promises"
 import { basename, join } from "node:path"
-import { BRAND } from "@chimera/brand"
 import { app, BrowserWindow, clipboard, dialog, ipcMain, shell } from "electron"
 import type { IpcMainEvent, IpcMainInvokeEvent } from "electron"
 import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
@@ -25,6 +24,7 @@ import type { UpdaterController } from "./updater-controller"
 import { createUpdaterSubscriptions } from "./updater-subscriptions"
 import { createDesktopDraftStore } from "./draft-store"
 import { nativeT } from "./native-translations"
+import { resolveChimeraGatewayRequest } from "./chimera-gateway"
 
 const pickerFilters = (ext?: string[]) => {
   if (!ext || ext.length === 0) return undefined
@@ -64,30 +64,30 @@ export function registerIpcHandlers(deps: Deps) {
   app.on("browser-window-created", (_event, win) => win.on("session-end", () => drafts.flush()))
 
   ipcMain.handle("kill-sidecar", () => deps.killSidecar())
-  // chimera: 网关 Dashboard API 代理（渲染层受 CORS 限制，主进程无此限制）。
-  // 仅允许固定网关域名下的 /api/ 路径，防止被用作任意请求代理。
-  // CHIMERA_DESKTOP_SECRET 配置后自动附带桌面客户端凭证头，
-  // 配合网关侧 DESKTOP_CLIENT_SECRET 豁免 Turnstile 人机验证。
-  const desktopSecret = process.env["CHIMERA_DESKTOP_SECRET"] ?? import.meta.env["MAIN_VITE_CHIMERA_DESKTOP_SECRET"]
+  // 仅运行时注入桌面凭证。共享密钥不能编译进可分发的客户端产物。
+  const desktopSecret = process.env["CHIMERA_DESKTOP_SECRET"]
   ipcMain.handle(
     "chimera-gateway-fetch",
-    async (
-      _event: IpcMainInvokeEvent,
-      input: { path: string; method?: string; headers?: Record<string, string>; body?: string },
-    ) => {
-      const base = new URL(BRAND.gatewayUrl)
-      const url = new URL(input.path, base)
-      if (url.origin !== base.origin || !url.pathname.startsWith("/api/")) {
-        return { status: 403, body: JSON.stringify({ success: false, message: "forbidden path" }) }
+    async (event: IpcMainInvokeEvent, input: unknown) => {
+      const win = BrowserWindow.fromWebContents(event.sender)
+      const request = resolveChimeraGatewayRequest(input)
+      if (
+        !win ||
+        win.isDestroyed() ||
+        win.webContents !== event.sender ||
+        event.senderFrame !== event.sender.mainFrame ||
+        !request
+      ) {
+        return { status: 403, body: JSON.stringify({ success: false, message: "forbidden request" }) }
       }
       try {
-        const res = await fetch(url, {
-          method: input.method ?? "GET",
+        const res = await fetch(request.url, {
+          method: request.method,
           headers: {
-            ...input.headers,
+            ...request.headers,
             ...(desktopSecret ? { "x-chimera-desktop-secret": desktopSecret } : {}),
           },
-          body: input.body,
+          body: request.body,
           signal: AbortSignal.timeout(15_000),
         })
         return { status: res.status, body: await res.text() }

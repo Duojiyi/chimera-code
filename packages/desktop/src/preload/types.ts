@@ -113,7 +113,7 @@ export type ElectronAPI = {
   setForceFocus: (enabled: boolean) => Promise<void>
   recordFatalRendererError: (error: FatalRendererError) => Promise<void>
   setNativeTranslations: (bundle: DesktopNativeBundle) => Promise<void>
-  /** chimera: 网关 Dashboard API 代理（仅限网关域名 /api/ 路径） */
+  /** Chimera 网关 Dashboard API 代理（仅开放桌面授权所需端点）。 */
   chimeraGatewayFetch: (input: {
     path: string
     method?: string
