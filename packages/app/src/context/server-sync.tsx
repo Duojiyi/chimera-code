@@ -32,6 +32,7 @@ import { trimSessions } from "./global-sync/session-trim"
 import type { ProjectMeta } from "./global-sync/types"
 import { SESSION_RECENT_LIMIT } from "./global-sync/types"
 import { formatServerError } from "@/utils/server-errors"
+import { appQueryClient } from "@/context/query-client"
 import { queryOptions, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/solid-query"
 import type { SolidQueryOptions } from "@tanstack/solid-query"
 import { createRefreshQueue } from "./global-sync/queue"
@@ -289,7 +290,10 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
   })
 
   const queryClient = useQueryClient()
-  const homeSessions = createHomeSessionIndexCache(queryClient, ServerConnection.key(serverSDK.server))
+  // Home 索引缓存必须与首页 sessionLoad 共用同一 QueryClient（appQueryClient）：
+  // 本 sync 在 GlobalProvider 外层 owner 中创建，useQueryClient() 会解析到默认 client，
+  // 导致归档/恢复事件写入与首页索引（QueryProvider 内）的 client 不一致。
+  const homeSessions = createHomeSessionIndexCache(appQueryClient, ServerConnection.key(serverSDK.server))
   const refreshProviders = () =>
     queryClient.invalidateQueries({
       predicate: (query) => query.queryKey[0] === serverSDK.scope && query.queryKey[2] === "providers",

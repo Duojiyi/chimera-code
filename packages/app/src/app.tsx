@@ -17,7 +17,8 @@ import {
   useParams,
   useSearchParams,
 } from "@solidjs/router"
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
+import { QueryClientProvider } from "@tanstack/solid-query"
+import { appQueryClient } from "@/context/query-client"
 import { Effect } from "effect"
 import { base64Encode } from "@opencode-ai/core/util/encode"
 import {
@@ -287,16 +288,7 @@ declare global {
 }
 
 function QueryProvider(props: ParentProps) {
-  const client = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnReconnect: false,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-      },
-    },
-  })
-  return <QueryClientProvider client={client}>{props.children}</QueryClientProvider>
+  return <QueryClientProvider client={appQueryClient}>{props.children}</QueryClientProvider>
 }
 
 function BodyDesignClass() {

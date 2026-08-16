@@ -19,7 +19,8 @@ import {
   type OpenSessionOptions,
 } from "./home-sessions-controller"
 
-const SHOW_HOME_SESSION_ARCHIVE = false
+// Chimera：归档按钮默认打开（上游 false；我们提供"已归档"分组 + 恢复，功能完整）。
+const SHOW_HOME_SESSION_ARCHIVE = true
 const HOME_SECTION_LABEL = "text-v2-text-text-muted [font-weight:440]"
 const HOME_SESSION_SEARCH_RESULTS_ID = "home-session-search-results"
 
