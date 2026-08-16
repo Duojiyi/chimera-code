@@ -4,6 +4,7 @@ import { Dialog } from "@opencode-ai/ui/dialog"
 import { Tabs } from "@opencode-ai/ui/tabs"
 import { Icon } from "@opencode-ai/ui/icon"
 import { useLanguage } from "@/context/language"
+import { usePlatform } from "@/context/platform"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { SettingsGeneral } from "./settings-general"
 import { SettingsKeybinds } from "./settings-keybinds"
@@ -13,6 +14,7 @@ import { SettingsServers } from "./settings-servers"
 
 export const DialogSettings: Component<{ defaultValue?: string }> = (props) => {
   const language = useLanguage()
+  const platform = usePlatform()
   const dialog = useDialog()
   const [tab, setTab] = createSignal(props.defaultValue ?? "general")
 
@@ -68,7 +70,7 @@ export const DialogSettings: Component<{ defaultValue?: string }> = (props) => {
             </div>
             <div class="flex flex-col gap-1 pl-1 py-1 text-12-medium text-text-weak">
               <span>{BRAND.name}</span>
-              <span class="text-11-regular">v{BRAND.version}</span>
+              <span class="text-11-regular">v{platform.version ?? BRAND.version}</span>
             </div>
           </div>
         </Tabs.List>

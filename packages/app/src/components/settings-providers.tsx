@@ -1,3 +1,4 @@
+import { BRAND } from "@chimera/brand"
 import { Button } from "@opencode-ai/ui/button"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
@@ -197,7 +198,7 @@ const SettingsProvidersContent: Component<{ onBack?: () => void }> = (props) => 
                     <div class="flex items-center gap-x-3">
                       <ProviderIcon id={item.id} class="size-5 shrink-0 icon-strong-base" />
                       <span class="text-14-medium text-text-strong">{item.name}</span>
-                      <Show when={item.id === "chimera"}>
+                      <Show when={item.id === BRAND.nameLower}>
                         <Tag>{language.t("dialog.provider.tag.recommended")}</Tag>
                       </Show>
                     </div>

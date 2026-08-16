@@ -29,8 +29,22 @@ export function readChimeraKeys(): KeysState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return { keys: [], active: "" }
-    const parsed = JSON.parse(raw) as KeysState
-    return { keys: parsed.keys ?? [], active: parsed.active ?? "" }
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { keys: [], active: "" }
+    const value = parsed as Record<string, unknown>
+    const keys = Array.isArray(value.keys)
+      ? value.keys.filter(
+          (entry): entry is ChimeraKeyEntry =>
+            !!entry &&
+            typeof entry === "object" &&
+            !Array.isArray(entry) &&
+            typeof (entry as Record<string, unknown>).name === "string" &&
+            typeof (entry as Record<string, unknown>).key === "string" &&
+            !!(entry as Record<string, unknown>).key,
+        )
+      : []
+    const active = typeof value.active === "string" && keys.some((entry) => entry.key === value.active) ? value.active : ""
+    return { keys, active }
   } catch {
     return { keys: [], active: "" }
   }
@@ -57,6 +71,18 @@ export async function switchChimeraKey(input: { entry: ChimeraKeyEntry; sdk: Ser
 
 export function hasChimeraAuth() {
   return readChimeraKeys().keys.length > 0 || !!localStorage.getItem("chimera-account")
+}
+
+export function createChimeraAuth() {
+  const [signedIn, setSignedIn] = createSignal(hasChimeraAuth())
+  const refresh = () => setSignedIn(hasChimeraAuth())
+  window.addEventListener("chimera:keys-changed", refresh)
+  window.addEventListener("storage", refresh)
+  onCleanup(() => {
+    window.removeEventListener("chimera:keys-changed", refresh)
+    window.removeEventListener("storage", refresh)
+  })
+  return signedIn
 }
 
 export function registerChimeraKey(key: string, name?: string | ((index: number) => string)) {

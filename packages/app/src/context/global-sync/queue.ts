@@ -75,6 +75,10 @@ export function createRefreshQueue(input: QueueInput) {
   return {
     push,
     refresh,
+    resume() {
+      if (input.paused()) return
+      if (root || queued.size) schedule()
+    },
     clear(directory: string) {
       queued.delete(key(directory))
     },

@@ -95,7 +95,7 @@ export const DialogSettings: Component<{
             </div>
             <div class="settings-v2-nav-footer">
               <span>{BRAND.name}</span>
-              <span title={platform.version}>v{BRAND.version}</span>
+              <span title={platform.version}>v{platform.version ?? BRAND.version}</span>
             </div>
           </div>
         </TabsV2.List>

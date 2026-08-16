@@ -1,3 +1,4 @@
+import { BRAND } from "@chimera/brand"
 import { type Accessor, createMemo, createResource } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DateTime } from "luxon"
@@ -118,7 +119,7 @@ export const { use: useModels, provider: ModelsProvider } = createSimpleContext(
       if (state === "hide") return false
       if (state === "show") return true
       // chimera: 网关下发的模型默认全部可见（管理员已在网关侧控制签发范围）
-      if (model.providerID === "chimera") return true
+      if (model.providerID === BRAND.nameLower) return true
       if (latestSet().has(key)) return true
       const date = release().get(key)
       if (!date?.isValid) return true

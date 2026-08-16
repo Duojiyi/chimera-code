@@ -1,3 +1,4 @@
+import { BRAND } from "@chimera/brand"
 import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
 import { Tag } from "@opencode-ai/ui/v2/badge-v2"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
@@ -10,7 +11,7 @@ import { useServerProtocol, useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { DialogConnectProvider, useProviderConnectController } from "../dialog-connect-provider"
 import { DialogCustomProvider } from "../dialog-custom-provider"
-import { hasChimeraAuth } from "../chimera-keys"
+import { createChimeraAuth } from "../chimera-keys"
 import { SettingsListV2 } from "./parts/list"
 import "./settings-v2.css"
 
@@ -38,12 +39,13 @@ export const SettingsProvidersV2: Component<{
   const protocol = useServerProtocol()
   const serverSync = useServerSync()
   const providers = useProviders(props.directory)
+  const signedIn = createChimeraAuth()
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
 
   const connect = (provider?: string) => {
     // Chimera：已连接时进入密钥管理器（设计稿 S6），未连接时进入连接流程（设计稿 S5）
-    if (provider === "chimera") {
-      if (hasChimeraAuth()) {
+    if (provider === BRAND.nameLower) {
+      if (signedIn()) {
         void import("../chimera-keys").then((x) => {
           void dialog.show(() => <x.ChimeraKeysDialog directory={props.directory} />)
         })
@@ -59,7 +61,7 @@ export const SettingsProvidersV2: Component<{
   }
 
   const connected = createMemo(() =>
-    providers.connected().filter((item) => item.id !== "chimera" || hasChimeraAuth()),
+    providers.connected().filter((item) => item.id !== BRAND.nameLower || signedIn()),
   )
 
   const popular = createMemo(() => {
@@ -218,7 +220,7 @@ export const SettingsProvidersV2: Component<{
                     <div class="settings-v2-provider-copy">
                       <div class="settings-v2-provider-main">
                         <span class="settings-v2-provider-name">{item.name}</span>
-                        <Show when={item.id === "chimera"}>
+                        <Show when={item.id === BRAND.nameLower}>
                           <Tag>{language.t("dialog.provider.tag.recommended")}</Tag>
                         </Show>
                       </div>

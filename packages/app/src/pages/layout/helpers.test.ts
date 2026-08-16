@@ -41,6 +41,8 @@ const session = (input: Partial<Session> & Pick<Session, "id" | "directory">) =>
 describe("layout deep links", () => {
   test("parses open-project deep links", () => {
     expect(parseDeepLink("chimera://open-project?directory=/tmp/demo")).toBe("/tmp/demo")
+    expect(parseDeepLink("chimera-beta://open-project?directory=/tmp/demo")).toBe("/tmp/demo")
+    expect(parseDeepLink("chimera-dev://open-project?directory=/tmp/demo")).toBe("/tmp/demo")
     expect(parseDeepLink("opencode://open-project?directory=/tmp/demo")).toBe("/tmp/demo")
   })
 

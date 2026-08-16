@@ -380,7 +380,7 @@ export const ChimeraStatusBar: Component = () => {
           </Show>
         </span>
         <span class="font-mono text-[10.5px] text-v2-text-text-faint" title={platform.version}>
-          v{BRAND.version}
+          v{platform.version ?? BRAND.version}
         </span>
       </div>
     </footer>

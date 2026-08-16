@@ -6,7 +6,7 @@ import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
 import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
 import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
 import { type Component, For, Show, createMemo } from "solid-js"
-import { hasChimeraAuth } from "../chimera-keys"
+import { createChimeraAuth } from "../chimera-keys"
 import { useLanguage } from "@/context/language"
 import { useModels } from "@/context/models"
 import "./settings-v2.css"
@@ -30,7 +30,7 @@ function contextLabel(item: ModelItem) {
 function protocolLabel(item: ModelItem, language: ReturnType<typeof useLanguage>) {
   if (item.provider.id === "anthropic") return "Anthropic"
   if (item.provider.id === "openai") return "OpenAI"
-  if (item.provider.id === "chimera") {
+  if (item.provider.id === BRAND.nameLower) {
     const id = item.id.toLowerCase()
     if (id.startsWith("claude")) return "Anthropic"
     if (id.startsWith("gpt") || /^o\d/.test(id)) return "OpenAI"
@@ -44,7 +44,7 @@ export const SettingsModelsV2: Component = () => {
   const language = useLanguage()
   const dialog = useDialog()
   const models = useModels()
-  const signedIn = () => hasChimeraAuth()
+  const signedIn = createChimeraAuth()
 
   const openConnect = () => {
     void import("../chimera-connect").then((x) => {

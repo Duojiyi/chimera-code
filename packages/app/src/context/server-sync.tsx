@@ -291,7 +291,7 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
   const queryClient = useQueryClient()
   const homeSessions = createHomeSessionIndexCache(queryClient, ServerConnection.key(serverSDK.server))
   const refreshProviders = () =>
-    queryClient.refetchQueries({
+    queryClient.invalidateQueries({
       predicate: (query) => query.queryKey[0] === serverSDK.scope && query.queryKey[2] === "providers",
     })
 
@@ -541,7 +541,7 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
       homeSessions.apply(event)
     }
     homeSessions.refresh(event.type)
-    if (eventType === "integration.connection.updated") void refreshProviders()
+    if (eventType === "integration.connection.updated" || eventType === "global.disposed") void refreshProviders()
 
     if (directory === "global") {
       if (eventType === "server.connected" && activeSessionsQuery.data === undefined && !activeSessionsQuery.isFetching)
@@ -563,7 +563,7 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
       )
         bootstrap.refetch()
       if (eventType === "server.connected" || eventType === "global.disposed") {
-        if (recent) return
+        if (eventType === "server.connected" && recent) return
         for (const directory of Object.keys(children.children)) {
           if (!children.active(directory)) continue
           queue.push(directory)
@@ -659,14 +659,12 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
 
   const updateConfigMutation = useMutation(() => ({
     mutationFn: (config: Config) => serverSDK.client.global.config.update({ config }),
-    onSuccess: () => {
-      bootstrap.refetch()
-      // Invalidate all provider queries so newly configured custom providers
-      // appear immediately in the available provider list across all directories.
-      queryClient.invalidateQueries({ queryKey: [serverSDK.scope, null, "providers"] })
-      queryClient.invalidateQueries({
-        predicate: (query) => query.queryKey[0] === serverSDK.scope && query.queryKey[2] === "providers",
-      })
+    onSuccess: async () => {
+      await Promise.all([bootstrap.refetch(), refreshProviders()])
+    },
+    onSettled: () => {
+      // TanStack keeps the mutation pending until callbacks finish, so resume on the next task.
+      setTimeout(queue.resume, 0)
     },
   }))
 

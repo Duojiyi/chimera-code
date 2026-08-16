@@ -232,7 +232,7 @@ export const ChimeraConnectDialog: Component<{
       active: keys[0].key,
     })
     await serverSDK().api.integration.connect.key({
-      integrationID: "chimera",
+      integrationID: BRAND.nameLower,
       key: keys[0].key,
       location: location(),
     })
@@ -293,7 +293,7 @@ export const ChimeraConnectDialog: Component<{
         return
       }
       await serverSDK().api.integration.connect.key({
-        integrationID: "chimera",
+        integrationID: BRAND.nameLower,
         key: apiKey().trim(),
         location: location(),
       })

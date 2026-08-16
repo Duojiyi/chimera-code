@@ -43,4 +43,27 @@ describe("createRefreshQueue", () => {
     expect(calls).toEqual(["C:\\tmp\\demo"])
     queue.dispose()
   })
+
+  test("resumes work queued while refreshes are paused", async () => {
+    const calls: string[] = []
+    const state = { paused: true }
+    const queue = createRefreshQueue({
+      paused: () => state.paused,
+      bootstrap: async () => {},
+      bootstrapInstance: (directory) => {
+        calls.push(directory)
+      },
+    })
+
+    queue.push("C:/tmp/demo")
+    await tick()
+    expect(calls).toEqual([])
+
+    state.paused = false
+    queue.resume()
+    await tick()
+
+    expect(calls).toEqual(["C:/tmp/demo"])
+    queue.dispose()
+  })
 })
