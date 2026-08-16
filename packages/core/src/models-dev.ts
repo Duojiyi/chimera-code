@@ -131,6 +131,32 @@ export const Provider = Schema.Struct({
 
 export type Provider = Schema.Schema.Type<typeof Provider>
 
+export function findModel(data: Record<string, Provider>, ids: readonly string[]) {
+  const candidates = Object.values(data).flatMap((provider) =>
+    Object.entries(provider.models).flatMap(([key, model]) => {
+      const keyIndex = ids.indexOf(key)
+      const idIndex = ids.indexOf(model.id)
+      const index = keyIndex === -1 ? idIndex : keyIndex
+      if (index === -1) return []
+      return [
+        {
+          model,
+          index,
+          key: keyIndex !== -1,
+          effort: model.reasoning_options?.some((option) => option.type === "effort") ?? false,
+        },
+      ]
+    }),
+  )
+  return candidates.sort(
+    (a, b) =>
+      a.index - b.index ||
+      Number(b.key) - Number(a.key) ||
+      Number(b.effort) - Number(a.effort) ||
+      Number(b.model.reasoning) - Number(a.model.reasoning),
+  )[0]?.model
+}
+
 export const Event = ModelsDev.Event
 
 declare const OPENCODE_MODELS_DEV: Record<string, Provider> | undefined

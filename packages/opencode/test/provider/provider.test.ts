@@ -226,6 +226,44 @@ it.instance(
 )
 
 it.instance(
+  "custom OpenAI-compatible models inherit reasoning metadata by API model ID",
+  Effect.gen(function* () {
+    const providers = yield* list
+    const provider = providers[ProviderV2.ID.make("custom-provider")]
+    const reasoning = provider.models["gpt-5.4"]
+
+    expect(reasoning.capabilities.reasoning).toBe(true)
+    expect(reasoning.variants).toMatchObject({
+      low: { reasoningEffort: "low" },
+      medium: { reasoningEffort: "medium" },
+      high: { reasoningEffort: "high" },
+      xhigh: { reasoningEffort: "xhigh" },
+    })
+    expect(provider.models["unknown-model"].capabilities.reasoning).toBe(false)
+    expect(provider.models["unknown-model"].variants).toEqual({})
+    expect(provider.models["reasoning-disabled"].capabilities.reasoning).toBe(false)
+    expect(provider.models["reasoning-disabled"].variants).toEqual({})
+  }),
+  {
+    config: {
+      provider: {
+        "custom-provider": {
+          name: "Custom Provider",
+          npm: "@ai-sdk/openai-compatible",
+          api: "https://api.custom.com/v1",
+          models: {
+            "gpt-5.4": { name: "GPT-5.4" },
+            "unknown-model": { name: "Unknown" },
+            "reasoning-disabled": { id: "gpt-5.4", name: "Disabled", reasoning: false },
+          },
+          options: { apiKey: "custom-key" },
+        },
+      },
+    },
+  },
+)
+
+it.instance(
   "filters alpha provider models by default",
   Effect.gen(function* () {
     const providers = yield* list

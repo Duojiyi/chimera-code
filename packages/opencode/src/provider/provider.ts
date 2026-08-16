@@ -1410,6 +1410,7 @@ const layer = Layer.effect(
           for (const [modelID, model] of Object.entries(provider.models ?? {})) {
             const existingModel = parsed.models[model.id ?? modelID]
             const apiID = model.id ?? existingModel?.api.id ?? modelID
+            const reference = ModelsDev.findModel(modelsDev, [apiID, modelID])
             const apiNpm =
               model.provider?.npm ??
               provider.npm ??
@@ -1433,7 +1434,7 @@ const layer = Layer.effect(
               providerID: ProviderV2.ID.make(providerID),
               capabilities: {
                 temperature: model.temperature ?? existingModel?.capabilities.temperature ?? false,
-                reasoning: model.reasoning ?? existingModel?.capabilities.reasoning ?? false,
+                reasoning: model.reasoning ?? existingModel?.capabilities.reasoning ?? reference?.reasoning ?? false,
                 attachment: model.attachment ?? existingModel?.capabilities.attachment ?? false,
                 toolcall: model.tool_call ?? existingModel?.capabilities.toolcall ?? true,
                 input: {
@@ -1480,9 +1481,14 @@ const layer = Layer.effect(
               variants: {},
             }
             const variants =
-              existingModel?.api.npm === parsedModel.api.npm
-                ? (existingModel.variants ?? ProviderTransform.variants(parsedModel))
-                : ProviderTransform.variants(parsedModel)
+              model.reasoning === false
+                ? ProviderTransform.variants(parsedModel)
+                : !existingModel
+                  ? ((reference && ProviderTransform.reasoningVariants(reference, parsedModel)) ??
+                    ProviderTransform.variants(parsedModel))
+                  : existingModel.api.npm === parsedModel.api.npm
+                    ? (existingModel.variants ?? ProviderTransform.variants(parsedModel))
+                    : ProviderTransform.variants(parsedModel)
             const merged = mergeDeep(variants, model.variants ?? {})
             parsedModel.variants = mapValues(
               pickBy(merged, (v) => !v.disabled),
