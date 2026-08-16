@@ -223,19 +223,10 @@ export const ChimeraStatusBar: Component = () => {
   const probeTimer = setInterval(() => void probeGateway(), 60_000)
   onCleanup(() => clearInterval(probeTimer))
 
-  // Phase 2：工作区状态统一走 app/src/chimera adapter（路线图 App Adapters 层）。
+  // 工作区状态走 app/src/chimera adapter。
   const directory = useWorkspaceDirectory()
   const branch = useWorkspaceBranch(directory)
   const sessionDiff = useSessionDiff()
-
-  // 工作区显示名（Workspace Strip）：目录 basename（无工作区时为空）。
-  const workspaceName = createMemo(() => {
-    const dir = directory()
-    if (!dir) return undefined
-    const normalized = dir.replace(/[\\/]+$/, "")
-    const base = normalized.split(/[\\/]/).pop()
-    return base || normalized
-  })
 
   const [keysState, setKeysState] = createSignal(readChimeraKeys())
   const [pickerOpen, setPickerOpen] = createSignal(false)
@@ -283,17 +274,7 @@ export const ChimeraStatusBar: Component = () => {
       class="flex h-[24px] shrink-0 items-center justify-between border-t-[0.5px] border-v2-border-border-muted px-3"
     >
       <div class="flex items-center gap-3">
-        <Show when={workspaceName()}>
-          {(name) => (
-            <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-muted" title={directory()}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
-                <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              </svg>
-              <span class="max-w-[180px] truncate">{name()}</span>
-            </span>
-          )}
-        </Show>
-        <Show when={branch()} fallback={<Show when={!workspaceName()}><span class="font-mono text-[10.5px] text-v2-text-text-faint">{BRAND.name}</span></Show>}>
+        <Show when={branch()} fallback={<span class="font-mono text-[10.5px] text-v2-text-text-faint">{BRAND.name}</span>}>
           <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-muted">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
               <line x1="6" x2="6" y1="3" y2="15" />

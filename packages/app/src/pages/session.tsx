@@ -72,10 +72,7 @@ import {
 } from "@/pages/session/composer"
 import { createOpenReviewFile, createSessionTabs, createSizing, shouldShowFileTree } from "@/pages/session/helpers"
 import { SessionTurnRail } from "@/pages/session/session-turn-rail"
-import { ChimeraTurnLedger } from "@/components/chimera-turn-ledger"
-import { ChimeraContextRibbon } from "@/components/chimera-context-ribbon"
-import { projectTurns } from "@/chimera/turn-ledger"
-import { useSessionContext } from "@/chimera/context"
+
 import { MessageTimeline } from "@/pages/session/timeline/message-timeline"
 import { createTimelineModel } from "@/pages/session/timeline/model"
 import { type DiffStyle, SessionReviewTab, type SessionReviewTabProps } from "@/pages/session/review-tab"
@@ -560,7 +557,6 @@ export default function Page() {
   const historyMore = timeline.history.more
   const lastUserMessage = timeline.lastUserMessage
   const messages = timeline.messages
-  const context = useSessionContext(messages)
   const messagesReady = timeline.ready
   const sessionSync = timeline.resource
   const userMessages = timeline.userMessages
@@ -2097,22 +2093,7 @@ export default function Page() {
             <Show when={messagesReady() ? params.id : undefined} keyed>
               {(_id) => (
                 <div class="relative h-full min-h-0 min-w-0">
-                  <Show when={isDesktop()}>
-                    <div class="flex shrink-0 items-stretch">
-                      <div class="min-w-0 flex-1">
-                        <ChimeraTurnLedger
-                          turns={projectTurns(messages(), (messageID) => sync().data.part[messageID] ?? [])}
-                          onJump={(id) => {
-                            const message = visibleUserMessages().find((item) => item.id === id)
-                            if (!message) return
-                            autoScroll.pause()
-                            scrollToMessage(message, "auto")
-                          }}
-                        />
-                      </div>
-                      <ChimeraContextRibbon context={context()} />
-                    </div>
-                  </Show>
+
                   <MessageTimeline
                     actions={actions}
                     scroll={ui.scroll}
