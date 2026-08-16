@@ -19,7 +19,7 @@ function displayName(id: string) {
     .join(" ")
 }
 
-/** models.dev 官方目录中的模型元数据（仅取本插件需要的字段）。 */
+/** 官方模型目录（models.opencode.ai 镜像的 models.dev 数据）中的模型元数据（仅取本插件需要的字段）。 */
 type OfficialModel = {
   name?: string
   limit?: { context?: number; output?: number }
@@ -38,7 +38,7 @@ let officialCatalog: Map<string, OfficialModel> | undefined
 let officialCatalogAt = 0
 
 /**
- * 拉取 models.dev 官方目录并按模型 ID 展平索引（跨厂商）。
+ * 拉取官方模型目录（models.opencode.ai 镜像）并按模型 ID 展平索引（跨厂商）。
  * 网关模型 ID 与官方 ID 一致（如 claude-sonnet-4-6），据此自动识别
  * 上下文窗口等官方数据；目录缓存 10 分钟，失败时退回保守默认值。
  */
@@ -46,7 +46,8 @@ async function officialModels(): Promise<Map<string, OfficialModel>> {
   const now = Date.now()
   if (officialCatalog && now - officialCatalogAt < 10 * 60_000) return officialCatalog
   try {
-    const res = await fetch("https://models.dev/api.json", { signal: AbortSignal.timeout(10_000) })
+    // 与 core ModelsDev 同一镜像：models.dev 在部分网络（如国内直连）不可达，opencode.ai 镜像可直连。
+    const res = await fetch("https://models.opencode.ai/api.json", { signal: AbortSignal.timeout(10_000) })
     if (!res.ok) return officialCatalog ?? new Map()
     const data = (await res.json()) as Record<string, { models?: Record<string, OfficialModel> }>
     const map = new Map<string, OfficialModel>()
@@ -71,7 +72,7 @@ async function officialModels(): Promise<Map<string, OfficialModel>> {
   }
 }
 
-/** 网关模型元数据：官方目录（models.dev）自动识别，缺失字段用保守默认；
+/** 网关模型元数据：官方目录（models.opencode.ai）自动识别，缺失字段用保守默认；
  *  用户可在 chimera.json 的 provider.chimera.models.<id> 手动覆盖。 */
 function gatewayModel(id: string, official?: OfficialModel) {
   const modality = (values: string[] | undefined, key: string, fallback: boolean) =>
