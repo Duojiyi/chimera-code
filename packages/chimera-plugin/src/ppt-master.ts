@@ -86,10 +86,17 @@ async function downloadSkillZip(dest: string) {
   const zipPath = `${staging}.zip`
   console.log(`downloading ${url}`)
   if (!(await curlDownload(url, zipPath))) return
-  const size = Bun.file(zipPath).size
+  const file = Bun.file(zipPath)
+  const size = file.size
   console.log(`downloaded ${SKILL_ZIP} (${size} bytes)`)
   if (size < 1_000_000) {
     console.error(`download too small: ${size} bytes`)
+    await rm(zipPath, { force: true })
+    return
+  }
+  const digest = new Bun.CryptoHasher("sha256").update(await file.arrayBuffer()).digest("hex")
+  if (digest !== pin.sha256) {
+    console.error(`download checksum mismatch: ${digest}`)
     await rm(zipPath, { force: true })
     return
   }
@@ -106,21 +113,18 @@ async function downloadSkillZip(dest: string) {
 }
 
 function extractZip(zipPath: string, dest: string) {
-  if (run(["unzip", "-q", zipPath, "-d", dest])) return true
-  return run(["tar", "-xf", zipPath, "-C", dest])
+  if (runCommand(["unzip", "-q", zipPath, "-d", dest])) return true
+  return runCommand(["tar", "-xf", zipPath, "-C", dest])
 }
 
-function run(cmd: string[]) {
-  const result = Bun.spawnSync(cmd, { stdout: "inherit", stderr: "inherit" })
-  if (result.error) {
-    console.error(`${cmd[0]}: ${result.error.message}`)
-    return false
-  }
-  return result.exitCode === 0
+export function runCommand(cmd: string[]) {
+  if (!Bun.which(cmd[0])) return false
+  return Bun.spawnSync(cmd, { stdout: "inherit", stderr: "inherit" }).exitCode === 0
 }
 
 async function curlDownload(url: string, zipPath: string) {
   const curl = process.platform === "win32" ? "curl.exe" : "curl"
+  if (!Bun.which(curl)) return false
   const proc = Bun.spawn(
     [
       curl,

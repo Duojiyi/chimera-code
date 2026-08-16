@@ -1,0 +1,61 @@
+import { expect, test } from "bun:test"
+import type { Config } from "@opencode-ai/plugin"
+import { ChimeraPlugin, PROVIDER_ID } from "./index"
+
+async function apply(config: Config) {
+  const hooks = await ChimeraPlugin(undefined as never)
+  await hooks.config?.(config)
+  return config
+}
+
+test("config hook injects Chimera defaults without duplicating skill paths", async () => {
+  const config = await apply({
+    provider: {
+      custom: {
+        name: "Custom",
+        npm: "@ai-sdk/openai-compatible",
+        options: {},
+        models: {},
+      },
+    },
+  })
+
+  expect(config.provider?.[PROVIDER_ID]).toBeDefined()
+  expect(config.enabled_providers).toEqual(["custom", PROVIDER_ID])
+  expect(config.skills?.paths?.length).toBeGreaterThan(0)
+  expect(new Set(config.skills?.paths ?? []).size).toBe(config.skills?.paths?.length ?? 0)
+  expect(config.permission).toMatchObject({
+    edit: "allow",
+    bash: "allow",
+    webfetch: "allow",
+    external_directory: "allow",
+    skill: "allow",
+    doom_loop: "ask",
+  })
+
+  await apply(config)
+  expect(new Set(config.skills?.paths ?? []).size).toBe(config.skills?.paths?.length ?? 0)
+})
+
+test("config hook fills individual permission defaults while preserving user rules", async () => {
+  const config = await apply({ permission: { edit: "deny", doom_loop: "deny" } })
+
+  expect(config.permission).toMatchObject({
+    edit: "deny",
+    bash: "allow",
+    webfetch: "allow",
+    external_directory: "allow",
+    skill: "allow",
+    doom_loop: "deny",
+  })
+})
+
+test("config hook preserves a top-level permission policy", async () => {
+  const config = await apply({ permission: "deny" })
+  expect(config.permission).toBe("deny")
+})
+
+test("config hook preserves explicitly enabled providers", async () => {
+  const config = await apply({ enabled_providers: ["custom"] })
+  expect(config.enabled_providers).toEqual(["custom"])
+})

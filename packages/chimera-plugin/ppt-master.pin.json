@@ -2,6 +2,7 @@
   "name": "ppt-master",
   "version": "4.5.0",
   "tag": "v4.5.0",
+  "sha256": "f6ef8db5ad6b763cdd75154354d5fb6eef845380226bbcef51a02a31dab5b5d0",
   "license": "MIT",
   "copyright": "Copyright (c) 2025-2026 Hugo He",
   "repository": "https://github.com/hugohe3/ppt-master"

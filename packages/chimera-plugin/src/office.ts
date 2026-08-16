@@ -11,6 +11,23 @@ import { extractText, getDocumentProxy } from "unpdf"
 
 const READ_ROWS_DEFAULT = 100
 const READ_ROWS_MAX = 500
+const officeCell = tool.schema.union([
+  tool.schema.string(),
+  tool.schema.number(),
+  tool.schema.boolean(),
+  tool.schema.null(),
+])
+const officeRows = tool.schema.array(tool.schema.array(officeCell))
+const officeSheets = tool.schema.array(
+  tool.schema.object({ name: tool.schema.string().optional(), rows: officeRows.optional() }),
+)
+const officeParagraphs = tool.schema.array(tool.schema.string())
+const officeSlides = tool.schema.array(
+  tool.schema.object({
+    title: tool.schema.string().optional(),
+    bullets: tool.schema.array(tool.schema.string()).optional(),
+  }),
+)
 
 export const officeTools = {
   office_inspect: tool({
@@ -58,7 +75,7 @@ export const officeTools = {
       sheets: tool.schema
         .string()
         .optional()
-        .describe('xlsx: JSON string of [{ "name": string, "rows": (string|number|null)[][] }]. Pass a string, not a raw array.'),
+        .describe('xlsx: JSON string of [{ "name": string, "rows": (string|number|boolean|null)[][] }]. Pass a string, not a raw array.'),
       rows: tool.schema.string().optional().describe("csv/tsv: JSON string of a 2D array. Pass a string, not a raw array."),
       paragraphs: tool.schema.string().optional().describe("docx: JSON string of paragraph strings. Pass a string, not a raw array."),
       title: tool.schema.string().optional().describe("pptx: optional title-slide text"),
@@ -134,7 +151,7 @@ export function parseCsv(text: string, delimiter = ",") {
     row.push(cell)
     rows.push(row)
   }
-  return rows.filter((item) => item.some((value) => value.length > 0))
+  return rows
 }
 
 function kindOf(filepath: string) {
@@ -316,7 +333,7 @@ async function writeFile(
   }
   const kind = writeKind(filepath, args.format)
   if (kind === "xlsx") {
-    const sheets = jsonArray<{ name?: string; rows?: unknown[][] }>(args.sheets, "sheets")
+    const sheets = jsonArray(args.sheets, "sheets", officeSheets)
     if (sheets.length === 0) return fail('xlsx write requires sheets JSON, e.g. [{"name":"Sheet1","rows":[["A"]]}]')
     const workbook = new ExcelJS.Workbook()
     for (const [index, sheet] of sheets.entries()) {
@@ -331,14 +348,14 @@ async function writeFile(
     return ok("Wrote spreadsheet", { path: filepath, sheets: sheets.length })
   }
   if (kind === "csv" || kind === "tsv") {
-    const rows = jsonArray<unknown[]>(args.rows, "rows")
+    const rows = jsonArray(args.rows, "rows", officeRows)
     const delimiter = kind === "tsv" ? "\t" : ","
     const text = rows.map((row) => row.map((value) => csvEscape(value, delimiter)).join(delimiter)).join("\n") + (rows.length ? "\n" : "")
     await Bun.write(filepath, text)
     return ok(`Wrote ${kind}`, { path: filepath, rows: rows.length })
   }
   if (kind === "docx") {
-    const paragraphs = jsonArray<string>(args.paragraphs, "paragraphs")
+    const paragraphs = jsonArray(args.paragraphs, "paragraphs", officeParagraphs)
     if (paragraphs.length === 0) return fail("docx write requires paragraphs JSON array of strings")
     const children = paragraphs.map((text, index) => {
       if (index === 0 && paragraphs.length > 1) {
@@ -351,7 +368,7 @@ async function writeFile(
     return ok("Wrote Word document", { path: filepath, paragraphs: paragraphs.length })
   }
   if (kind === "pptx") {
-    const slides = jsonArray<{ title?: string; bullets?: string[] }>(args.slides, "slides")
+    const slides = jsonArray(args.slides, "slides", officeSlides)
     if (!args.title && slides.length === 0) {
       return fail('pptx write requires title and/or slides JSON, e.g. [{"title":"Agenda","bullets":["One"]}]')
     }
@@ -448,13 +465,16 @@ function colNumber(letters: string) {
   return n
 }
 
-function jsonArray<T>(raw: unknown, name: string): T[] {
+function jsonArray<T>(
+  raw: unknown,
+  name: string,
+  schema: { safeParse(input: unknown): { success: true; data: T[] } | { success: false } },
+) {
   if (raw == null || raw === "") return []
-  if (Array.isArray(raw)) return raw as T[]
-  if (typeof raw !== "string") throw new Error(`${name} must be a JSON array`)
-  const parsed: unknown = JSON.parse(raw)
-  if (!Array.isArray(parsed)) throw new Error(`${name} must be a JSON array`)
-  return parsed as T[]
+  const parsed: unknown = typeof raw === "string" ? JSON.parse(raw) : raw
+  const result = schema.safeParse(parsed)
+  if (!result.success) throw new Error(`${name} must be a valid JSON array`)
+  return result.data
 }
 
 function csvEscape(value: unknown, delimiter = ",") {

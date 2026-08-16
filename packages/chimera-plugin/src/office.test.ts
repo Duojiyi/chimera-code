@@ -1,10 +1,12 @@
 import { afterAll, expect, test } from "bun:test"
+import type { ToolResult } from "@opencode-ai/plugin"
 import { mkdtemp, rm } from "node:fs/promises"
 import os from "os"
 import path from "path"
 import { clampRows, officeTools, parseCsv, resolvePath } from "./office"
 
 const tmp = await mkdtemp(path.join(os.tmpdir(), "chimera-office-"))
+const output = (result: ToolResult) => (typeof result === "string" ? result : result.output)
 afterAll(() => rm(tmp, { recursive: true, force: true }))
 
 const ctx = {
@@ -22,6 +24,14 @@ test("parseCsv handles quotes and commas", () => {
   expect(parseCsv('a,"b,c",d\n1,2,3\n')).toEqual([
     ["a", "b,c", "d"],
     ["1", "2", "3"],
+  ])
+})
+
+test("parseCsv preserves blank rows and their line positions", () => {
+  expect(parseCsv("a,b\n\n1,2\n")).toEqual([
+    ["a", "b"],
+    [""],
+    ["1", "2"],
   ])
 })
 
@@ -50,15 +60,15 @@ test("xlsx round-trip inspect/read/write", async () => {
     },
     ctx,
   )
-  expect(written.output).toContain("sales.xlsx")
+  expect(output(written)).toContain("sales.xlsx")
 
   const inspected = await officeTools.office_inspect.execute({ path: file }, ctx)
-  const inspectJson = JSON.parse(typeof inspected === "string" ? inspected : inspected.output)
+  const inspectJson = JSON.parse(output(inspected))
   expect(inspectJson.sheets[0].name).toBe("Q1")
   expect(inspectJson.sheets[0].header).toEqual(["Item", "Qty", "Total"])
 
   const read = await officeTools.office_read.execute({ path: file, sheet: "Q1" }, ctx)
-  const readJson = JSON.parse(typeof read === "string" ? read : read.output)
+  const readJson = JSON.parse(output(read))
   expect(readJson.rows[0]).toEqual(["Item", "Qty", "Total"])
   expect(readJson.rows[1][2]).toBe("=B2*2")
 })
@@ -70,7 +80,7 @@ test("csv write and read", async () => {
     ctx,
   )
   const read = await officeTools.office_read.execute({ path: file }, ctx)
-  const json = JSON.parse(typeof read === "string" ? read : read.output)
+  const json = JSON.parse(output(read))
   expect(json.rows).toEqual([
     ["a", "b"],
     ["1", "2"],
@@ -86,8 +96,18 @@ test("tsv keeps commas inside fields", async () => {
   const text = await Bun.file(file).text()
   expect(text).toContain("a,b\tc")
   const read = await officeTools.office_read.execute({ path: file }, ctx)
-  const json = JSON.parse(typeof read === "string" ? read : read.output)
+  const json = JSON.parse(output(read))
   expect(json.rows[0]).toEqual(["a,b", "c"])
+})
+
+test("rejects invalid nested office data", async () => {
+  const file = path.join(tmp, "invalid.docx")
+  const result = await officeTools.office_write.execute(
+    { path: file, paragraphs: JSON.stringify(["Heading", 42]) },
+    ctx,
+  )
+  expect(output(result)).toContain("paragraphs must be a valid JSON array")
+  expect(await Bun.file(file).exists()).toBe(false)
 })
 
 test("rejects creating xlsm and empty pptx", async () => {
@@ -95,9 +115,9 @@ test("rejects creating xlsm and empty pptx", async () => {
     { path: path.join(tmp, "macro.xlsm"), sheets: JSON.stringify([{ name: "A", rows: [["1"]] }]) },
     ctx,
   )
-  expect(xlsm.output).toContain(".xlsm")
+  expect(output(xlsm)).toContain(".xlsm")
   const pptx = await officeTools.office_write.execute({ path: path.join(tmp, "empty.pptx") }, ctx)
-  expect(pptx.output).toContain("title and/or slides")
+  expect(output(pptx)).toContain("title and/or slides")
 })
 
 test("pdf inspect and read", async () => {
@@ -110,12 +130,12 @@ test("pdf inspect and read", async () => {
   await Bun.write(file, await doc.save())
 
   const inspected = await officeTools.office_inspect.execute({ path: file }, ctx)
-  const inspectJson = JSON.parse(typeof inspected === "string" ? inspected : inspected.output)
+  const inspectJson = JSON.parse(output(inspected))
   expect(inspectJson.kind).toBe("pdf")
   expect(inspectJson.pages).toBe(1)
 
   const read = await officeTools.office_read.execute({ path: file }, ctx)
-  const readJson = JSON.parse(typeof read === "string" ? read : read.output)
+  const readJson = JSON.parse(output(read))
   expect(readJson.pages).toBe(1)
   expect(readJson.scanned).toBe(false)
   expect(readJson.text.join(" ")).toContain("Hello Chimera")
@@ -123,9 +143,9 @@ test("pdf inspect and read", async () => {
 
 test("docx write accepts a native paragraph array", async () => {
   const file = path.join(tmp, "array.docx")
-  await officeTools.office_write.execute({ path: file, paragraphs: ["Heading", "Body"] }, ctx)
+  await officeTools.office_write.execute({ path: file, paragraphs: ["Heading", "Body"] as never }, ctx)
   const inspected = await officeTools.office_inspect.execute({ path: file }, ctx)
-  const json = JSON.parse(typeof inspected === "string" ? inspected : inspected.output)
+  const json = JSON.parse(output(inspected))
   expect(json.kind).toBe("docx")
   expect(json.paragraphs).toBeGreaterThan(0)
 })
@@ -137,7 +157,7 @@ test("docx write then inspect", async () => {
     ctx,
   )
   const inspected = await officeTools.office_inspect.execute({ path: file }, ctx)
-  const json = JSON.parse(typeof inspected === "string" ? inspected : inspected.output)
+  const json = JSON.parse(output(inspected))
   expect(json.kind).toBe("docx")
   expect(json.paragraphs).toBeGreaterThan(0)
 })
@@ -153,7 +173,7 @@ test("pptx write then inspect", async () => {
     ctx,
   )
   const inspected = await officeTools.office_inspect.execute({ path: file }, ctx)
-  const json = JSON.parse(typeof inspected === "string" ? inspected : inspected.output)
+  const json = JSON.parse(output(inspected))
   expect(json.kind).toBe("pptx")
   expect(json.slides).toBeGreaterThanOrEqual(2)
 })

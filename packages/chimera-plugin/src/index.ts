@@ -174,13 +174,16 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
 
       // 权限默认自动放行（用户产品决策：企业内部工具免打断）；
       // doom_loop 保留询问作为失控保护。用户显式配置优先。
-      config.permission ??= {
-        edit: "allow",
-        bash: "allow",
-        webfetch: "allow",
-        external_directory: "allow",
-        skill: "allow",
-        doom_loop: "ask",
+      if (typeof config.permission !== "string") {
+        config.permission = {
+          edit: "allow",
+          bash: "allow",
+          webfetch: "allow",
+          external_directory: "allow",
+          skill: "allow",
+          doom_loop: "ask",
+          ...config.permission,
+        }
       }
     },
 

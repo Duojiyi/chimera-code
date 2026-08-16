@@ -8,9 +8,8 @@ import type {
   UserMessage,
   Message,
   Part,
-  Config as SDKConfig,
 } from "@opencode-ai/sdk"
-import type { Provider as ProviderV2, Model as ModelV2, Auth } from "@opencode-ai/sdk/v2"
+import type { Auth } from "@opencode-ai/sdk/v2"
 
 import type { BunShell } from "./shell.js"
 import { type ToolDefinition } from "./tool.js"
@@ -67,7 +66,8 @@ export type PluginInput = {
 
 export type PluginOptions = Record<string, unknown>
 
-export type Config = Omit<SDKConfig, "plugin"> & {
+export type Config = Omit<import("@opencode-ai/sdk").Config, "plugin" | "permission"> &
+  Pick<import("@opencode-ai/sdk/v2").Config, "skills" | "permission"> & {
   plugin?: Array<string | [string, PluginOptions]>
 }
 
@@ -213,7 +213,10 @@ export type ProviderHookContext = {
 
 export type ProviderHook = {
   id: string
-  models?: (provider: ProviderV2, ctx: ProviderHookContext) => Promise<Record<string, ModelV2>>
+  models?: (
+    provider: import("@opencode-ai/sdk/v2").Provider,
+    ctx: ProviderHookContext,
+  ) => Promise<Record<string, import("@opencode-ai/sdk/v2").Model>>
 }
 
 /** @deprecated Use AuthOAuthResult instead. */
@@ -294,7 +297,10 @@ export interface Hooks {
       system: string[]
     },
   ) => Promise<void>
-  "experimental.provider.small_model"?: (input: { provider: ProviderV2 }, output: { model?: ModelV2 }) => Promise<void>
+  "experimental.provider.small_model"?: (
+    input: { provider: import("@opencode-ai/sdk/v2").Provider },
+    output: { model?: import("@opencode-ai/sdk/v2").Model },
+  ) => Promise<void>
   /**
    * Called before session compaction starts. Allows plugins to customize
    * the compaction prompt.

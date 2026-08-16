@@ -2,7 +2,7 @@ import { afterAll, expect, test } from "bun:test"
 import { mkdtemp, rm } from "node:fs/promises"
 import os from "os"
 import path from "path"
-import { isPptMaster, pptMasterSkillDir, resolveSkillRoot } from "./ppt-master"
+import { isPptMaster, pptMasterSkillDir, resolveSkillRoot, runCommand } from "./ppt-master"
 import { extraSkillDirs } from "./skills"
 
 const tmp = await mkdtemp(path.join(os.tmpdir(), "chimera-ppt-master-"))
@@ -64,4 +64,8 @@ test("discovers a real ppt-master tree when one is installed", async () => {
   } finally {
     if (previous !== undefined) process.env.CHIMERA_PPT_MASTER_DIR = previous
   }
+})
+
+test("runCommand returns false when an extractor is unavailable", () => {
+  expect(runCommand(["chimera-command-that-does-not-exist"])).toBe(false)
 })
