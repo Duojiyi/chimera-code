@@ -84,7 +84,14 @@ const paid = (providers: Record<string, { models: Record<string, { cost: { input
 
 const languageBaseURL = (language: unknown) => (language as { config: { baseURL: string } }).config.baseURL
 
-const it = testEffect(LayerNode.compile(LayerNode.group([Provider.node, Env.node, Plugin.node])))
+// Chimera: 供应商收敛（chimera-plugin 把 enabled_providers 收敛到中转站白名单）会
+// 禁用 env 配置的 provider。provider 测试需要恢复上游"env provider 自动可用"的预期，
+// 因此在测试环境禁用默认插件（disableDefaultPlugins），产品行为不受影响。
+const it = testEffect(
+  LayerNode.compile(LayerNode.group([Provider.node, Env.node, Plugin.node]), [
+    [RuntimeFlags.node, RuntimeFlags.layer({ disableDefaultPlugins: true })],
+  ]),
+)
 const experimentalModels = testEffect(providerLayer({ enableExperimentalModels: true }))
 
 const alphaProviderConfig = {
@@ -2076,7 +2083,9 @@ it.instance(
   }),
 )
 
-it.effect("opencode loader keeps paid models when config apiKey is present", () =>
+// Chimera: opencode 托管 provider 已被品牌裁剪移除（provider.ts 不再注册 opencode loader），
+// 上游这两个测试依赖 opencode.ai 托管模型目录，标记跳过（有意分叉）。
+it.effect.skip("opencode loader keeps paid models when config apiKey is present", () =>
   Effect.gen(function* () {
     const noneDir = yield* tmpdirScoped()
     const keyedDir = yield* tmpdirScoped({
@@ -2097,7 +2106,7 @@ it.effect("opencode loader keeps paid models when config apiKey is present", () 
   }).pipe(provideMultiInstance),
 )
 
-it.effect("opencode loader keeps paid models when auth exists", () =>
+it.effect.skip("opencode loader keeps paid models when auth exists", () =>
   Effect.gen(function* () {
     const noneDir = yield* tmpdirScoped()
     const keyedDir = yield* tmpdirScoped()
