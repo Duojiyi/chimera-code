@@ -2,7 +2,7 @@
  * Chimera 字体覆盖（对应设计稿）：
  * - 界面：Noto Sans SC（中文为主的 UI 文本）
  * - 数据/代码：JetBrains Mono
- * - 品牌字标：Space Grotesk（--chimera-font-display，供水印/品牌组件使用）
+ * - 品牌字标：Geist Variable（--chimera-font-display，供水印/品牌组件使用；Phase 1 字体收敛）
  * 同时覆盖上游 v2 的 --font-family-text / --v2-font-family-sans（原先写死 Inter，
  * 且未随应用分发，新布局会掉回系统黑体）。
  * 使用 :root:root 提升优先级，确保晚加载的上游 theme.css 不会覆盖回系统字体。
@@ -17,7 +17,7 @@
     "JetBrains Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
     "PingFang SC", "Microsoft YaHei UI", monospace;
   --font-family-mono--font-feature-settings: "liga" 1, "calt" 1;
-  --chimera-font-display: "Space Grotesk", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  --chimera-font-display: "Geist Variable", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
 
   /* 品牌主操作色（青金绿）：金黄系三轮反馈后弃用；青金本就是品牌渐变的
      另一端（tokens.viridian），主按钮/选中态/强调统一走这个变量。 */
