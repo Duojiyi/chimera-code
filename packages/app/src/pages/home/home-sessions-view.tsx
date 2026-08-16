@@ -451,6 +451,10 @@ function HomeSessionRow(props: HomeSessionsViewProps & { record: HomeSessionReco
           transition-[background-color,color,box-shadow] duration-[120ms] ease-in-out
           hover:bg-v2-overlay-simple-overlay-hover focus-visible:bg-v2-overlay-simple-overlay-hover focus-visible:outline-none
         `}
+        classList={{
+          // 归档行 hover 出现归档+恢复双按钮（约 66px），pr-10 只够单按钮，需加宽避免覆盖行尾元信息。
+          "pr-[72px]": typeof props.record.session.time.archived === "number",
+        }}
         onMouseDown={(event) => {
           if (event.button === 1) event.preventDefault()
         }}
