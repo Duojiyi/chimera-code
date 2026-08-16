@@ -9,6 +9,7 @@ export const BRAND = {
   version: packageJson.version,
   gatewayUrl: "https://api.chimerahub.org/",
   homepage: "https://chimerahub.org",
+  docs: "https://github.com/Duojiyi/chimera-code",
   github: { owner: "Duojiyi", repo: "chimera-code" },
   issues: "https://github.com/Duojiyi/chimera-code/issues/new",
   releases: "https://github.com/Duojiyi/chimera-code/releases",

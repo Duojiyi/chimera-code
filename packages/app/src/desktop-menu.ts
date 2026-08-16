@@ -280,7 +280,8 @@ export const DESKTOP_MENU: DesktopMenu[] = [
     id: "help",
     labelKey: "desktop.menu.help",
     items: [
-      { type: "item", labelKey: "desktop.menu.documentation", href: BRAND.homepage },
+      // Chimera 暂未建独立文档站；先指向仓库（README 即用户文档），避免跳转空白页。
+      { type: "item", labelKey: "desktop.menu.documentation", href: BRAND.docs },
       { type: "item", labelKey: "desktop.menu.exportLogs", command: "logs.export" },
       { type: "separator" },
       {
