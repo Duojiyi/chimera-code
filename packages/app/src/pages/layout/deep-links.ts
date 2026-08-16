@@ -1,10 +1,15 @@
+import { BRAND_SCHEMES } from "@chimera/brand"
+
 export const deepLinkEvent = "opencode:deep-link"
 
+const deepLinkProtocols = new Set([...BRAND_SCHEMES, "opencode"].map((scheme) => `${scheme}:`))
+
 const parseUrl = (input: string) => {
-  if (!input.startsWith("chimera://") && !input.startsWith("opencode://")) return
   if (typeof URL.canParse === "function" && !URL.canParse(input)) return
   try {
-    return new URL(input)
+    const url = new URL(input)
+    if (!deepLinkProtocols.has(url.protocol)) return
+    return url
   } catch {
     return
   }

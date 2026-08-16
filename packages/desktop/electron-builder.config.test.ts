@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import type { Configuration } from "electron-builder"
 
-import { BRAND } from "@chimera/brand"
+import { BRAND, brandScheme } from "@chimera/brand"
 
 const channels = [
   { channel: "dev", appId: `${BRAND.appId}.dev` },
@@ -26,6 +26,10 @@ for (const channel of channels) {
     expect(config.linux?.desktop?.entry?.StartupWMClass).toBe(channel.appId)
     expect(config.deb?.fpm).toContainEqual(expect.stringContaining(`/usr/share/metainfo/${channel.appId}.metainfo.xml`))
     expect(config.rpm?.fpm).toContainEqual(expect.stringContaining(`/usr/share/metainfo/${channel.appId}.metainfo.xml`))
+    expect(config.protocols).toEqual({
+      name: channel.channel === "prod" ? BRAND.name : `${BRAND.name} ${channel.channel === "dev" ? "Dev" : "Beta"}`,
+      schemes: [brandScheme(channel.channel)],
+    })
   })
 }
 
@@ -68,7 +72,7 @@ test("brands the protocol scheme and artifact name", async () => {
   else process.env.OPENCODE_CHANNEL = previous
 
   expect(config.productName).toBe(BRAND.name)
-  expect(config.protocols).toEqual({ name: BRAND.name, schemes: [BRAND.scheme] })
+  expect(config.protocols).toEqual({ name: BRAND.name, schemes: [brandScheme("prod")] })
   expect(config.artifactName?.startsWith(`${BRAND.nameLower}-desktop-`)).toBe(true)
   expect(config.publish).toEqual({
     provider: "github",

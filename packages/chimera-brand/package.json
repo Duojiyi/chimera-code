@@ -5,9 +5,15 @@
   "type": "module",
   "description": "Chimera brand constants, single source of truth for all branding",
   "exports": {
-    ".": {
-      "types": "./src/index.d.ts",
-      "default": "./src/index.js"
-    }
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test src",
+    "typecheck": "tsgo --noEmit"
+  },
+  "devDependencies": {
+    "@tsconfig/bun": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "@types/bun": "catalog:"
   }
 }

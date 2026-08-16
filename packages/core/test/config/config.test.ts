@@ -161,7 +161,7 @@ describe("Config", () => {
     ),
   )
 
-  it.live("loads opencode JSON and JSONC files from lowest to highest priority", () =>
+  it.live("loads upstream and branded JSON files from lowest to highest priority", () =>
     Effect.acquireRelease(
       Effect.promise(() => tmpdir()),
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
@@ -178,8 +178,20 @@ describe("Config", () => {
                 path.join(tmp.path, "opencode.jsonc"),
                 `{
                   // Later global files override scalar fields while retaining providers.
-                  "$schema": "last",
-                  "providers": { "last": ${JSON.stringify(provider)} },
+                  "$schema": "upstream-last",
+                  "providers": { "upstream-last": ${JSON.stringify(provider)} },
+                }`,
+              ),
+              fs.writeFile(
+                path.join(tmp.path, "chimera.json"),
+                JSON.stringify({ $schema: "branded-base", providers: { brandedBase: provider } }),
+              ),
+              fs.writeFile(
+                path.join(tmp.path, "chimera.jsonc"),
+                `{
+                  // Branded files take precedence while upstream names remain compatible.
+                  "$schema": "branded-last",
+                  "providers": { "branded-last": ${JSON.stringify(provider)} },
                 }`,
               ),
             ]),
@@ -188,12 +200,17 @@ describe("Config", () => {
             const config = yield* Config.Service
             const documents = (yield* config.entries()).filter((entry) => entry.type === "document")
 
-            expect(documents).toHaveLength(2)
-            expect(documents.map((document) => document.type)).toEqual(["document", "document"])
-            expect(documents.map((document) => document.info.$schema)).toEqual(["base", "last"])
+            expect(documents).toHaveLength(4)
+            expect(documents.map((document) => document.type)).toEqual(["document", "document", "document", "document"])
+            expect(documents.map((document) => document.info.$schema)).toEqual([
+              "base",
+              "upstream-last",
+              "branded-base",
+              "branded-last",
+            ])
             expect(documents[0]).toBeInstanceOf(Config.Document)
             expect(documents[0]?.path).toBe(path.join(tmp.path, "opencode.json"))
-            expect(documents[1]?.info.providers?.last).toBeInstanceOf(ConfigProvider.Info)
+            expect(documents[3]?.info.providers?.["branded-last"]).toBeInstanceOf(ConfigProvider.Info)
 
             yield* Effect.promise(() =>
               fs.writeFile(path.join(tmp.path, "opencode.jsonc"), JSON.stringify({ $schema: "changed" })),
@@ -202,7 +219,7 @@ describe("Config", () => {
               (yield* config.entries())
                 .filter((entry) => entry.type === "document")
                 .map((document) => document.info.$schema),
-            ).toEqual(["base", "last"])
+            ).toEqual(["base", "upstream-last", "branded-base", "branded-last"])
           }).pipe(Effect.provide(testLayer(tmp.path)))
         }),
       ),

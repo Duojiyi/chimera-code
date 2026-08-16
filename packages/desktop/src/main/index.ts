@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { mkdirSync, rmSync } from "node:fs"
-import * as http from "node:http"
+// @ts-expect-error Electron's Node runtime exposes this before the installed @types/node version.
+import { setGlobalProxyFromEnv } from "node:http"
 import { createServer } from "node:net"
 import { homedir, tmpdir } from "node:os"
 import { join } from "node:path"
@@ -8,7 +9,7 @@ import { getCACertificates, setDefaultCACertificates } from "node:tls"
 import type { Event } from "electron"
 import { app, BrowserWindow, shell } from "electron"
 
-import { BRAND } from "@chimera/brand"
+import { BRAND, brandScheme } from "@chimera/brand"
 import { Deferred, Effect, Fiber } from "effect"
 import contextMenu from "electron-context-menu"
 
@@ -72,8 +73,7 @@ const pendingDeepLinks: string[] = []
 
 function useEnvProxy() {
   try {
-    // Electron 41.2 runs Node 24.14.1; latest @types/node@24 is 24.12.2.
-    ;(http as any).setGlobalProxyFromEnv()
+    setGlobalProxyFromEnv()
   } catch (error) {
     logger.warn("failed to load proxy environment", error)
   }
@@ -130,6 +130,9 @@ const main = Effect.gen(function* () {
   process.env.OPENCODE_DISABLE_EMBEDDED_WEB_UI = "true"
 
   const appId = app.isPackaged ? APP_IDS[CHANNEL] : `${BRAND.appId}.dev`
+  const protocolScheme = brandScheme(app.isPackaged ? CHANNEL : "dev")
+  const collectDeepLinks = (args: string[]) =>
+    args.filter((arg) => arg.toLowerCase().startsWith(`${protocolScheme}://`))
   const onboardingTestRoot = ((): string | undefined => {
     if (!TEST_ONBOARDING) return
 
@@ -231,7 +234,7 @@ const main = Effect.gen(function* () {
   const shellEnv = preferAppEnv(app.getPath("userData"))
 
   app.on("second-instance", (_event: Event, argv: string[]) => {
-    const urls = argv.filter((arg: string) => arg.startsWith(`${BRAND.scheme}://`))
+    const urls = collectDeepLinks(argv)
     if (urls.length) {
       logger.log("deep link received via second-instance", { urls })
       emitDeepLinks(urls)
@@ -245,6 +248,7 @@ const main = Effect.gen(function* () {
 
   app.on("open-url", (event: Event, url: string) => {
     event.preventDefault()
+    if (collectDeepLinks([url]).length === 0) return
     logger.log("deep link received via open-url", { url })
     emitDeepLinks([url])
   })
@@ -296,8 +300,8 @@ const main = Effect.gen(function* () {
       }),
     ),
   )
-  app.setAsDefaultProtocolClient(BRAND.scheme)
-  pendingDeepLinks.push(...process.argv.filter((arg: string) => arg.startsWith(`${BRAND.scheme}://`)))
+  app.setAsDefaultProtocolClient(protocolScheme)
+  pendingDeepLinks.push(...collectDeepLinks(process.argv))
   registerRendererProtocol()
   setDockIcon()
   const updater = setupAutoUpdater(stopSidecars)

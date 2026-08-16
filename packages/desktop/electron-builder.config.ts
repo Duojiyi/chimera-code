@@ -6,7 +6,7 @@ import { promisify } from "node:util"
 
 import type { Configuration } from "electron-builder"
 
-import { BRAND } from "@chimera/brand"
+import { BRAND, brandScheme, type BrandChannel } from "@chimera/brand"
 
 const execFileAsync = promisify(execFile)
 const packageDir = path.dirname(fileURLToPath(import.meta.url))
@@ -28,7 +28,7 @@ async function signWindows(configuration: { path: string }) {
   )
 }
 
-const channel = (() => {
+const channel: BrandChannel = (() => {
   const raw = process.env.OPENCODE_CHANNEL
   if (raw === "dev" || raw === "beta" || raw === "prod") return raw
   return "dev"
@@ -42,6 +42,12 @@ const APP_IDS = {
   dev: `${BRAND.appId}.dev`,
   beta: `${BRAND.appId}.beta`,
   prod: BRAND.appId,
+} as const
+
+const APP_NAMES = {
+  dev: `${BRAND.name} Dev`,
+  beta: `${BRAND.name} Beta`,
+  prod: BRAND.name,
 } as const
 
 const getBase = (appId: string): Configuration => ({
@@ -97,8 +103,8 @@ const getBase = (appId: string): Configuration => ({
     sign: appleNotarize,
   },
   protocols: {
-    name: BRAND.name,
-    schemes: [BRAND.scheme],
+    name: APP_NAMES[channel],
+    schemes: [brandScheme(channel)],
   },
   win: {
     icon: `resources/icons/icon.ico`,
@@ -138,7 +144,7 @@ function getConfig() {
       return {
         ...base,
         appId,
-        productName: `${BRAND.name} Dev`,
+        productName: APP_NAMES.dev,
         deb: { fpm: [metainfoFpm(appId)] },
         rpm: { packageName: `${BRAND.nameLower}-dev`, fpm: [metainfoFpm(appId)] },
       }
@@ -147,8 +153,7 @@ function getConfig() {
       return {
         ...base,
         appId,
-        productName: `${BRAND.name} Beta`,
-        protocols: { name: `${BRAND.name} Beta`, schemes: [BRAND.scheme] },
+        productName: APP_NAMES.beta,
         publish: {
           provider: "github",
           owner: BRAND.github.owner,
@@ -163,8 +168,7 @@ function getConfig() {
       return {
         ...base,
         appId,
-        productName: BRAND.name,
-        protocols: { name: BRAND.name, schemes: [BRAND.scheme] },
+        productName: APP_NAMES.prod,
         publish: {
           provider: "github",
           owner: BRAND.github.owner,

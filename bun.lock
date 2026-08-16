@@ -96,7 +96,12 @@
     },
     "packages/chimera-brand": {
       "name": "@chimera/brand",
-      "version": "0.1.1",
+      "version": "0.1.6",
+      "devDependencies": {
+        "@tsconfig/bun": "catalog:",
+        "@types/bun": "catalog:",
+        "@typescript/native-preview": "catalog:",
+      },
     },
     "packages/chimera-plugin": {
       "name": "@chimera/plugin",
@@ -113,6 +118,9 @@
       },
       "devDependencies": {
         "@opencode-ai/plugin": "workspace:*",
+        "@tsconfig/bun": "catalog:",
+        "@types/bun": "catalog:",
+        "@typescript/native-preview": "catalog:",
         "typescript": "catalog:",
       },
     },
