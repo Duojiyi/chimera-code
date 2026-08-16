@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/solid-query"
 import { DateTime } from "luxon"
 import { type Accessor, createEffect, createMemo, createRoot, type JSX, startTransition } from "solid-js"
 import { produce } from "solid-js/store"
+import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
+import { DialogFooter, DialogHeader, DialogTitleGroup, DialogV2 } from "@opencode-ai/ui/v2/dialog-v2"
 import { useCommand } from "@/context/command"
 import {
   loadHomeSessionIndex,
@@ -18,6 +20,7 @@ import { sessionHasOpenTab, useTabs } from "@/context/tabs"
 import { compareSessionTime, displayName, errorMessage, projectForSession } from "@/pages/layout/helpers"
 import { useSessionTabAvatarState } from "@/pages/layout/project-avatar-state"
 import { pathKey } from "@/utils/path-key"
+import { sessionTitle } from "@/utils/session-title"
 import { showToast } from "@/utils/toast"
 import { Binary } from "@opencode-ai/core/util/binary"
 import { archiveHomeSession } from "../home-session-archive"
@@ -258,6 +261,46 @@ export function createHomeSessionsController(home: HomeController) {
             description: errorMessage(cause, language.t("common.requestFailed")),
           })
         }
+      },
+      // 已归档会话提供「删除」：确认后永久删除（DELETE /session/:id），事件驱动首页索引移除。
+      remove: async (session: Session) => {
+        const conn = home.server.focused()
+        const ctx = home.server.focusedContext()
+        if (!conn || !ctx) return
+        if ((await ctx.sdk.protocol) !== "v1") return
+        const name = sessionTitle(session.title) ?? language.t("command.session.new")
+        dialog.show(() => (
+          <DialogV2 fit>
+            <DialogHeader hideClose>
+              <DialogTitleGroup
+                title={language.t("session.delete.title")}
+                description={language.t("session.delete.confirm", { name })}
+              />
+            </DialogHeader>
+            <DialogFooter>
+              <ButtonV2 variant="ghost" onClick={() => dialog.close()}>
+                {language.t("common.cancel")}
+              </ButtonV2>
+              <ButtonV2
+                variant="danger"
+                onClick={async () => {
+                  dialog.close()
+                  try {
+                    await ctx.sdk.client.session.delete({ sessionID: session.id, directory: session.directory })
+                    showToast({ title: language.t("home.sessions.deleted"), variant: "default" })
+                  } catch (cause) {
+                    showToast({
+                      title: language.t("session.delete.failed.title"),
+                      description: errorMessage(cause, language.t("common.requestFailed")),
+                    })
+                  }
+                }}
+              >
+                {language.t("session.delete.button")}
+              </ButtonV2>
+            </DialogFooter>
+          </DialogV2>
+        ))
       },
     },
     tab: {

@@ -665,6 +665,7 @@ export const dict = {
   "home.sessions.group.older": "Older",
   "home.sessions.group.archived": "Archived",
   "home.sessions.restore": "Restore",
+  "home.sessions.deleted": "Session deleted",
   "home.providerTip": "Connect to 75+ providers to use other models, including Claude, GPT, Gemini, etc",
 
   "session.tab.session": "Session",

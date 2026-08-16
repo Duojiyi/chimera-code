@@ -740,6 +740,7 @@ export const dict = {
   "home.sessions.group.older": "更早",
   "home.sessions.group.archived": "已归档",
   "home.sessions.restore": "恢复",
+  "home.sessions.deleted": "已删除会话",
   "home.providerTip": "连接 75 个以上的提供商，使用包括 Claude、GPT、Gemini 在内的更多模型",
 
   "session.tab.session": "会话",

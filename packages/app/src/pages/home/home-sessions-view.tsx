@@ -56,6 +56,7 @@ export type HomeSessionsViewProps = {
   onOpenSession: (session: Session, options?: OpenSessionOptions) => void
   onArchiveSession: (session: Session) => Promise<void>
   onRestoreSession: (session: Session) => Promise<void>
+  onDeleteSession: (session: Session) => Promise<void>
   onSetHoverTarget: (element: HTMLElement) => void
   onSetThumbTrack: (element: HTMLDivElement) => void
   onSetContent: (element: HTMLDivElement) => void
@@ -490,21 +491,40 @@ function HomeSessionRow(props: HomeSessionsViewProps & { record: HomeSessionReco
             group-hover/session:opacity-100 focus-within:opacity-100
           `}
         >
-          <TooltipV2 class="flex shrink-0 items-center" placement="bottom" value={props.language.t("common.archive")}>
-            <IconButtonV2
-              data-action="home-session-archive"
-              variant="ghost-muted"
-              size="large"
-              icon={<IconV2 name="archive" />}
-              aria-label={props.language.t("common.archive")}
-              onClick={(event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                void props.onArchiveSession(props.record.session)
-              }}
-            />
-          </TooltipV2>
-          <Show when={typeof props.record.session.time.archived === "number"}>
+          <Show
+            when={typeof props.record.session.time.archived === "number"}
+            fallback={
+              <TooltipV2 class="flex shrink-0 items-center" placement="bottom" value={props.language.t("common.archive")}>
+                <IconButtonV2
+                  data-action="home-session-archive"
+                  variant="ghost-muted"
+                  size="large"
+                  icon={<IconV2 name="archive" />}
+                  aria-label={props.language.t("common.archive")}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    void props.onArchiveSession(props.record.session)
+                  }}
+                />
+              </TooltipV2>
+            }
+          >
+            {/* 已归档会话：删除（永久）+ 恢复 */}
+            <TooltipV2 class="flex shrink-0 items-center" placement="bottom" value={props.language.t("common.delete")}>
+              <IconButtonV2
+                data-action="home-session-delete"
+                variant="ghost-muted"
+                size="large"
+                icon={<IconV2 name="trash" />}
+                aria-label={props.language.t("common.delete")}
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  void props.onDeleteSession(props.record.session)
+                }}
+              />
+            </TooltipV2>
             <TooltipV2 class="flex shrink-0 items-center" placement="bottom" value={props.language.t("home.sessions.restore")}>
               <IconButtonV2
                 data-action="home-session-restore"
