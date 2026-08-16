@@ -169,8 +169,9 @@ export function setDockIcon() {
 export function createMainWindow(id: string = randomUUID()) {
   const state = windowState({
     file: windowStateFile(id),
-    defaultWidth: 1280,
-    defaultHeight: 800,
+    // Phase 2 规格（docs/brand/phase0-window-matrix.md）：默认 1440×900，最小 960×640。
+    defaultWidth: 1440,
+    defaultHeight: 900,
   })
 
   // chimera: 首屏默认浅色，避免按系统深色先闪一帧
@@ -181,6 +182,8 @@ export function createMainWindow(id: string = randomUUID()) {
     y: state.y,
     width: state.width,
     height: state.height,
+    minWidth: 960,
+    minHeight: 640,
     show: false,
     autoHideMenuBar: true,
     title: BRAND.name,

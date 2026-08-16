@@ -20,6 +20,7 @@ import { usePlatform } from "@/context/platform"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { useTabs } from "@/context/tabs"
+import { useWorkspaceBranch, useSessionDiff, useWorkspaceDirectory } from "@/chimera/workspace"
 import { showToast } from "@/utils/toast"
 
 // Chimera 应用骨架（设计稿 S1）：左侧图标栏 + 底部状态栏。
@@ -222,37 +223,18 @@ export const ChimeraStatusBar: Component = () => {
   const probeTimer = setInterval(() => void probeGateway(), 60_000)
   onCleanup(() => clearInterval(probeTimer))
 
-  // 当前路由对应的工作目录（与 DialogSettings 同款推导）
-  const directory = createMemo(() => {
-    const route = layout.route()
-    if (route.type === "dir-new-sesssion") return route.dir
-    if (route.type === "draft") {
-      const draft = tabs.store.find((item) => item.type === "draft" && item.draftID === route.draftID)
-      return draft?.type === "draft" ? draft.directory : undefined
-    }
-    if (route.type === "session") return serverSync().session.get(route.sessionId)?.directory
-    return undefined
-  })
+  // Phase 2：工作区状态统一走 app/src/chimera adapter（路线图 App Adapters 层）。
+  const directory = useWorkspaceDirectory()
+  const branch = useWorkspaceBranch(directory)
+  const sessionDiff = useSessionDiff()
 
-  const branch = createMemo(() => {
+  // 工作区显示名（Workspace Strip）：目录 basename（无工作区时为空）。
+  const workspaceName = createMemo(() => {
     const dir = directory()
     if (!dir) return undefined
-    return serverSync().child(dir)[0].vcs?.branch
-  })
-
-  // 上下文用量已由会话右上角上游指示器承载（含 Token/成本），状态栏不再计算。
-
-  // 当前会话变更统计（设计稿 S1 状态栏左侧 +44 -214 · 3 处更改）
-  const sessionDiff = createMemo(() => {
-    const route = layout.route()
-    if (route.type !== "session") return undefined
-    const diffs = serverSync().session.data.session_diff?.[route.sessionId] ?? []
-    if (!diffs.length) return undefined
-    return {
-      files: diffs.length,
-      additions: diffs.reduce((sum, item) => sum + ((item as { additions?: number }).additions ?? 0), 0),
-      deletions: diffs.reduce((sum, item) => sum + ((item as { deletions?: number }).deletions ?? 0), 0),
-    }
+    const normalized = dir.replace(/[\\/]+$/, "")
+    const base = normalized.split(/[\\/]/).pop()
+    return base || normalized
   })
 
   const [keysState, setKeysState] = createSignal(readChimeraKeys())
@@ -301,7 +283,17 @@ export const ChimeraStatusBar: Component = () => {
       class="flex h-[24px] shrink-0 items-center justify-between border-t-[0.5px] border-v2-border-border-muted px-3"
     >
       <div class="flex items-center gap-3">
-        <Show when={branch()} fallback={<span class="font-mono text-[10.5px] text-v2-text-text-faint">{BRAND.name}</span>}>
+        <Show when={workspaceName()}>
+          {(name) => (
+            <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-muted" title={directory()}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
+                <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              </svg>
+              <span class="max-w-[180px] truncate">{name()}</span>
+            </span>
+          )}
+        </Show>
+        <Show when={branch()} fallback={<Show when={!workspaceName()}><span class="font-mono text-[10.5px] text-v2-text-text-faint">{BRAND.name}</span></Show>}>
           <span class="flex items-center gap-1 font-mono text-[10.5px] text-v2-text-text-muted">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3">
               <line x1="6" x2="6" y1="3" y2="15" />
