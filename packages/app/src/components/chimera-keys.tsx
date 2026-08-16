@@ -347,7 +347,7 @@ export const ChimeraKeyRow: Component<{
           <span class="flex items-center gap-1.5 font-mono text-[11px] font-[560]" style={{ color: "var(--chimera-accent)" }}>
             <span
               class="inline-block size-1.5 rounded-full"
-              style={{ background: "linear-gradient(135deg, #DEA54C, #46C39A)" }}
+              style={{ background: "linear-gradient(135deg, var(--chimera-strand-from), var(--chimera-strand-to))" }}
             />
             {language.t("chimera.keys.inUse")}
           </span>

@@ -10,7 +10,7 @@ export const ChimeraAvatar: Component<{ size?: number; class?: string }> = (prop
       style={{
         width: `${size()}px`,
         height: `${size()}px`,
-        background: "linear-gradient(135deg, #DEA54C, #46C39A)",
+        background: "linear-gradient(135deg, var(--chimera-strand-from), var(--chimera-strand-to))",
         "--icon-strong-base": "#10231D",
         "--icon-base": "#10231D",
       }}

@@ -20,7 +20,9 @@
   --chimera-font-display: "Geist Variable", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
 
   /* 品牌主操作色（青金绿）：金黄系三轮反馈后弃用；青金本就是品牌渐变的
-     另一端（tokens.viridian），主按钮/选中态/强调统一走这个变量。 */
+     另一端（tokens.viridian），主按钮/选中态/强调统一走这个变量。
+     语义等价于 --chimera-signal-execute（Phase 1 归一）：新代码用语义名，
+     旧引用保留 --chimera-accent 别名一个发布周期。 */
   --chimera-accent: #1e8e6a;
   --chimera-accent-contrast: #ffffff;
   --chimera-strand-from: #9a681b;
