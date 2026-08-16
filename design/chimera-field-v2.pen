@@ -1,0 +1,6485 @@
+{
+  "version": "2.6",
+  "children": [
+    {
+      "type": "frame",
+      "id": "c0003z",
+      "x": 0,
+      "y": 0,
+      "name": "01 — Chimera Home / Dark",
+      "width": 1280,
+      "height": 800,
+      "fill": "#0C100F",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "c0000l",
+          "x": 0,
+          "y": 0,
+          "name": "Chimera Spine",
+          "width": 72,
+          "height": 800,
+          "fill": "#0F1412",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "c00007",
+              "x": 16,
+              "y": 14,
+              "name": "Chimera Field Mark",
+              "width": 40,
+              "height": 40,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "line",
+                  "id": "c00001",
+                  "x": 11,
+                  "y": 12,
+                  "name": "field link amber",
+                  "width": 18,
+                  "height": 14,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#DEA54C"
+                  }
+                },
+                {
+                  "type": "line",
+                  "id": "c00002",
+                  "x": 11,
+                  "y": 28,
+                  "name": "field link green",
+                  "width": 18,
+                  "height": -14,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#46C39A"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00003",
+                  "x": 4,
+                  "y": 5,
+                  "name": "amber node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00004",
+                  "x": 4,
+                  "y": 21,
+                  "name": "green node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00005",
+                  "x": 24,
+                  "y": 13,
+                  "name": "fusion node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00006",
+                  "x": 29,
+                  "y": 18,
+                  "name": "fusion core",
+                  "width": 4,
+                  "height": 4,
+                  "fill": "#0C100F"
+                }
+              ]
+            },
+            {
+              "type": "line",
+              "id": "c00008",
+              "x": 71,
+              "y": 0,
+              "name": "spine divider",
+              "width": 0,
+              "height": 800,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "c00009",
+              "x": 0,
+              "y": 128,
+              "name": "工作场 active rail",
+              "width": 3,
+              "height": 44,
+              "fill": "#DEA54C",
+              "cornerRadius": 2
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000a",
+              "x": 25,
+              "y": 138,
+              "name": "工作场 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "orbit",
+              "iconFontFamily": "lucide",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0000b",
+              "x": 0,
+              "y": 165,
+              "name": "工作场 caption",
+              "content": "工作场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "600",
+              "fill": "#9AA4A0",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000c",
+              "x": 25,
+              "y": 196,
+              "name": "任务 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "list-tree",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0000d",
+              "x": 0,
+              "y": 223,
+              "name": "任务 caption",
+              "content": "任务",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000e",
+              "x": 25,
+              "y": 254,
+              "name": "资产 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "panels-top-left",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0000f",
+              "x": 0,
+              "y": 281,
+              "name": "资产 caption",
+              "content": "资产",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000g",
+              "x": 25,
+              "y": 312,
+              "name": "连接 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "plug-zap",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0000h",
+              "x": 0,
+              "y": 339,
+              "name": "连接 caption",
+              "content": "连接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "line",
+              "id": "c0000i",
+              "x": 16,
+              "y": 690,
+              "name": "spine utility divider",
+              "width": 40,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000j",
+              "x": 26,
+              "y": 711,
+              "name": "command",
+              "width": 19,
+              "height": 19,
+              "iconFontName": "command",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000k",
+              "x": 26,
+              "y": 758,
+              "name": "settings",
+              "width": 19,
+              "height": 19,
+              "iconFontName": "settings-2",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0000v",
+          "x": 72,
+          "y": 0,
+          "name": "Workspace Strip",
+          "width": 1208,
+          "height": 48,
+          "fill": "#0F1412",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0000m",
+              "x": 20,
+              "y": 13,
+              "name": "workspace name",
+              "content": "CHIMERA",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0000n",
+              "x": 132,
+              "y": 15,
+              "name": "workspace path",
+              "content": "D:/Desktop/chimera-code",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000o",
+              "x": 668,
+              "y": 15,
+              "name": "branch",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "git-branch",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0000p",
+              "x": 690,
+              "y": 15,
+              "name": "branch value",
+              "content": "dev",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "ellipse",
+              "id": "c0000q",
+              "x": 1002,
+              "y": 20,
+              "name": "gateway status dot",
+              "width": 8,
+              "height": 8,
+              "fill": "#46C39A"
+            },
+            {
+              "type": "text",
+              "id": "c0000r",
+              "x": 1018,
+              "y": 14,
+              "name": "gateway status",
+              "content": "已连接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000s",
+              "x": 1130,
+              "y": 15,
+              "name": "search",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "search",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0000t",
+              "x": 1171,
+              "y": 15,
+              "name": "window controls",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "panel-top",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "line",
+              "id": "c0000u",
+              "x": 0,
+              "y": 47,
+              "name": "workspace divider",
+              "width": 1208,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0001e",
+          "x": 72,
+          "y": 48,
+          "name": "Context Ribbon",
+          "width": 1208,
+          "height": 50,
+          "fill": "#0C100F",
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "c0000w",
+              "x": 20,
+              "y": 16,
+              "name": "context ribbon symbol",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "waypoints",
+              "iconFontFamily": "lucide",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c0000x",
+              "x": 46,
+              "y": 14,
+              "name": "context ribbon label",
+              "content": "上下文场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "frame",
+              "id": "c00010",
+              "x": 132,
+              "y": 10,
+              "name": "context item 1",
+              "width": 112,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0000y",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 1",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "monitor",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c0000z",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 1",
+                  "content": "桌面应用",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00013",
+              "x": 252,
+              "y": 10,
+              "name": "context item 2",
+              "width": 102,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00011",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 2",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "git-branch",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c00012",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 2",
+                  "content": "dev 分支",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00016",
+              "x": 362,
+              "y": 10,
+              "name": "context item 3",
+              "width": 136,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00014",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 3",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "files",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c00015",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 3",
+                  "content": "12 个活跃文件",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00019",
+              "x": 506,
+              "y": 10,
+              "name": "context item 4",
+              "width": 112,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00017",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 4",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "radio-tower",
+                  "iconFontFamily": "lucide",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c00018",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 4",
+                  "content": "Gateway",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "c0001a",
+              "x": 1004,
+              "y": 20,
+              "name": "context capacity track",
+              "width": 136,
+              "height": 6,
+              "fill": "#1D2422",
+              "cornerRadius": 3
+            },
+            {
+              "type": "rectangle",
+              "id": "c0001b",
+              "x": 1004,
+              "y": 20,
+              "name": "context capacity used",
+              "width": 82,
+              "height": 6,
+              "fill": "#46C39A",
+              "cornerRadius": 3
+            },
+            {
+              "type": "text",
+              "id": "c0001c",
+              "x": 1150,
+              "y": 14,
+              "name": "context capacity",
+              "content": "61%",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "line",
+              "id": "c0001d",
+              "x": 0,
+              "y": 49,
+              "name": "context bottom divider",
+              "width": 1208,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "c0001f",
+          "x": 112,
+          "y": 134,
+          "name": "home eyebrow",
+          "content": "CHIMERA FIELD",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 10,
+          "fontWeight": "700",
+          "fill": "#DEA54C",
+          "letterSpacing": 1.6
+        },
+        {
+          "type": "text",
+          "id": "c0001g",
+          "x": 112,
+          "y": 156,
+          "name": "home title",
+          "content": "继续你的工作场",
+          "fontFamily": "Space Grotesk",
+          "fontSize": 30,
+          "fontWeight": "700",
+          "fill": "#ECEFED"
+        },
+        {
+          "type": "text",
+          "id": "c0001h",
+          "x": 112,
+          "y": 198,
+          "name": "home subtitle",
+          "content": "把意图、上下文与执行汇聚到同一个持续空间。",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13,
+          "fontWeight": "normal",
+          "fill": "#9AA4A0"
+        },
+        {
+          "type": "frame",
+          "id": "c0001l",
+          "x": 628,
+          "y": 154,
+          "name": "new task button",
+          "width": 186,
+          "height": 44,
+          "fill": "#ECEFED",
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "c0001i",
+              "x": 18,
+              "y": 13,
+              "name": "new task icon",
+              "width": 18,
+              "height": 18,
+              "iconFontName": "plus",
+              "iconFontFamily": "lucide",
+              "fill": "#0C100F"
+            },
+            {
+              "type": "text",
+              "id": "c0001j",
+              "x": 48,
+              "y": 11,
+              "name": "new task label",
+              "content": "新建融合任务",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "fill": "#0C100F"
+            },
+            {
+              "type": "text",
+              "id": "c0001k",
+              "x": 143,
+              "y": 13,
+              "name": "new task shortcut",
+              "content": "⌘N",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 10
+        },
+        {
+          "type": "frame",
+          "id": "c00026",
+          "x": 112,
+          "y": 242,
+          "name": "active work region",
+          "width": 748,
+          "height": 196,
+          "fill": "#00000000",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0001m",
+              "x": 0,
+              "y": 0,
+              "name": "active title",
+              "content": "进行中的工作流",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0001n",
+              "x": 698,
+              "y": 1,
+              "name": "active count",
+              "content": "2 条",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "frame",
+              "id": "c0001w",
+              "x": 0,
+              "y": 34,
+              "name": "run 供应商能力与模型列表同步",
+              "width": 748,
+              "height": 72,
+              "fill": "#111615",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "c0001o",
+                  "x": 0,
+                  "y": 0,
+                  "name": "run tone",
+                  "width": 3,
+                  "height": 72,
+                  "fill": "#DEA54C",
+                  "cornerRadius": 2
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0001p",
+                  "x": 22,
+                  "y": 21,
+                  "name": "run state",
+                  "width": 10,
+                  "height": 10,
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "text",
+                  "id": "c0001q",
+                  "x": 48,
+                  "y": 14,
+                  "name": "run title",
+                  "content": "供应商能力与模型列表同步",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0001r",
+                  "x": 48,
+                  "y": 39,
+                  "name": "run meta",
+                  "content": "APP · 18 个文件 · 7m",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c0001s",
+                  "x": 576,
+                  "y": 14,
+                  "name": "run state value",
+                  "content": "正在验证",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0001t",
+                  "x": 576,
+                  "y": 39,
+                  "name": "run progress track",
+                  "width": 142,
+                  "height": 5,
+                  "fill": "#1D2422",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0001u",
+                  "x": 576,
+                  "y": 39,
+                  "name": "run progress fill",
+                  "width": 96.56,
+                  "height": 5,
+                  "fill": "#DEA54C",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c0001v",
+                  "x": 718,
+                  "y": 16,
+                  "name": "run arrow",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "arrow-up-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                }
+              ],
+              "cornerRadius": 9,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00025",
+              "x": 0,
+              "y": 114,
+              "name": "run 品牌 Shell 交互审计",
+              "width": 748,
+              "height": 72,
+              "fill": "#111615",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "c0001x",
+                  "x": 0,
+                  "y": 0,
+                  "name": "run tone",
+                  "width": 3,
+                  "height": 72,
+                  "fill": "#46C39A",
+                  "cornerRadius": 2
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0001y",
+                  "x": 22,
+                  "y": 21,
+                  "name": "run state",
+                  "width": 10,
+                  "height": 10,
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c0001z",
+                  "x": 48,
+                  "y": 14,
+                  "name": "run title",
+                  "content": "品牌 Shell 交互审计",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c00020",
+                  "x": 48,
+                  "y": 39,
+                  "name": "run meta",
+                  "content": "DESIGN · 6 个画板 · 24m",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c00021",
+                  "x": 576,
+                  "y": 14,
+                  "name": "run state value",
+                  "content": "等待确认",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c00022",
+                  "x": 576,
+                  "y": 39,
+                  "name": "run progress track",
+                  "width": 142,
+                  "height": 5,
+                  "fill": "#1D2422",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c00023",
+                  "x": 576,
+                  "y": 39,
+                  "name": "run progress fill",
+                  "width": 142,
+                  "height": 5,
+                  "fill": "#46C39A",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c00024",
+                  "x": 718,
+                  "y": 16,
+                  "name": "run arrow",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "arrow-up-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                }
+              ],
+              "cornerRadius": 9,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0002u",
+          "x": 112,
+          "y": 468,
+          "name": "ledger region",
+          "width": 748,
+          "height": 202,
+          "fill": "#00000000",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c00027",
+              "x": 0,
+              "y": 0,
+              "name": "ledger region title",
+              "content": "最近任务账本",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c00028",
+              "x": 672,
+              "y": 1,
+              "name": "ledger region action",
+              "content": "查看全部",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "frame",
+              "id": "c0002f",
+              "x": 0,
+              "y": 32,
+              "name": "ledger 修复密钥切换后的模型缓存",
+              "width": 748,
+              "height": 54,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c00029",
+                  "x": 0,
+                  "y": 17,
+                  "name": "ledger time",
+                  "content": "09:42",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002a",
+                  "x": 94,
+                  "y": 13,
+                  "name": "ledger title",
+                  "content": "修复密钥切换后的模型缓存",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002b",
+                  "x": 610,
+                  "y": 16,
+                  "name": "ledger additions",
+                  "content": "+84",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002c",
+                  "x": 660,
+                  "y": 16,
+                  "name": "ledger deletions",
+                  "content": "−19",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#E57676"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c0002d",
+                  "x": 728,
+                  "y": 16,
+                  "name": "ledger open",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "chevron-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "line",
+                  "id": "c0002e",
+                  "x": 94,
+                  "y": 53,
+                  "name": "ledger divider",
+                  "width": 654,
+                  "height": 0,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 1,
+                    "fill": "#29322F"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "c0002m",
+              "x": 0,
+              "y": 86,
+              "name": "ledger 统一第三方模型能力声明",
+              "width": 748,
+              "height": 54,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c0002g",
+                  "x": 0,
+                  "y": 17,
+                  "name": "ledger time",
+                  "content": "昨天",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002h",
+                  "x": 94,
+                  "y": 13,
+                  "name": "ledger title",
+                  "content": "统一第三方模型能力声明",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002i",
+                  "x": 610,
+                  "y": 16,
+                  "name": "ledger additions",
+                  "content": "+52",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002j",
+                  "x": 660,
+                  "y": 16,
+                  "name": "ledger deletions",
+                  "content": "−27",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#E57676"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c0002k",
+                  "x": 728,
+                  "y": 16,
+                  "name": "ledger open",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "chevron-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "line",
+                  "id": "c0002l",
+                  "x": 94,
+                  "y": 53,
+                  "name": "ledger divider",
+                  "width": 654,
+                  "height": 0,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 1,
+                    "fill": "#29322F"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "c0002t",
+              "x": 0,
+              "y": 140,
+              "name": "ledger 桌面窗口尺寸与全屏适配",
+              "width": 748,
+              "height": 54,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c0002n",
+                  "x": 0,
+                  "y": 17,
+                  "name": "ledger time",
+                  "content": "周四",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002o",
+                  "x": 94,
+                  "y": 13,
+                  "name": "ledger title",
+                  "content": "桌面窗口尺寸与全屏适配",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002p",
+                  "x": 610,
+                  "y": 16,
+                  "name": "ledger additions",
+                  "content": "+31",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c0002q",
+                  "x": 660,
+                  "y": 16,
+                  "name": "ledger deletions",
+                  "content": "−11",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#E57676"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c0002r",
+                  "x": 728,
+                  "y": 16,
+                  "name": "ledger open",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "chevron-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "line",
+                  "id": "c0002s",
+                  "x": 94,
+                  "y": 53,
+                  "name": "ledger divider",
+                  "width": 654,
+                  "height": 0,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 1,
+                    "fill": "#29322F"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0003m",
+          "x": 856,
+          "y": 134,
+          "name": "Environment readiness",
+          "width": 352,
+          "height": 550,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0002v",
+              "x": 22,
+              "y": 22,
+              "name": "environment eyebrow",
+              "content": "FIELD STATUS",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#46C39A",
+              "letterSpacing": 1.4
+            },
+            {
+              "type": "text",
+              "id": "c0002w",
+              "x": 22,
+              "y": 45,
+              "name": "environment title",
+              "content": "环境已就绪",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0002x",
+              "x": 22,
+              "y": 76,
+              "name": "environment subtitle",
+              "content": "执行配方与当前工作区保持同步",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "line",
+              "id": "c0002y",
+              "x": 22,
+              "y": 108,
+              "name": "environment divider 1",
+              "width": 308,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0002z",
+              "x": 22,
+              "y": 130,
+              "name": "provider icon",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "layers-3",
+              "iconFontFamily": "lucide",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c00030",
+              "x": 50,
+              "y": 128,
+              "name": "provider label",
+              "content": "供应商",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c00031",
+              "x": 50,
+              "y": 150,
+              "name": "provider value",
+              "content": "Chimera Gateway",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "600",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "frame",
+              "id": "c00033",
+              "x": 238,
+              "y": 133,
+              "name": "gateway label",
+              "width": 78,
+              "height": 28,
+              "fill": "#16382E",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c00032",
+                  "x": 10,
+                  "y": 5,
+                  "name": "gateway label text",
+                  "content": "已连接",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "fill": "#46C39A"
+                }
+              ],
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c00034",
+              "x": 22,
+              "y": 202,
+              "name": "model icon",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "sparkles",
+              "iconFontFamily": "lucide",
+              "fill": "#46C39A"
+            },
+            {
+              "type": "text",
+              "id": "c00035",
+              "x": 50,
+              "y": 200,
+              "name": "model label",
+              "content": "当前模型",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c00036",
+              "x": 50,
+              "y": 222,
+              "name": "model value",
+              "content": "GPT-5.4",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c00037",
+              "x": 50,
+              "y": 246,
+              "name": "model caps",
+              "content": "支持 4 档思考强度",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "icon_font",
+              "id": "c00038",
+              "x": 22,
+              "y": 286,
+              "name": "key icon",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "key-round",
+              "iconFontFamily": "lucide",
+              "fill": "#7CA9E8"
+            },
+            {
+              "type": "text",
+              "id": "c00039",
+              "x": 50,
+              "y": 284,
+              "name": "key label",
+              "content": "密钥策略",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0003a",
+              "x": 50,
+              "y": 306,
+              "name": "key value",
+              "content": "按工作区自动选择",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "line",
+              "id": "c0003b",
+              "x": 22,
+              "y": 345,
+              "name": "environment divider 2",
+              "width": 308,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c0003c",
+              "x": 22,
+              "y": 369,
+              "name": "environment usage label",
+              "content": "本周执行",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0003d",
+              "x": 22,
+              "y": 393,
+              "name": "environment usage value",
+              "content": "148",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 26,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0003e",
+              "x": 128,
+              "y": 369,
+              "name": "environment success label",
+              "content": "一次通过",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0003f",
+              "x": 128,
+              "y": 393,
+              "name": "environment success value",
+              "content": "87%",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 26,
+              "fontWeight": "700",
+              "fill": "#46C39A"
+            },
+            {
+              "type": "text",
+              "id": "c0003g",
+              "x": 238,
+              "y": 369,
+              "name": "environment context label",
+              "content": "上下文",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0003h",
+              "x": 238,
+              "y": 393,
+              "name": "environment context value",
+              "content": "61%",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 26,
+              "fontWeight": "700",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "frame",
+              "id": "c0003l",
+              "x": 22,
+              "y": 459,
+              "name": "environment action",
+              "width": 308,
+              "height": 50,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0003i",
+                  "x": 16,
+                  "y": 16,
+                  "name": "environment action icon",
+                  "width": 17,
+                  "height": 17,
+                  "iconFontName": "sliders-horizontal",
+                  "iconFontFamily": "lucide",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c0003j",
+                  "x": 46,
+                  "y": 14,
+                  "name": "environment action text",
+                  "content": "检查执行配方",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c0003k",
+                  "x": 276,
+                  "y": 16,
+                  "name": "environment action arrow",
+                  "width": 17,
+                  "height": 17,
+                  "iconFontName": "arrow-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c0003y",
+          "x": 112,
+          "y": 706,
+          "name": "quick composer",
+          "width": 1096,
+          "height": 66,
+          "fill": "#161C1A",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "c0003t",
+              "x": 16,
+              "y": 13,
+              "name": "Chimera Field Mark",
+              "width": 36,
+              "height": 36,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "line",
+                  "id": "c0003n",
+                  "x": 9.9,
+                  "y": 10.8,
+                  "name": "field link amber",
+                  "width": 16.2,
+                  "height": 12.6,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 1.8,
+                    "fill": "#DEA54C"
+                  }
+                },
+                {
+                  "type": "line",
+                  "id": "c0003o",
+                  "x": 9.9,
+                  "y": 25.2,
+                  "name": "field link green",
+                  "width": 16.2,
+                  "height": -12.6,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 1.8,
+                    "fill": "#46C39A"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0003p",
+                  "x": 3.6,
+                  "y": 4.5,
+                  "name": "amber node",
+                  "width": 12.6,
+                  "height": 12.6,
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0003q",
+                  "x": 3.6,
+                  "y": 18.900000000000002,
+                  "name": "green node",
+                  "width": 12.6,
+                  "height": 12.6,
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0003r",
+                  "x": 21.6,
+                  "y": 11.700000000000001,
+                  "name": "fusion node",
+                  "width": 12.6,
+                  "height": 12.6,
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0003s",
+                  "x": 26.1,
+                  "y": 16.2,
+                  "name": "fusion core",
+                  "width": 3.6,
+                  "height": 3.6,
+                  "fill": "#0C100F"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "c0003u",
+              "x": 68,
+              "y": 13,
+              "name": "quick composer placeholder",
+              "content": "描述你想推进的工作，Chimera 会自动装配上下文与执行配方…",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "text",
+              "id": "c0003v",
+              "x": 68,
+              "y": 38,
+              "name": "quick composer hint",
+              "content": "可直接粘贴错误、文件或截图",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "frame",
+              "id": "c0003x",
+              "x": 1038,
+              "y": 13,
+              "name": "quick composer send",
+              "width": 42,
+              "height": 40,
+              "fill": "#DEA54C",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0003w",
+                  "x": 11,
+                  "y": 10,
+                  "name": "quick composer send icon",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "arrow-up",
+                  "iconFontFamily": "lucide",
+                  "fill": "#0C100F"
+                }
+              ],
+              "cornerRadius": 9
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#35413D"
+          }
+        }
+      ],
+      "clip": true
+    },
+    {
+      "type": "frame",
+      "id": "c00088",
+      "x": 1400,
+      "y": 0,
+      "name": "02 — Turn Ledger / Dark",
+      "width": 1280,
+      "height": 800,
+      "fill": "#0C100F",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "c0004k",
+          "x": 0,
+          "y": 0,
+          "name": "Chimera Spine",
+          "width": 72,
+          "height": 800,
+          "fill": "#0F1412",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "c00046",
+              "x": 16,
+              "y": 14,
+              "name": "Chimera Field Mark",
+              "width": 40,
+              "height": 40,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "line",
+                  "id": "c00040",
+                  "x": 11,
+                  "y": 12,
+                  "name": "field link amber",
+                  "width": 18,
+                  "height": 14,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#DEA54C"
+                  }
+                },
+                {
+                  "type": "line",
+                  "id": "c00041",
+                  "x": 11,
+                  "y": 28,
+                  "name": "field link green",
+                  "width": 18,
+                  "height": -14,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#46C39A"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00042",
+                  "x": 4,
+                  "y": 5,
+                  "name": "amber node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00043",
+                  "x": 4,
+                  "y": 21,
+                  "name": "green node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00044",
+                  "x": 24,
+                  "y": 13,
+                  "name": "fusion node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c00045",
+                  "x": 29,
+                  "y": 18,
+                  "name": "fusion core",
+                  "width": 4,
+                  "height": 4,
+                  "fill": "#0C100F"
+                }
+              ]
+            },
+            {
+              "type": "line",
+              "id": "c00047",
+              "x": 71,
+              "y": 0,
+              "name": "spine divider",
+              "width": 0,
+              "height": 800,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c00048",
+              "x": 25,
+              "y": 138,
+              "name": "工作场 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "orbit",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c00049",
+              "x": 0,
+              "y": 165,
+              "name": "工作场 caption",
+              "content": "工作场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "rectangle",
+              "id": "c0004a",
+              "x": 0,
+              "y": 186,
+              "name": "任务 active rail",
+              "width": 3,
+              "height": 44,
+              "fill": "#DEA54C",
+              "cornerRadius": 2
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004b",
+              "x": 25,
+              "y": 196,
+              "name": "任务 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "list-tree",
+              "iconFontFamily": "lucide",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0004c",
+              "x": 0,
+              "y": 223,
+              "name": "任务 caption",
+              "content": "任务",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "600",
+              "fill": "#9AA4A0",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004d",
+              "x": 25,
+              "y": 254,
+              "name": "资产 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "panels-top-left",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0004e",
+              "x": 0,
+              "y": 281,
+              "name": "资产 caption",
+              "content": "资产",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004f",
+              "x": 25,
+              "y": 312,
+              "name": "连接 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "plug-zap",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0004g",
+              "x": 0,
+              "y": 339,
+              "name": "连接 caption",
+              "content": "连接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "line",
+              "id": "c0004h",
+              "x": 16,
+              "y": 690,
+              "name": "spine utility divider",
+              "width": 40,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004i",
+              "x": 26,
+              "y": 711,
+              "name": "command",
+              "width": 19,
+              "height": 19,
+              "iconFontName": "command",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004j",
+              "x": 26,
+              "y": 758,
+              "name": "settings",
+              "width": 19,
+              "height": 19,
+              "iconFontName": "settings-2",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0004u",
+          "x": 72,
+          "y": 0,
+          "name": "Workspace Strip",
+          "width": 1208,
+          "height": 48,
+          "fill": "#0F1412",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0004l",
+              "x": 20,
+              "y": 13,
+              "name": "workspace name",
+              "content": "供应商能力修复",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c0004m",
+              "x": 132,
+              "y": 15,
+              "name": "workspace path",
+              "content": "chimera-code / packages/app",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004n",
+              "x": 668,
+              "y": 15,
+              "name": "branch",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "git-branch",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0004o",
+              "x": 690,
+              "y": 15,
+              "name": "branch value",
+              "content": "dev",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "ellipse",
+              "id": "c0004p",
+              "x": 1002,
+              "y": 20,
+              "name": "gateway status dot",
+              "width": 8,
+              "height": 8,
+              "fill": "#46C39A"
+            },
+            {
+              "type": "text",
+              "id": "c0004q",
+              "x": 1018,
+              "y": 14,
+              "name": "gateway status",
+              "content": "已连接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004r",
+              "x": 1130,
+              "y": 15,
+              "name": "search",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "search",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0004s",
+              "x": 1171,
+              "y": 15,
+              "name": "window controls",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "panel-top",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "line",
+              "id": "c0004t",
+              "x": 0,
+              "y": 47,
+              "name": "workspace divider",
+              "width": 1208,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0005d",
+          "x": 72,
+          "y": 48,
+          "name": "Context Ribbon",
+          "width": 1208,
+          "height": 50,
+          "fill": "#0C100F",
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "c0004v",
+              "x": 20,
+              "y": 16,
+              "name": "context ribbon symbol",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "waypoints",
+              "iconFontFamily": "lucide",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c0004w",
+              "x": 46,
+              "y": 14,
+              "name": "context ribbon label",
+              "content": "上下文场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "frame",
+              "id": "c0004z",
+              "x": 132,
+              "y": 10,
+              "name": "context item 1",
+              "width": 116,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0004x",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 1",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "file-code-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c0004y",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 1",
+                  "content": "models.tsx",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00052",
+              "x": 256,
+              "y": 10,
+              "name": "context item 2",
+              "width": 142,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00050",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 2",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "file-code-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c00051",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 2",
+                  "content": "use-providers.ts",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00055",
+              "x": 406,
+              "y": 10,
+              "name": "context item 3",
+              "width": 104,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00053",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 3",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "test-tube-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c00054",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 3",
+                  "content": "4 条测试",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00058",
+              "x": 518,
+              "y": 10,
+              "name": "context item 4",
+              "width": 112,
+              "height": 30,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00056",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 4",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "text",
+                  "id": "c00057",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 4",
+                  "content": "GPT-5.4",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "c00059",
+              "x": 1004,
+              "y": 20,
+              "name": "context capacity track",
+              "width": 136,
+              "height": 6,
+              "fill": "#1D2422",
+              "cornerRadius": 3
+            },
+            {
+              "type": "rectangle",
+              "id": "c0005a",
+              "x": 1004,
+              "y": 20,
+              "name": "context capacity used",
+              "width": 82,
+              "height": 6,
+              "fill": "#46C39A",
+              "cornerRadius": 3
+            },
+            {
+              "type": "text",
+              "id": "c0005b",
+              "x": 1150,
+              "y": 14,
+              "name": "context capacity",
+              "content": "61%",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "line",
+              "id": "c0005c",
+              "x": 0,
+              "y": 49,
+              "name": "context bottom divider",
+              "width": 1208,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0005k",
+          "x": 72,
+          "y": 98,
+          "name": "Session Header",
+          "width": 908,
+          "height": 70,
+          "fill": "#0C100F",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0005e",
+              "x": 40,
+              "y": 14,
+              "name": "session eyebrow",
+              "content": "TURN LEDGER  /  #A18F",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#DEA54C",
+              "letterSpacing": 1.1
+            },
+            {
+              "type": "text",
+              "id": "c0005f",
+              "x": 40,
+              "y": 34,
+              "name": "session title",
+              "content": "让模型能力随密钥切换即时更新",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "frame",
+              "id": "c0005h",
+              "x": 760,
+              "y": 20,
+              "name": "session running",
+              "width": 84,
+              "height": 28,
+              "fill": "#3A2D19",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c0005g",
+                  "x": 10,
+                  "y": 5,
+                  "name": "session running text",
+                  "content": "执行中",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "fill": "#DEA54C"
+                }
+              ],
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0005i",
+              "x": 864,
+              "y": 26,
+              "name": "session menu",
+              "width": 18,
+              "height": 18,
+              "iconFontName": "ellipsis",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "line",
+              "id": "c0005j",
+              "x": 0,
+              "y": 69,
+              "name": "session header line",
+              "width": 908,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0006o",
+          "x": 72,
+          "y": 168,
+          "name": "Turn Ledger",
+          "width": 908,
+          "height": 470,
+          "fill": "#0C100F",
+          "layout": "none",
+          "children": [
+            {
+              "type": "line",
+              "id": "c0005l",
+              "x": 140,
+              "y": 14,
+              "name": "timeline base",
+              "width": 0,
+              "height": 430,
+              "stroke": {
+                "align": "center",
+                "thickness": 2,
+                "fill": "#35413D"
+              }
+            },
+            {
+              "type": "line",
+              "id": "c0005m",
+              "x": 140,
+              "y": 14,
+              "name": "timeline active amber",
+              "width": 0,
+              "height": 152,
+              "stroke": {
+                "align": "center",
+                "thickness": 2,
+                "fill": "#DEA54C"
+              }
+            },
+            {
+              "type": "line",
+              "id": "c0005n",
+              "x": 140,
+              "y": 166,
+              "name": "timeline active green",
+              "width": 0,
+              "height": 110,
+              "stroke": {
+                "align": "center",
+                "thickness": 2,
+                "fill": "#46C39A"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c0005o",
+              "x": 32,
+              "y": 19,
+              "name": "user time",
+              "content": "09:42",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "ellipse",
+              "id": "c0005p",
+              "x": 133,
+              "y": 21,
+              "name": "timeline node outer",
+              "width": 14,
+              "height": 14,
+              "fill": "#0C100F",
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#DEA54C"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "c0005q",
+              "x": 138,
+              "y": 26,
+              "name": "timeline node inner",
+              "width": 4,
+              "height": 4,
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c0005r",
+              "x": 172,
+              "y": 12,
+              "name": "user intent label",
+              "content": "你的意图",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c0005s",
+              "x": 172,
+              "y": 35,
+              "name": "user intent",
+              "content": "切换到中转站密钥后，模型列表和思考强度必须立刻同步。",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "600",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "frame",
+              "id": "c00060",
+              "x": 172,
+              "y": 76,
+              "name": "plan block",
+              "width": 674,
+              "height": 88,
+              "fill": "#111615",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0005t",
+                  "x": 16,
+                  "y": 16,
+                  "name": "plan icon",
+                  "width": 17,
+                  "height": 17,
+                  "iconFontName": "route",
+                  "iconFontFamily": "lucide",
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "text",
+                  "id": "c0005u",
+                  "x": 46,
+                  "y": 13,
+                  "name": "plan title",
+                  "content": "执行计划",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0005v",
+                  "x": 46,
+                  "y": 39,
+                  "name": "plan 1",
+                  "content": "01 追踪供应商身份与 capability 缓存",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c0005w",
+                  "x": 360,
+                  "y": 39,
+                  "name": "plan 2",
+                  "content": "02 统一派生模型列表并补充回归测试",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0005x",
+                  "x": 46,
+                  "y": 67,
+                  "name": "plan progress track",
+                  "width": 584,
+                  "height": 4,
+                  "fill": "#1D2422",
+                  "cornerRadius": 2
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0005y",
+                  "x": 46,
+                  "y": 67,
+                  "name": "plan progress amber",
+                  "width": 250,
+                  "height": 4,
+                  "fill": "#DEA54C",
+                  "cornerRadius": 2
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0005z",
+                  "x": 296,
+                  "y": 67,
+                  "name": "plan progress green",
+                  "width": 158,
+                  "height": 4,
+                  "fill": "#46C39A",
+                  "cornerRadius": 2
+                }
+              ],
+              "cornerRadius": 9,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c00061",
+              "x": 32,
+              "y": 190,
+              "name": "assistant time",
+              "content": "09:44",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "ellipse",
+              "id": "c00062",
+              "x": 133,
+              "y": 192,
+              "name": "timeline node outer",
+              "width": 14,
+              "height": 14,
+              "fill": "#0C100F",
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#46C39A"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "c00063",
+              "x": 138,
+              "y": 197,
+              "name": "timeline node inner",
+              "width": 4,
+              "height": 4,
+              "fill": "#46C39A"
+            },
+            {
+              "type": "text",
+              "id": "c00064",
+              "x": 172,
+              "y": 183,
+              "name": "assistant label",
+              "content": "CHIMERA 执行",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#46C39A"
+            },
+            {
+              "type": "text",
+              "id": "c00065",
+              "x": 172,
+              "y": 207,
+              "name": "assistant title",
+              "content": "已定位：模型目录只监听配置变更，未监听活动密钥身份。",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "600",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "frame",
+              "id": "c0006a",
+              "x": 172,
+              "y": 245,
+              "name": "tool call",
+              "width": 674,
+              "height": 52,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00066",
+                  "x": 16,
+                  "y": 16,
+                  "name": "tool icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "search-code",
+                  "iconFontFamily": "lucide",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c00067",
+                  "x": 46,
+                  "y": 12,
+                  "name": "tool name",
+                  "content": "inspect",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c00068",
+                  "x": 110,
+                  "y": 13,
+                  "name": "tool path",
+                  "content": "packages/app/src/context/models.tsx",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c00069",
+                  "x": 574,
+                  "y": 13,
+                  "name": "tool result",
+                  "content": "完成 · 1.2s",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#46C39A"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c0006i",
+              "x": 172,
+              "y": 310,
+              "name": "diff summary",
+              "width": 674,
+              "height": 82,
+              "fill": "#111615",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0006b",
+                  "x": 16,
+                  "y": 16,
+                  "name": "diff icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "file-diff",
+                  "iconFontFamily": "lucide",
+                  "fill": "#7CA9E8"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006c",
+                  "x": 46,
+                  "y": 13,
+                  "name": "diff title",
+                  "content": "变更集",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006d",
+                  "x": 46,
+                  "y": 39,
+                  "name": "diff file 1",
+                  "content": "M  context/models.tsx",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006e",
+                  "x": 252,
+                  "y": 39,
+                  "name": "diff file 2",
+                  "content": "M  hooks/use-providers.ts",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006f",
+                  "x": 556,
+                  "y": 39,
+                  "name": "diff stats",
+                  "content": "+42  −12",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0006g",
+                  "x": 46,
+                  "y": 64,
+                  "name": "diff signal amber",
+                  "width": 92,
+                  "height": 3,
+                  "fill": "#DEA54C",
+                  "cornerRadius": 2
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c0006h",
+                  "x": 138,
+                  "y": 64,
+                  "name": "diff signal green",
+                  "width": 408,
+                  "height": 3,
+                  "fill": "#46C39A",
+                  "cornerRadius": 2
+                }
+              ],
+              "cornerRadius": 9,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c0006j",
+              "x": 32,
+              "y": 424,
+              "name": "next time",
+              "content": "现在",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "ellipse",
+              "id": "c0006k",
+              "x": 133,
+              "y": 425,
+              "name": "timeline node outer",
+              "width": 14,
+              "height": 14,
+              "fill": "#0C100F",
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#DEA54C"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "c0006l",
+              "x": 138,
+              "y": 430,
+              "name": "timeline node inner",
+              "width": 4,
+              "height": 4,
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c0006m",
+              "x": 172,
+              "y": 416,
+              "name": "next label",
+              "content": "正在运行回归测试",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "text",
+              "id": "c0006n",
+              "x": 354,
+              "y": 416,
+              "name": "next command",
+              "content": "bun test models.test.ts",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0007r",
+          "x": 980,
+          "y": 98,
+          "name": "Context Field",
+          "width": 300,
+          "height": 702,
+          "fill": "#0F1412",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0006p",
+              "x": 22,
+              "y": 19,
+              "name": "context field title",
+              "content": "上下文场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0006q",
+              "x": 257,
+              "y": 20,
+              "name": "context field action",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "sliders-horizontal",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "text",
+              "id": "c0006r",
+              "x": 22,
+              "y": 46,
+              "name": "context field subtitle",
+              "content": "本轮被 Chimera 主动装配的证据",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "line",
+              "id": "c0006s",
+              "x": 22,
+              "y": 72,
+              "name": "context field line",
+              "width": 256,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c0006t",
+              "x": 22,
+              "y": 94,
+              "name": "context group code",
+              "content": "CODE  3",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "frame",
+              "id": "c0006y",
+              "x": 22,
+              "y": 120,
+              "name": "context file active",
+              "width": 256,
+              "height": 58,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0006u",
+                  "x": 12,
+                  "y": 13,
+                  "name": "context file icon",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "file-code-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006v",
+                  "x": 38,
+                  "y": 10,
+                  "name": "context file name",
+                  "content": "models.tsx",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "700",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006w",
+                  "x": 38,
+                  "y": 31,
+                  "name": "context file reason",
+                  "content": "模型目录派生",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c0006x",
+                  "x": 205,
+                  "y": 22,
+                  "name": "context file tokens",
+                  "content": "1.8k",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#35413D"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00072",
+              "x": 22,
+              "y": 186,
+              "name": "context file 2",
+              "width": 256,
+              "height": 50,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0006z",
+                  "x": 12,
+                  "y": 14,
+                  "name": "context file icon 2",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "file-code-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c00070",
+                  "x": 38,
+                  "y": 12,
+                  "name": "context file name 2",
+                  "content": "use-providers.ts",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c00071",
+                  "x": 205,
+                  "y": 13,
+                  "name": "context file tokens 2",
+                  "content": "1.2k",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "c00076",
+              "x": 22,
+              "y": 238,
+              "name": "context file 3",
+              "width": 256,
+              "height": 50,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00073",
+                  "x": 12,
+                  "y": 14,
+                  "name": "context file icon 3",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "file-check-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                },
+                {
+                  "type": "text",
+                  "id": "c00074",
+                  "x": 38,
+                  "y": 12,
+                  "name": "context file name 3",
+                  "content": "models.test.ts",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c00075",
+                  "x": 205,
+                  "y": 13,
+                  "name": "context file tokens 3",
+                  "content": "0.9k",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#5F6A66"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "c00077",
+              "x": 22,
+              "y": 316,
+              "name": "context group runtime",
+              "content": "RUNTIME  2",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#46C39A"
+            },
+            {
+              "type": "frame",
+              "id": "c0007b",
+              "x": 22,
+              "y": 342,
+              "name": "runtime source",
+              "width": 256,
+              "height": 54,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00078",
+                  "x": 12,
+                  "y": 17,
+                  "name": "runtime source icon",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "radio-tower",
+                  "iconFontFamily": "lucide",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c00079",
+                  "x": 40,
+                  "y": 9,
+                  "name": "runtime source title",
+                  "content": "活动供应商身份",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "600",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0007a",
+                  "x": 40,
+                  "y": 29,
+                  "name": "runtime source value",
+                  "content": "gateway / key_03",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8
+            },
+            {
+              "type": "frame",
+              "id": "c0007f",
+              "x": 22,
+              "y": 404,
+              "name": "runtime source 2",
+              "width": 256,
+              "height": 54,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0007c",
+                  "x": 12,
+                  "y": 17,
+                  "name": "runtime source icon 2",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "cpu",
+                  "iconFontFamily": "lucide",
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "text",
+                  "id": "c0007d",
+                  "x": 40,
+                  "y": 9,
+                  "name": "runtime source title 2",
+                  "content": "模型能力快照",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "600",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "text",
+                  "id": "c0007e",
+                  "x": 40,
+                  "y": 29,
+                  "name": "runtime source value 2",
+                  "content": "reasoning: 4 levels",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 8
+            },
+            {
+              "type": "line",
+              "id": "c0007g",
+              "x": 22,
+              "y": 498,
+              "name": "context usage divider",
+              "width": 256,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c0007h",
+              "x": 22,
+              "y": 522,
+              "name": "context usage title",
+              "content": "上下文占用",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "text",
+              "id": "c0007i",
+              "x": 225,
+              "y": 520,
+              "name": "context usage value",
+              "content": "61%",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "rectangle",
+              "id": "c0007j",
+              "x": 22,
+              "y": 548,
+              "name": "context usage track",
+              "width": 256,
+              "height": 7,
+              "fill": "#1D2422",
+              "cornerRadius": 4
+            },
+            {
+              "type": "rectangle",
+              "id": "c0007k",
+              "x": 22,
+              "y": 548,
+              "name": "context usage amber",
+              "width": 62,
+              "height": 7,
+              "fill": "#DEA54C",
+              "cornerRadius": 4
+            },
+            {
+              "type": "rectangle",
+              "id": "c0007l",
+              "x": 84,
+              "y": 548,
+              "name": "context usage green",
+              "width": 94,
+              "height": 7,
+              "fill": "#46C39A",
+              "cornerRadius": 4
+            },
+            {
+              "type": "text",
+              "id": "c0007m",
+              "x": 22,
+              "y": 569,
+              "name": "context usage hint",
+              "content": "代码 25% · 运行时 19% · 历史 17%",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "frame",
+              "id": "c0007q",
+              "x": 22,
+              "y": 616,
+              "name": "context pin action",
+              "width": 256,
+              "height": 48,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0007n",
+                  "x": 14,
+                  "y": 15,
+                  "name": "context pin icon",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "pin",
+                  "iconFontFamily": "lucide",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "text",
+                  "id": "c0007o",
+                  "x": 42,
+                  "y": 13,
+                  "name": "context pin text",
+                  "content": "固定新的上下文",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c0007p",
+                  "x": 226,
+                  "y": 15,
+                  "name": "context pin arrow",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "plus",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c00087",
+          "x": 112,
+          "y": 648,
+          "name": "Fusion Composer",
+          "width": 828,
+          "height": 132,
+          "fill": "#161C1A",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c0007s",
+              "x": 0,
+              "y": 0,
+              "name": "composer running signal amber",
+              "width": 312,
+              "height": 2,
+              "fill": "#DEA54C",
+              "cornerRadius": 1
+            },
+            {
+              "type": "rectangle",
+              "id": "c0007t",
+              "x": 312,
+              "y": 0,
+              "name": "composer running signal green",
+              "width": 516,
+              "height": 2,
+              "fill": "#46C39A",
+              "cornerRadius": 1
+            },
+            {
+              "type": "text",
+              "id": "c0007u",
+              "x": 20,
+              "y": 18,
+              "name": "composer placeholder",
+              "content": "继续引导本轮执行，或在安全边界插入新的意图…",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "line",
+              "id": "c0007v",
+              "x": 20,
+              "y": 52,
+              "name": "composer divider",
+              "width": 788,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c0007x",
+              "x": 20,
+              "y": 70,
+              "name": "composer model",
+              "width": 104,
+              "height": 28,
+              "fill": "#1D2422",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c0007w",
+                  "x": 10,
+                  "y": 5,
+                  "name": "composer model text",
+                  "content": "GPT-5.4",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c0007z",
+              "x": 132,
+              "y": 70,
+              "name": "composer reasoning",
+              "width": 104,
+              "height": 28,
+              "fill": "#3A2D19",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c0007y",
+                  "x": 10,
+                  "y": 5,
+                  "name": "composer reasoning text",
+                  "content": "思考 · 高",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "fill": "#DEA54C"
+                }
+              ],
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c00081",
+              "x": 244,
+              "y": 70,
+              "name": "composer agent",
+              "width": 124,
+              "height": 28,
+              "fill": "#16382E",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c00080",
+                  "x": 10,
+                  "y": 5,
+                  "name": "composer agent text",
+                  "content": "Agent · Build",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "fill": "#46C39A"
+                }
+              ],
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c00082",
+              "x": 642,
+              "y": 78,
+              "name": "composer attachment",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "paperclip",
+              "iconFontFamily": "lucide",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "icon_font",
+              "id": "c00083",
+              "x": 684,
+              "y": 78,
+              "name": "composer stop",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "square",
+              "iconFontFamily": "lucide",
+              "fill": "#E57676"
+            },
+            {
+              "type": "frame",
+              "id": "c00085",
+              "x": 746,
+              "y": 66,
+              "name": "composer send",
+              "width": 44,
+              "height": 44,
+              "fill": "#DEA54C",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00084",
+                  "x": 12,
+                  "y": 11,
+                  "name": "composer send icon",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "arrow-up",
+                  "iconFontFamily": "lucide",
+                  "fill": "#0C100F"
+                }
+              ],
+              "cornerRadius": 9
+            },
+            {
+              "type": "text",
+              "id": "c00086",
+              "x": 20,
+              "y": 107,
+              "name": "composer mode",
+              "content": "STEER AT NEXT SAFE BOUNDARY",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 8,
+              "fontWeight": "normal",
+              "fill": "#5F6A66",
+              "letterSpacing": 1
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#35413D"
+          }
+        }
+      ],
+      "clip": true
+    },
+    {
+      "type": "frame",
+      "id": "c000bi",
+      "x": 2800,
+      "y": 0,
+      "name": "03 — Fusion Composer / Light",
+      "width": 1280,
+      "height": 800,
+      "fill": "#F4F6F4",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "c0008t",
+          "x": 0,
+          "y": 0,
+          "name": "Chimera Spine",
+          "width": 72,
+          "height": 800,
+          "fill": "#EDF0ED",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "c0008f",
+              "x": 16,
+              "y": 14,
+              "name": "Chimera Field Mark",
+              "width": 40,
+              "height": 40,
+              "fill": "#00000000",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "line",
+                  "id": "c00089",
+                  "x": 11,
+                  "y": 12,
+                  "name": "field link amber",
+                  "width": 18,
+                  "height": 14,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#9A681B"
+                  }
+                },
+                {
+                  "type": "line",
+                  "id": "c0008a",
+                  "x": 11,
+                  "y": 28,
+                  "name": "field link green",
+                  "width": 18,
+                  "height": -14,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#1E8E6A"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0008b",
+                  "x": 4,
+                  "y": 5,
+                  "name": "amber node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#9A681B"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0008c",
+                  "x": 4,
+                  "y": 21,
+                  "name": "green node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#1E8E6A"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0008d",
+                  "x": 24,
+                  "y": 13,
+                  "name": "fusion node",
+                  "width": 14,
+                  "height": 14,
+                  "fill": "#1B211F"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c0008e",
+                  "x": 29,
+                  "y": 18,
+                  "name": "fusion core",
+                  "width": 4,
+                  "height": 4,
+                  "fill": "#F4F6F4"
+                }
+              ]
+            },
+            {
+              "type": "line",
+              "id": "c0008g",
+              "x": 71,
+              "y": 0,
+              "name": "spine divider",
+              "width": 0,
+              "height": 800,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008h",
+              "x": 25,
+              "y": 138,
+              "name": "工作场 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "orbit",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "text",
+              "id": "c0008i",
+              "x": 0,
+              "y": 165,
+              "name": "工作场 caption",
+              "content": "工作场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#87928D",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "rectangle",
+              "id": "c0008j",
+              "x": 0,
+              "y": 186,
+              "name": "任务 active rail",
+              "width": 3,
+              "height": 44,
+              "fill": "#9A681B",
+              "cornerRadius": 2
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008k",
+              "x": 25,
+              "y": 196,
+              "name": "任务 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "list-tree",
+              "iconFontFamily": "lucide",
+              "fill": "#1B211F"
+            },
+            {
+              "type": "text",
+              "id": "c0008l",
+              "x": 0,
+              "y": 223,
+              "name": "任务 caption",
+              "content": "任务",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "600",
+              "fill": "#5D6964",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008m",
+              "x": 25,
+              "y": 254,
+              "name": "资产 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "panels-top-left",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "text",
+              "id": "c0008n",
+              "x": 0,
+              "y": 281,
+              "name": "资产 caption",
+              "content": "资产",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#87928D",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008o",
+              "x": 25,
+              "y": 312,
+              "name": "连接 icon",
+              "width": 21,
+              "height": 21,
+              "iconFontName": "plug-zap",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "text",
+              "id": "c0008p",
+              "x": 0,
+              "y": 339,
+              "name": "连接 caption",
+              "content": "连接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#87928D",
+              "width": 72,
+              "textGrowth": "fixed-width",
+              "textAlign": "center"
+            },
+            {
+              "type": "line",
+              "id": "c0008q",
+              "x": 16,
+              "y": 690,
+              "name": "spine utility divider",
+              "width": 40,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008r",
+              "x": 26,
+              "y": 711,
+              "name": "command",
+              "width": 19,
+              "height": 19,
+              "iconFontName": "command",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008s",
+              "x": 26,
+              "y": 758,
+              "name": "settings",
+              "width": 19,
+              "height": 19,
+              "iconFontName": "settings-2",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c00093",
+          "x": 72,
+          "y": 0,
+          "name": "Workspace Strip",
+          "width": 1208,
+          "height": 48,
+          "fill": "#EDF0ED",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0008u",
+              "x": 20,
+              "y": 13,
+              "name": "workspace name",
+              "content": "新任务",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 14,
+              "fontWeight": "700",
+              "fill": "#1B211F"
+            },
+            {
+              "type": "text",
+              "id": "c0008v",
+              "x": 132,
+              "y": 15,
+              "name": "workspace path",
+              "content": "chimera-code / desktop",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#87928D"
+            },
+            {
+              "type": "icon_font",
+              "id": "c0008w",
+              "x": 668,
+              "y": 15,
+              "name": "branch",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "git-branch",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "text",
+              "id": "c0008x",
+              "x": 690,
+              "y": 15,
+              "name": "branch value",
+              "content": "dev",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5D6964"
+            },
+            {
+              "type": "ellipse",
+              "id": "c0008y",
+              "x": 1002,
+              "y": 20,
+              "name": "gateway status dot",
+              "width": 8,
+              "height": 8,
+              "fill": "#1E8E6A"
+            },
+            {
+              "type": "text",
+              "id": "c0008z",
+              "x": 1018,
+              "y": 14,
+              "name": "gateway status",
+              "content": "已连接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5D6964"
+            },
+            {
+              "type": "icon_font",
+              "id": "c00090",
+              "x": 1130,
+              "y": 15,
+              "name": "search",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "search",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "icon_font",
+              "id": "c00091",
+              "x": 1171,
+              "y": 15,
+              "name": "window controls",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "panel-top",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "line",
+              "id": "c00092",
+              "x": 0,
+              "y": 47,
+              "name": "workspace divider",
+              "width": 1208,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0009m",
+          "x": 72,
+          "y": 48,
+          "name": "Context Ribbon",
+          "width": 1208,
+          "height": 50,
+          "fill": "#F4F6F4",
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "c00094",
+              "x": 20,
+              "y": 16,
+              "name": "context ribbon symbol",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "waypoints",
+              "iconFontFamily": "lucide",
+              "fill": "#9A681B"
+            },
+            {
+              "type": "text",
+              "id": "c00095",
+              "x": 46,
+              "y": 14,
+              "name": "context ribbon label",
+              "content": "上下文场",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 12,
+              "fontWeight": "600",
+              "fill": "#5D6964"
+            },
+            {
+              "type": "frame",
+              "id": "c00098",
+              "x": 132,
+              "y": 10,
+              "name": "context item 1",
+              "width": 102,
+              "height": 30,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00096",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 1",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "monitor",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                },
+                {
+                  "type": "text",
+                  "id": "c00097",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 1",
+                  "content": "desktop",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#5D6964"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c0009b",
+              "x": 242,
+              "y": 10,
+              "name": "context item 2",
+              "width": 126,
+              "height": 30,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c00099",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 2",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "wand-sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                },
+                {
+                  "type": "text",
+                  "id": "c0009a",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 2",
+                  "content": "自动上下文",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#5D6964"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c0009e",
+              "x": 376,
+              "y": 10,
+              "name": "context item 3",
+              "width": 98,
+              "height": 30,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0009c",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 3",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "files",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                },
+                {
+                  "type": "text",
+                  "id": "c0009d",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 3",
+                  "content": "0 个文件",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#5D6964"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "c0009h",
+              "x": 482,
+              "y": 10,
+              "name": "context item 4",
+              "width": 126,
+              "height": 30,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c0009f",
+                  "x": 10,
+                  "y": 7,
+                  "name": "context icon 4",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "#9A681B"
+                },
+                {
+                  "type": "text",
+                  "id": "c0009g",
+                  "x": 32,
+                  "y": 6,
+                  "name": "context text 4",
+                  "content": "待选择模型",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "500",
+                  "fill": "#5D6964"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "c0009i",
+              "x": 1004,
+              "y": 20,
+              "name": "context capacity track",
+              "width": 136,
+              "height": 6,
+              "fill": "#E7ECE8",
+              "cornerRadius": 3
+            },
+            {
+              "type": "rectangle",
+              "id": "c0009j",
+              "x": 1004,
+              "y": 20,
+              "name": "context capacity used",
+              "width": 82,
+              "height": 6,
+              "fill": "#1E8E6A",
+              "cornerRadius": 3
+            },
+            {
+              "type": "text",
+              "id": "c0009k",
+              "x": 1150,
+              "y": 14,
+              "name": "context capacity",
+              "content": "61%",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#5D6964"
+            },
+            {
+              "type": "line",
+              "id": "c0009l",
+              "x": 0,
+              "y": 49,
+              "name": "context bottom divider",
+              "width": 1208,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "c0009n",
+          "x": 112,
+          "y": 140,
+          "name": "new task eyebrow",
+          "content": "NEW FUSION",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 10,
+          "fontWeight": "700",
+          "fill": "#9A681B",
+          "letterSpacing": 1.6
+        },
+        {
+          "type": "text",
+          "id": "c0009o",
+          "x": 112,
+          "y": 162,
+          "name": "new task title",
+          "content": "装配一次清晰的执行",
+          "fontFamily": "Space Grotesk",
+          "fontSize": 30,
+          "fontWeight": "700",
+          "fill": "#1B211F"
+        },
+        {
+          "type": "text",
+          "id": "c0009p",
+          "x": 112,
+          "y": 204,
+          "name": "new task subtitle",
+          "content": "模型、供应商、思考强度与权限被组合成可检查的执行配方。",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 13,
+          "fontWeight": "normal",
+          "fill": "#5D6964"
+        },
+        {
+          "type": "frame",
+          "id": "c0009x",
+          "x": 112,
+          "y": 244,
+          "name": "intent canvas",
+          "width": 716,
+          "height": 210,
+          "fill": "#FFFFFF",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0009q",
+              "x": 22,
+              "y": 20,
+              "name": "intent eyebrow",
+              "content": "01  INTENT",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#9A681B",
+              "letterSpacing": 1.2
+            },
+            {
+              "type": "text",
+              "id": "c0009r",
+              "x": 22,
+              "y": 48,
+              "name": "intent title",
+              "content": "你希望 Chimera 推进什么？",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "700",
+              "fill": "#1B211F"
+            },
+            {
+              "type": "text",
+              "id": "c0009s",
+              "x": 22,
+              "y": 86,
+              "name": "intent placeholder",
+              "content": "例如：审计供应商切换流程，修复模型能力未刷新的问题，补充测试并启动 dev 版本验证。",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "normal",
+              "fill": "#5D6964",
+              "width": 650,
+              "textGrowth": "fixed-width",
+              "lineHeight": 1.7
+            },
+            {
+              "type": "line",
+              "id": "c0009t",
+              "x": 22,
+              "y": 152,
+              "name": "intent baseline",
+              "width": 672,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c0009u",
+              "x": 24,
+              "y": 170,
+              "name": "intent attach",
+              "width": 17,
+              "height": 17,
+              "iconFontName": "paperclip",
+              "iconFontFamily": "lucide",
+              "fill": "#87928D"
+            },
+            {
+              "type": "text",
+              "id": "c0009v",
+              "x": 50,
+              "y": 168,
+              "name": "intent attach text",
+              "content": "添加文件、截图或链接",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "normal",
+              "fill": "#5D6964"
+            },
+            {
+              "type": "text",
+              "id": "c0009w",
+              "x": 612,
+              "y": 169,
+              "name": "intent shortcut",
+              "content": "⌘ ↵",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#87928D"
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#D5DDD8"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000aa",
+          "x": 852,
+          "y": 244,
+          "name": "context recipe",
+          "width": 356,
+          "height": 210,
+          "fill": "#FFFFFF",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c0009y",
+              "x": 22,
+              "y": 20,
+              "name": "context recipe eyebrow",
+              "content": "02  CONTEXT",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#1E8E6A",
+              "letterSpacing": 1.2
+            },
+            {
+              "type": "text",
+              "id": "c0009z",
+              "x": 22,
+              "y": 48,
+              "name": "context recipe title",
+              "content": "上下文配方",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "700",
+              "fill": "#1B211F"
+            },
+            {
+              "type": "frame",
+              "id": "c000a5",
+              "x": 22,
+              "y": 84,
+              "name": "context auto row",
+              "width": 312,
+              "height": 48,
+              "fill": "#DCEFE8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c000a0",
+                  "x": 14,
+                  "y": 14,
+                  "name": "context auto icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "wand-sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "#1E8E6A"
+                },
+                {
+                  "type": "text",
+                  "id": "c000a1",
+                  "x": 44,
+                  "y": 8,
+                  "name": "context auto title",
+                  "content": "自动装配",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "fill": "#1B211F"
+                },
+                {
+                  "type": "text",
+                  "id": "c000a2",
+                  "x": 44,
+                  "y": 26,
+                  "name": "context auto subtitle",
+                  "content": "从意图推导相关代码与运行时",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#5D6964"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c000a3",
+                  "x": 272,
+                  "y": 16,
+                  "name": "context auto switch track",
+                  "width": 28,
+                  "height": 16,
+                  "fill": "#1E8E6A"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c000a4",
+                  "x": 286,
+                  "y": 18,
+                  "name": "context auto switch knob",
+                  "width": 12,
+                  "height": 12,
+                  "fill": "#FFFFFF"
+                }
+              ],
+              "cornerRadius": 8
+            },
+            {
+              "type": "frame",
+              "id": "c000a9",
+              "x": 22,
+              "y": 142,
+              "name": "context add row",
+              "width": 312,
+              "height": 44,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c000a6",
+                  "x": 14,
+                  "y": 13,
+                  "name": "context add icon",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "plus",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                },
+                {
+                  "type": "text",
+                  "id": "c000a7",
+                  "x": 44,
+                  "y": 11,
+                  "name": "context add title",
+                  "content": "固定特定上下文",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "fill": "#5D6964"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000a8",
+                  "x": 282,
+                  "y": 13,
+                  "name": "context add arrow",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "chevron-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#D5DDD8"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000bf",
+          "x": 112,
+          "y": 482,
+          "name": "Execution Recipe",
+          "width": 1096,
+          "height": 248,
+          "fill": "#FFFFFF",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c000ab",
+              "x": 22,
+              "y": 20,
+              "name": "recipe eyebrow",
+              "content": "03  EXECUTION RECIPE",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "700",
+              "fill": "#9A681B",
+              "letterSpacing": 1.2
+            },
+            {
+              "type": "text",
+              "id": "c000ac",
+              "x": 22,
+              "y": 46,
+              "name": "recipe title",
+              "content": "执行配方",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "700",
+              "fill": "#1B211F"
+            },
+            {
+              "type": "text",
+              "id": "c000ad",
+              "x": 128,
+              "y": 49,
+              "name": "recipe subtitle",
+              "content": "每一项均来自当前供应商和模型的真实能力",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#87928D"
+            },
+            {
+              "type": "line",
+              "id": "c000ae",
+              "x": 22,
+              "y": 78,
+              "name": "recipe divider",
+              "width": 1052,
+              "height": 0,
+              "stroke": {
+                "align": "center",
+                "thickness": 1,
+                "fill": "#D5DDD8"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000af",
+              "x": 22,
+              "y": 98,
+              "name": "provider label",
+              "content": "供应商",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "600",
+              "fill": "#87928D"
+            },
+            {
+              "type": "frame",
+              "id": "c000ak",
+              "x": 22,
+              "y": 120,
+              "name": "provider select",
+              "width": 244,
+              "height": 52,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c000ag",
+                  "x": 14,
+                  "y": 16,
+                  "name": "provider select icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "radio-tower",
+                  "iconFontFamily": "lucide",
+                  "fill": "#1E8E6A"
+                },
+                {
+                  "type": "text",
+                  "id": "c000ah",
+                  "x": 44,
+                  "y": 9,
+                  "name": "provider select value",
+                  "content": "Chimera Gateway",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "fill": "#1B211F"
+                },
+                {
+                  "type": "text",
+                  "id": "c000ai",
+                  "x": 44,
+                  "y": 28,
+                  "name": "provider select hint",
+                  "content": "中转站 · 已连接",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#1E8E6A"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000aj",
+                  "x": 216,
+                  "y": 18,
+                  "name": "provider select chevron",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "chevrons-up-down",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#BFCAC3"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000al",
+              "x": 286,
+              "y": 98,
+              "name": "model select label",
+              "content": "模型",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "600",
+              "fill": "#87928D"
+            },
+            {
+              "type": "frame",
+              "id": "c000aq",
+              "x": 286,
+              "y": 120,
+              "name": "model select",
+              "width": 222,
+              "height": 52,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c000am",
+                  "x": 14,
+                  "y": 16,
+                  "name": "model select icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "#9A681B"
+                },
+                {
+                  "type": "text",
+                  "id": "c000an",
+                  "x": 44,
+                  "y": 9,
+                  "name": "model select value",
+                  "content": "GPT-5.4",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "fill": "#1B211F"
+                },
+                {
+                  "type": "text",
+                  "id": "c000ao",
+                  "x": 44,
+                  "y": 28,
+                  "name": "model select hint",
+                  "content": "工具 · 图像 · 推理",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#5D6964"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000ap",
+                  "x": 194,
+                  "y": 18,
+                  "name": "model select chevron",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "chevrons-up-down",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#BFCAC3"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000ar",
+              "x": 528,
+              "y": 98,
+              "name": "reasoning label",
+              "content": "思考强度",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "600",
+              "fill": "#87928D"
+            },
+            {
+              "type": "frame",
+              "id": "c000b3",
+              "x": 528,
+              "y": 120,
+              "name": "reasoning control",
+              "width": 312,
+              "height": 52,
+              "fill": "#F5E8D2",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "c000at",
+                  "x": 6,
+                  "y": 7,
+                  "name": "reasoning auto",
+                  "width": 50,
+                  "height": 38,
+                  "fill": "#00000000",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000as",
+                      "x": 14,
+                      "y": 10,
+                      "name": "reasoning auto text",
+                      "content": "自动",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "fill": "#5D6964"
+                    }
+                  ],
+                  "cornerRadius": 7
+                },
+                {
+                  "type": "frame",
+                  "id": "c000av",
+                  "x": 58,
+                  "y": 7,
+                  "name": "reasoning low",
+                  "width": 46,
+                  "height": 38,
+                  "fill": "#00000000",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000au",
+                      "x": 15,
+                      "y": 10,
+                      "name": "reasoning low text",
+                      "content": "低",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "fill": "#5D6964"
+                    }
+                  ],
+                  "cornerRadius": 7
+                },
+                {
+                  "type": "frame",
+                  "id": "c000ax",
+                  "x": 106,
+                  "y": 7,
+                  "name": "reasoning medium",
+                  "width": 58,
+                  "height": 38,
+                  "fill": "#FFFFFF",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000aw",
+                      "x": 14,
+                      "y": 10,
+                      "name": "reasoning medium text",
+                      "content": "标准",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 10,
+                      "fontWeight": "700",
+                      "fill": "#1B211F"
+                    }
+                  ],
+                  "cornerRadius": 7,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#BFCAC3"
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "c000az",
+                  "x": 166,
+                  "y": 7,
+                  "name": "reasoning high",
+                  "width": 46,
+                  "height": 38,
+                  "fill": "#00000000",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000ay",
+                      "x": 15,
+                      "y": 10,
+                      "name": "reasoning high text",
+                      "content": "高",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "fill": "#5D6964"
+                    }
+                  ],
+                  "cornerRadius": 7
+                },
+                {
+                  "type": "frame",
+                  "id": "c000b2",
+                  "x": 214,
+                  "y": 7,
+                  "name": "reasoning max",
+                  "width": 90,
+                  "height": 38,
+                  "fill": "#00000000",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000b0",
+                      "x": 15,
+                      "y": 10,
+                      "name": "reasoning max text",
+                      "content": "极高",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 10,
+                      "fontWeight": "700",
+                      "fill": "#9A681B"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "c000b1",
+                      "x": 59,
+                      "y": 11,
+                      "name": "reasoning max spark",
+                      "width": 14,
+                      "height": 14,
+                      "iconFontName": "sparkle",
+                      "iconFontFamily": "lucide",
+                      "fill": "#9A681B"
+                    }
+                  ],
+                  "cornerRadius": 7
+                }
+              ],
+              "cornerRadius": 9,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#9A681B"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000b4",
+              "x": 860,
+              "y": 98,
+              "name": "agent label",
+              "content": "Agent / 权限",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "600",
+              "fill": "#87928D"
+            },
+            {
+              "type": "frame",
+              "id": "c000b9",
+              "x": 860,
+              "y": 120,
+              "name": "agent select",
+              "width": 214,
+              "height": 52,
+              "fill": "#F8FAF8",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c000b5",
+                  "x": 14,
+                  "y": 16,
+                  "name": "agent select icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "bot",
+                  "iconFontFamily": "lucide",
+                  "fill": "#426FA6"
+                },
+                {
+                  "type": "text",
+                  "id": "c000b6",
+                  "x": 44,
+                  "y": 9,
+                  "name": "agent select value",
+                  "content": "Build",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "fill": "#1B211F"
+                },
+                {
+                  "type": "text",
+                  "id": "c000b7",
+                  "x": 44,
+                  "y": 28,
+                  "name": "agent select hint",
+                  "content": "按需确认危险操作",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 9,
+                  "fontWeight": "normal",
+                  "fill": "#5D6964"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000b8",
+                  "x": 186,
+                  "y": 18,
+                  "name": "agent select chevron",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "chevrons-up-down",
+                  "iconFontFamily": "lucide",
+                  "fill": "#87928D"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#BFCAC3"
+              }
+            },
+            {
+              "type": "icon_font",
+              "id": "c000ba",
+              "x": 530,
+              "y": 188,
+              "name": "capability signal icon",
+              "width": 14,
+              "height": 14,
+              "iconFontName": "info",
+              "iconFontFamily": "lucide",
+              "fill": "#9A681B"
+            },
+            {
+              "type": "text",
+              "id": "c000bb",
+              "x": 550,
+              "y": 184,
+              "name": "capability signal text",
+              "content": "由当前模型能力动态提供 · 切换密钥后即时重新计算",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "600",
+              "fill": "#9A681B"
+            },
+            {
+              "type": "frame",
+              "id": "c000be",
+              "x": 900,
+              "y": 190,
+              "name": "start action",
+              "width": 174,
+              "height": 42,
+              "fill": "#1B211F",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c000bc",
+                  "x": 18,
+                  "y": 10,
+                  "name": "start action text",
+                  "content": "启动融合任务",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000bd",
+                  "x": 142,
+                  "y": 11,
+                  "name": "start action icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "arrow-right",
+                  "iconFontFamily": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ],
+              "cornerRadius": 9
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#D5DDD8"
+          }
+        },
+        {
+          "type": "text",
+          "id": "c000bg",
+          "x": 112,
+          "y": 758,
+          "name": "light footer",
+          "content": "CHIMERA FIELD  /  READY",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 9,
+          "fontWeight": "normal",
+          "fill": "#87928D",
+          "letterSpacing": 1.3
+        },
+        {
+          "type": "text",
+          "id": "c000bh",
+          "x": 1012,
+          "y": 754,
+          "name": "light footer hint",
+          "content": "所有配方都可在执行前检查",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 10,
+          "fontWeight": "normal",
+          "fill": "#87928D"
+        }
+      ],
+      "clip": true
+    },
+    {
+      "type": "frame",
+      "id": "c000dx",
+      "x": 4200,
+      "y": 0,
+      "name": "04 — Chimera Field System",
+      "width": 1000,
+      "height": 800,
+      "fill": "#0C100F",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "c000bp",
+          "x": 40,
+          "y": 34,
+          "name": "Chimera Field Mark",
+          "width": 48,
+          "height": 48,
+          "fill": "#00000000",
+          "layout": "none",
+          "children": [
+            {
+              "type": "line",
+              "id": "c000bj",
+              "x": 13.2,
+              "y": 14.399999999999999,
+              "name": "field link amber",
+              "width": 21.599999999999998,
+              "height": 16.8,
+              "stroke": {
+                "align": "center",
+                "thickness": 2.4,
+                "fill": "#DEA54C"
+              }
+            },
+            {
+              "type": "line",
+              "id": "c000bk",
+              "x": 13.2,
+              "y": 33.6,
+              "name": "field link green",
+              "width": 21.599999999999998,
+              "height": -16.8,
+              "stroke": {
+                "align": "center",
+                "thickness": 2.4,
+                "fill": "#46C39A"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "c000bl",
+              "x": 4.8,
+              "y": 6,
+              "name": "amber node",
+              "width": 16.8,
+              "height": 16.8,
+              "fill": "#DEA54C"
+            },
+            {
+              "type": "ellipse",
+              "id": "c000bm",
+              "x": 4.8,
+              "y": 25.2,
+              "name": "green node",
+              "width": 16.8,
+              "height": 16.8,
+              "fill": "#46C39A"
+            },
+            {
+              "type": "ellipse",
+              "id": "c000bn",
+              "x": 28.799999999999997,
+              "y": 15.6,
+              "name": "fusion node",
+              "width": 16.8,
+              "height": 16.8,
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "ellipse",
+              "id": "c000bo",
+              "x": 34.8,
+              "y": 21.599999999999998,
+              "name": "fusion core",
+              "width": 4.8,
+              "height": 4.8,
+              "fill": "#0C100F"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "c000bq",
+          "x": 112,
+          "y": 36,
+          "name": "system eyebrow",
+          "content": "CHIMERA FIELD",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 10,
+          "fontWeight": "700",
+          "fill": "#DEA54C",
+          "letterSpacing": 1.8
+        },
+        {
+          "type": "text",
+          "id": "c000br",
+          "x": 112,
+          "y": 58,
+          "name": "system title",
+          "content": "独立品牌系统",
+          "fontFamily": "Space Grotesk",
+          "fontSize": 27,
+          "fontWeight": "700",
+          "fill": "#ECEFED"
+        },
+        {
+          "type": "text",
+          "id": "c000bs",
+          "x": 112,
+          "y": 96,
+          "name": "system subtitle",
+          "content": "不是 OpenCode 换色：以“融合场、轨迹、配方”形成稳定识别。",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 12,
+          "fontWeight": "normal",
+          "fill": "#9AA4A0"
+        },
+        {
+          "type": "line",
+          "id": "c000bt",
+          "x": 40,
+          "y": 132,
+          "name": "system top divider",
+          "width": 920,
+          "height": 0,
+          "stroke": {
+            "align": "center",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "text",
+          "id": "c000bu",
+          "x": 40,
+          "y": 158,
+          "name": "colors eyebrow",
+          "content": "01  FIELD COLORS",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 10,
+          "fontWeight": "700",
+          "fill": "#46C39A",
+          "letterSpacing": 1.4
+        },
+        {
+          "type": "text",
+          "id": "c000bv",
+          "x": 40,
+          "y": 180,
+          "name": "colors title",
+          "content": "克制的双能量色",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 17,
+          "fontWeight": "700",
+          "fill": "#ECEFED"
+        },
+        {
+          "type": "frame",
+          "id": "c000bz",
+          "x": 40,
+          "y": 216,
+          "name": "swatch Obsidian",
+          "width": 166,
+          "height": 74,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c000bw",
+              "x": 10,
+              "y": 10,
+              "name": "swatch color",
+              "width": 44,
+              "height": 54,
+              "fill": "#0C100F",
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000bx",
+              "x": 66,
+              "y": 13,
+              "name": "swatch name",
+              "content": "Obsidian",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000by",
+              "x": 66,
+              "y": 37,
+              "name": "swatch hex",
+              "content": "#0C100F",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 9,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000c3",
+          "x": 216,
+          "y": 216,
+          "name": "swatch Surface",
+          "width": 166,
+          "height": 74,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c000c0",
+              "x": 10,
+              "y": 10,
+              "name": "swatch color",
+              "width": 44,
+              "height": 54,
+              "fill": "#111615",
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000c1",
+              "x": 66,
+              "y": 13,
+              "name": "swatch name",
+              "content": "Surface",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000c2",
+              "x": 66,
+              "y": 37,
+              "name": "swatch hex",
+              "content": "#111615",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 9,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000c7",
+          "x": 392,
+          "y": 216,
+          "name": "swatch Amber",
+          "width": 166,
+          "height": 74,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c000c4",
+              "x": 10,
+              "y": 10,
+              "name": "swatch color",
+              "width": 44,
+              "height": 54,
+              "fill": "#DEA54C",
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000c5",
+              "x": 66,
+              "y": 13,
+              "name": "swatch name",
+              "content": "Amber",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000c6",
+              "x": 66,
+              "y": 37,
+              "name": "swatch hex",
+              "content": "#DEA54C",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 9,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000cb",
+          "x": 568,
+          "y": 216,
+          "name": "swatch Viridian",
+          "width": 166,
+          "height": 74,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c000c8",
+              "x": 10,
+              "y": 10,
+              "name": "swatch color",
+              "width": 44,
+              "height": 54,
+              "fill": "#46C39A",
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000c9",
+              "x": 66,
+              "y": 13,
+              "name": "swatch name",
+              "content": "Viridian",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000ca",
+              "x": 66,
+              "y": 37,
+              "name": "swatch hex",
+              "content": "#46C39A",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 9,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000cf",
+          "x": 744,
+          "y": 216,
+          "name": "swatch Mist",
+          "width": 166,
+          "height": 74,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c000cc",
+              "x": 10,
+              "y": 10,
+              "name": "swatch color",
+              "width": 44,
+              "height": 54,
+              "fill": "#9AA4A0",
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000cd",
+              "x": 66,
+              "y": 13,
+              "name": "swatch name",
+              "content": "Mist",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000ce",
+              "x": 66,
+              "y": 37,
+              "name": "swatch hex",
+              "content": "#9AA4A0",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 9,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "text",
+          "id": "c000cg",
+          "x": 40,
+          "y": 320,
+          "name": "type eyebrow",
+          "content": "02  TYPOGRAPHY",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 10,
+          "fontWeight": "700",
+          "fill": "#DEA54C",
+          "letterSpacing": 1.4
+        },
+        {
+          "type": "text",
+          "id": "c000ch",
+          "x": 40,
+          "y": 342,
+          "name": "type title",
+          "content": "文字既是界面，也是执行信号",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 17,
+          "fontWeight": "700",
+          "fill": "#ECEFED"
+        },
+        {
+          "type": "frame",
+          "id": "c000cl",
+          "x": 40,
+          "y": 380,
+          "name": "type specimen",
+          "width": 426,
+          "height": 122,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c000ci",
+              "x": 18,
+              "y": 15,
+              "name": "display specimen",
+              "content": "Chimera Field 融合工作场",
+              "fontFamily": "Space Grotesk",
+              "fontSize": 22,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000cj",
+              "x": 18,
+              "y": 55,
+              "name": "ui specimen",
+              "content": "模型能力会随供应商身份即时更新",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 12,
+              "fontWeight": "500",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "text",
+              "id": "c000ck",
+              "x": 18,
+              "y": 83,
+              "name": "mono specimen",
+              "content": "reasoning.levels = [low, medium, high]",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#46C39A"
+            }
+          ],
+          "cornerRadius": 10,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "c000cq",
+          "x": 486,
+          "y": 380,
+          "name": "principles",
+          "width": 474,
+          "height": 122,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "c000cm",
+              "x": 18,
+              "y": 15,
+              "name": "principles title",
+              "content": "视觉约束",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 12,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000cn",
+              "x": 18,
+              "y": 43,
+              "name": "principles 1",
+              "content": "• 渐变只用于品牌标与 1–2px 执行轨迹",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "text",
+              "id": "c000co",
+              "x": 18,
+              "y": 66,
+              "name": "principles 2",
+              "content": "• 控件低圆角、低层级、拒绝卡片泛滥",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            },
+            {
+              "type": "text",
+              "id": "c000cp",
+              "x": 18,
+              "y": 89,
+              "name": "principles 3",
+              "content": "• 状态以位置、轨迹和语义色共同表达",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 10,
+              "fontWeight": "normal",
+              "fill": "#9AA4A0"
+            }
+          ],
+          "cornerRadius": 10,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "text",
+          "id": "c000cr",
+          "x": 40,
+          "y": 536,
+          "name": "components eyebrow",
+          "content": "03  SIGNATURE COMPONENTS",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 10,
+          "fontWeight": "700",
+          "fill": "#46C39A",
+          "letterSpacing": 1.4
+        },
+        {
+          "type": "text",
+          "id": "c000cs",
+          "x": 40,
+          "y": 558,
+          "name": "components title",
+          "content": "六个品牌识别表面",
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 17,
+          "fontWeight": "700",
+          "fill": "#ECEFED"
+        },
+        {
+          "type": "frame",
+          "id": "c000dv",
+          "x": 40,
+          "y": 596,
+          "name": "signature strip",
+          "width": 920,
+          "height": 150,
+          "fill": "#111615",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "c000d3",
+              "x": 14,
+              "y": 14,
+              "name": "mini spine",
+              "width": 58,
+              "height": 122,
+              "fill": "#0F1412",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "c000cz",
+                  "x": 11,
+                  "y": 10,
+                  "name": "Chimera Field Mark",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "#00000000",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "line",
+                      "id": "c000ct",
+                      "x": 9.9,
+                      "y": 10.8,
+                      "name": "field link amber",
+                      "width": 16.2,
+                      "height": 12.6,
+                      "stroke": {
+                        "align": "center",
+                        "thickness": 1.8,
+                        "fill": "#DEA54C"
+                      }
+                    },
+                    {
+                      "type": "line",
+                      "id": "c000cu",
+                      "x": 9.9,
+                      "y": 25.2,
+                      "name": "field link green",
+                      "width": 16.2,
+                      "height": -12.6,
+                      "stroke": {
+                        "align": "center",
+                        "thickness": 1.8,
+                        "fill": "#46C39A"
+                      }
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "c000cv",
+                      "x": 3.6,
+                      "y": 4.5,
+                      "name": "amber node",
+                      "width": 12.6,
+                      "height": 12.6,
+                      "fill": "#DEA54C"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "c000cw",
+                      "x": 3.6,
+                      "y": 18.900000000000002,
+                      "name": "green node",
+                      "width": 12.6,
+                      "height": 12.6,
+                      "fill": "#46C39A"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "c000cx",
+                      "x": 21.6,
+                      "y": 11.700000000000001,
+                      "name": "fusion node",
+                      "width": 12.6,
+                      "height": 12.6,
+                      "fill": "#ECEFED"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "c000cy",
+                      "x": 26.1,
+                      "y": 16.2,
+                      "name": "fusion core",
+                      "width": 3.6,
+                      "height": 3.6,
+                      "fill": "#0C100F"
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c000d0",
+                  "x": 0,
+                  "y": 66,
+                  "name": "mini spine rail",
+                  "width": 3,
+                  "height": 36,
+                  "fill": "#DEA54C",
+                  "cornerRadius": 2
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000d1",
+                  "x": 19,
+                  "y": 71,
+                  "name": "mini spine icon",
+                  "width": 19,
+                  "height": 19,
+                  "iconFontName": "orbit",
+                  "iconFontFamily": "lucide",
+                  "fill": "#ECEFED"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "c000d2",
+                  "x": 19,
+                  "y": 107,
+                  "name": "mini spine icon 2",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "settings-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#5F6A66"
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000d4",
+              "x": 86,
+              "y": 18,
+              "name": "mini spine label",
+              "content": "Chimera Spine",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "fill": "#ECEFED"
+            },
+            {
+              "type": "text",
+              "id": "c000d5",
+              "x": 86,
+              "y": 40,
+              "name": "mini spine desc",
+              "content": "持续而非工具箱式导航",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "frame",
+              "id": "c000d8",
+              "x": 86,
+              "y": 70,
+              "name": "mini ribbon",
+              "width": 244,
+              "height": 34,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "c000d6",
+                  "x": 10,
+                  "y": 9,
+                  "name": "mini ribbon icon",
+                  "width": 15,
+                  "height": 15,
+                  "iconFontName": "waypoints",
+                  "iconFontFamily": "lucide",
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "text",
+                  "id": "c000d7",
+                  "x": 34,
+                  "y": 8,
+                  "name": "mini ribbon text",
+                  "content": "上下文场 · 4 来源 · 61%",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "600",
+                  "fill": "#9AA4A0"
+                }
+              ],
+              "cornerRadius": 7,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#29322F"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000d9",
+              "x": 86,
+              "y": 115,
+              "name": "mini ribbon label",
+              "content": "Context Ribbon",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "frame",
+              "id": "c000dh",
+              "x": 354,
+              "y": 14,
+              "name": "mini ledger",
+              "width": 244,
+              "height": 122,
+              "fill": "#0C100F",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "line",
+                  "id": "c000da",
+                  "x": 24,
+                  "y": 16,
+                  "name": "mini ledger line",
+                  "width": 0,
+                  "height": 88,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 2,
+                    "fill": "#35413D"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c000db",
+                  "x": 19,
+                  "y": 20,
+                  "name": "mini ledger node 1",
+                  "width": 10,
+                  "height": 10,
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c000dc",
+                  "x": 19,
+                  "y": 58,
+                  "name": "mini ledger node 2",
+                  "width": 10,
+                  "height": 10,
+                  "fill": "#46C39A"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "c000dd",
+                  "x": 19,
+                  "y": 96,
+                  "name": "mini ledger node 3",
+                  "width": 10,
+                  "height": 10,
+                  "fill": "#DEA54C"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c000de",
+                  "x": 46,
+                  "y": 18,
+                  "name": "mini ledger row 1",
+                  "width": 174,
+                  "height": 22,
+                  "fill": "#161C1A",
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c000df",
+                  "x": 46,
+                  "y": 52,
+                  "name": "mini ledger row 2",
+                  "width": 142,
+                  "height": 22,
+                  "fill": "#161C1A",
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c000dg",
+                  "x": 46,
+                  "y": 86,
+                  "name": "mini ledger row 3",
+                  "width": 188,
+                  "height": 22,
+                  "fill": "#161C1A",
+                  "cornerRadius": 5
+                }
+              ],
+              "cornerRadius": 8
+            },
+            {
+              "type": "text",
+              "id": "c000di",
+              "x": 372,
+              "y": 115,
+              "name": "mini ledger label",
+              "content": "Turn Ledger",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            },
+            {
+              "type": "frame",
+              "id": "c000dt",
+              "x": 620,
+              "y": 14,
+              "name": "mini composer",
+              "width": 286,
+              "height": 122,
+              "fill": "#161C1A",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "c000dj",
+                  "x": 0,
+                  "y": 0,
+                  "name": "mini composer signal amber",
+                  "width": 104,
+                  "height": 2,
+                  "fill": "#DEA54C",
+                  "cornerRadius": 1
+                },
+                {
+                  "type": "rectangle",
+                  "id": "c000dk",
+                  "x": 104,
+                  "y": 0,
+                  "name": "mini composer signal green",
+                  "width": 182,
+                  "height": 2,
+                  "fill": "#46C39A",
+                  "cornerRadius": 1
+                },
+                {
+                  "type": "text",
+                  "id": "c000dl",
+                  "x": 14,
+                  "y": 16,
+                  "name": "mini composer text",
+                  "content": "继续引导这次执行…",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 10,
+                  "fontWeight": "normal",
+                  "fill": "#9AA4A0"
+                },
+                {
+                  "type": "line",
+                  "id": "c000dm",
+                  "x": 14,
+                  "y": 46,
+                  "name": "mini composer divider",
+                  "width": 258,
+                  "height": 0,
+                  "stroke": {
+                    "align": "center",
+                    "thickness": 1,
+                    "fill": "#29322F"
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "c000do",
+                  "x": 14,
+                  "y": 60,
+                  "name": "mini model",
+                  "width": 86,
+                  "height": 28,
+                  "fill": "#1D2422",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000dn",
+                      "x": 10,
+                      "y": 5,
+                      "name": "mini model text",
+                      "content": "GPT-5.4",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "fill": "#9AA4A0"
+                    }
+                  ],
+                  "cornerRadius": 7,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#29322F"
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "c000dq",
+                  "x": 108,
+                  "y": 60,
+                  "name": "mini thinking",
+                  "width": 92,
+                  "height": 28,
+                  "fill": "#3A2D19",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c000dp",
+                      "x": 10,
+                      "y": 5,
+                      "name": "mini thinking text",
+                      "content": "思考 · 高",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "fill": "#DEA54C"
+                    }
+                  ],
+                  "cornerRadius": 7,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#29322F"
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "c000ds",
+                  "x": 240,
+                  "y": 60,
+                  "name": "mini send",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#DEA54C",
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "c000dr",
+                      "x": 8,
+                      "y": 7,
+                      "name": "mini send icon",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "arrow-up",
+                      "iconFontFamily": "lucide",
+                      "fill": "#0C100F"
+                    }
+                  ],
+                  "cornerRadius": 7
+                }
+              ],
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#35413D"
+              }
+            },
+            {
+              "type": "text",
+              "id": "c000du",
+              "x": 638,
+              "y": 115,
+              "name": "mini composer label",
+              "content": "Fusion Composer",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 9,
+              "fontWeight": "normal",
+              "fill": "#5F6A66"
+            }
+          ],
+          "cornerRadius": 12,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#29322F"
+          }
+        },
+        {
+          "type": "text",
+          "id": "c000dw",
+          "x": 40,
+          "y": 770,
+          "name": "system footer",
+          "content": "CHIMERA DESIGN LANGUAGE  /  V2.0",
+          "fontFamily": "JetBrains Mono",
+          "fontSize": 9,
+          "fontWeight": "normal",
+          "fill": "#5F6A66",
+          "letterSpacing": 1.2
+        }
+      ],
+      "clip": true
+    }
+  ]
+}
