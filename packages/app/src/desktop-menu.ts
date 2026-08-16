@@ -1,4 +1,3 @@
-import { BRAND } from "@chimera/brand"
 import type { DesktopNativeKey } from "./i18n/desktop-native"
 
 export type DesktopMenuPlatform = "macos" | "windows"
@@ -274,26 +273,6 @@ export const DESKTOP_MENU: DesktopMenu[] = [
       { type: "item", labelKey: "desktop.menu.maximize", action: "window.toggleMaximize" },
       { type: "separator" },
       { type: "item", labelKey: "desktop.menu.closeWindow", action: "window.close" },
-    ],
-  },
-  {
-    id: "help",
-    labelKey: "desktop.menu.help",
-    items: [
-      // Chimera 暂未建独立文档站；先指向仓库（README 即用户文档），避免跳转空白页。
-      { type: "item", labelKey: "desktop.menu.documentation", href: BRAND.docs },
-      { type: "item", labelKey: "desktop.menu.exportLogs", command: "logs.export" },
-      { type: "separator" },
-      {
-        type: "item",
-        labelKey: "desktop.menu.shareFeedback",
-        href: BRAND.issues,
-      },
-      {
-        type: "item",
-        labelKey: "desktop.menu.reportBug",
-        href: BRAND.issues,
-      },
     ],
   },
 ]
