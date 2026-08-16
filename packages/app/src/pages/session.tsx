@@ -72,6 +72,8 @@ import {
 } from "@/pages/session/composer"
 import { createOpenReviewFile, createSessionTabs, createSizing, shouldShowFileTree } from "@/pages/session/helpers"
 import { SessionTurnRail } from "@/pages/session/session-turn-rail"
+import { ChimeraTurnLedger } from "@/components/chimera-turn-ledger"
+import { projectTurns } from "@/chimera/turn-ledger"
 import { MessageTimeline } from "@/pages/session/timeline/message-timeline"
 import { createTimelineModel } from "@/pages/session/timeline/model"
 import { type DiffStyle, SessionReviewTab, type SessionReviewTabProps } from "@/pages/session/review-tab"
@@ -2092,6 +2094,17 @@ export default function Page() {
             <Show when={messagesReady() ? params.id : undefined} keyed>
               {(_id) => (
                 <div class="relative h-full min-h-0 min-w-0">
+                  <Show when={isDesktop()}>
+                    <ChimeraTurnLedger
+                      turns={projectTurns(messages())}
+                      onJump={(id) => {
+                        const message = visibleUserMessages().find((item) => item.id === id)
+                        if (!message) return
+                        autoScroll.pause()
+                        scrollToMessage(message, "auto")
+                      }}
+                    />
+                  </Show>
                   <MessageTimeline
                     actions={actions}
                     scroll={ui.scroll}

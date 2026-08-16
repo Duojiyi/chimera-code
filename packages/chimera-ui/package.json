@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens": "./src/tokens.ts",
+    "./primitives": "./src/primitives.tsx",
     "./vite": "./vite.ts"
   },
   "dependencies": {
