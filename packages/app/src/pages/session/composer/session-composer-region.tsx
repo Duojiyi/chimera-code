@@ -1,4 +1,5 @@
 import { Show, type JSX } from "solid-js"
+import { ChimeraFusionComposer } from "@/components/chimera-fusion-composer"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
 import { SessionPermissionDock } from "@/pages/session/composer/session-permission-dock"
@@ -141,7 +142,12 @@ export function SessionComposerRegion(props: {
               </Show>
               <Show
                 when={controller.child()}
-                fallback={<Show when={!controller.state.blocked()}>{props.promptInput}</Show>}
+                fallback={
+                  <Show when={!controller.state.blocked()}>
+                    <ChimeraFusionComposer />
+                    {props.promptInput}
+                  </Show>
+                }
               >
                 <div
                   ref={controller.setPromptRef}
