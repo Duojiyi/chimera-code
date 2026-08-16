@@ -54,6 +54,7 @@ export type HomeSessionsViewProps = {
   onCreateSession: () => void
   onOpenSession: (session: Session, options?: OpenSessionOptions) => void
   onArchiveSession: (session: Session) => Promise<void>
+  onRestoreSession: (session: Session) => Promise<void>
   onSetHoverTarget: (element: HTMLElement) => void
   onSetThumbTrack: (element: HTMLDivElement) => void
   onSetContent: (element: HTMLDivElement) => void
@@ -498,6 +499,22 @@ function HomeSessionRow(props: HomeSessionsViewProps & { record: HomeSessionReco
               }}
             />
           </TooltipV2>
+          <Show when={typeof props.record.session.time.archived === "number"}>
+            <TooltipV2 class="flex shrink-0 items-center" placement="bottom" value={props.language.t("home.sessions.restore")}>
+              <IconButtonV2
+                data-action="home-session-restore"
+                variant="ghost-muted"
+                size="large"
+                icon={<IconV2 name="undo" />}
+                aria-label={props.language.t("home.sessions.restore")}
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  void props.onRestoreSession(props.record.session)
+                }}
+              />
+            </TooltipV2>
+          </Show>
         </div>
       </Show>
     </div>

@@ -98,6 +98,10 @@ describe("Home V2 session index", () => {
         id: "active-null",
         time: { created: 1, updated: 20, archived: null },
       }),
+      expect.objectContaining({
+        id: "archived",
+        time: { created: 1, updated: 50, archived: 50 },
+      }),
     ])
   })
 

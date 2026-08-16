@@ -31,7 +31,7 @@ export type HomeSessionRecord = {
 }
 
 export type HomeSessionGroup = {
-  id: "today" | "yesterday" | "older"
+  id: "today" | "yesterday" | "older" | "archived"
   title: string
   sessions: HomeSessionRecord[]
 }
@@ -233,6 +233,26 @@ export function createHomeSessionsController(home: HomeController) {
             }),
         })
       },
+      restore: async (session: Session) => {
+        const conn = home.server.focused()
+        const ctx = home.server.focusedContext()
+        if (!conn || !ctx) return
+        if ((await ctx.sdk.protocol) !== "v1") return
+        try {
+          await ctx.sdk.client.session.update({
+            sessionID: session.id,
+            directory: session.directory,
+            // V1 update 的 time 为宽松对象；null 使服务端将 time_archived 置 NULL（未归档）。
+            time: { archived: null as unknown as number },
+          })
+          showToast({ title: language.t("home.sessions.restore"), variant: "default" })
+        } catch (cause) {
+          showToast({
+            title: language.t("common.requestFailed"),
+            description: errorMessage(cause, language.t("common.requestFailed")),
+          })
+        }
+      },
     },
     tab: {
       isOpen: (record: HomeSessionRecord) =>
@@ -274,15 +294,18 @@ export function homeSessionSearchKey(record: HomeSessionRecord) {
 }
 
 function groupSessions(records: HomeSessionRecord[], language: ReturnType<typeof useLanguage>): HomeSessionGroup[] {
+  // Chimera：归档会话独立成"已归档"组（首页管理入口），非归档维持原有分组。
+  const active = records.filter((record) => typeof record.session.time.archived !== "number")
+  const archivedSessions = records.filter((record) => typeof record.session.time.archived === "number")
   const now = DateTime.local()
   const yesterday = now.minus({ days: 1 })
-  const todaySessions = records.filter((record) =>
+  const todaySessions = active.filter((record) =>
     DateTime.fromMillis(record.session.time.updated ?? record.session.time.created).hasSame(now, "day"),
   )
-  const yesterdaySessions = records.filter((record) =>
+  const yesterdaySessions = active.filter((record) =>
     DateTime.fromMillis(record.session.time.updated ?? record.session.time.created).hasSame(yesterday, "day"),
   )
-  const olderSessions = records.filter((record) => {
+  const olderSessions = active.filter((record) => {
     const time = DateTime.fromMillis(record.session.time.updated ?? record.session.time.created)
     return !time.hasSame(now, "day") && !time.hasSame(yesterday, "day")
   })
@@ -294,6 +317,9 @@ function groupSessions(records: HomeSessionRecord[], language: ReturnType<typeof
     { id: "today" as const, title: language.t("home.sessions.group.today"), sessions: todaySessions },
     { id: "yesterday" as const, title: language.t("home.sessions.group.yesterday"), sessions: yesterdaySessions },
     { id: "older" as const, title: olderTitle, sessions: olderSessions },
+    ...(archivedSessions.length > 0
+      ? [{ id: "archived" as const, title: language.t("home.sessions.group.archived"), sessions: archivedSessions }]
+      : []),
   ].filter((group) => group.sessions.length > 0)
 }
 
