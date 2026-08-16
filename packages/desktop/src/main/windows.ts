@@ -464,9 +464,15 @@ function wireWindowRecovery(win: BrowserWindow, name: string) {
     writeLog("window", "renderer responsive", { window: name, currentURL: safeWindowURL(win) }, "error")
     sampler.stopAndFlush()
   })
-  win.webContents.on("console-message", (_event, level, message, line, sourceId) => {
-    if (message.toLowerCase().includes("terminal") || sourceId.toLowerCase().includes("terminal")) {
-      writeLog("pty", "console", { window: name, level, message, line, sourceId })
+  win.webContents.on("console-message", (event) => {
+    if (event.message.toLowerCase().includes("terminal") || event.sourceId.toLowerCase().includes("terminal")) {
+      writeLog("pty", "console", {
+        window: name,
+        level: event.level,
+        message: event.message,
+        line: event.lineNumber,
+        sourceId: event.sourceId,
+      })
     }
   })
   win.webContents.on("preload-error", (_event, preloadPath, error) => {
