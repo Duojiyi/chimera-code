@@ -52,7 +52,8 @@ export const UpdatePayload = Schema.Struct({
   permission: Schema.optional(PermissionV1.Ruleset),
   time: Schema.optional(
     Schema.Struct({
-      archived: Schema.optional(Session.ArchivedTimestamp),
+      // null 表示清除归档（恢复会话）；undefined 表示不变更。
+      archived: Schema.optional(Schema.NullOr(Session.ArchivedTimestamp)),
     }),
   ),
 })

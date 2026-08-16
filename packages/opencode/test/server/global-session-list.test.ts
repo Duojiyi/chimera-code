@@ -73,6 +73,26 @@ describe("session.listGlobal", () => {
   )
 
   it.instance(
+    "restores archived sessions when time.archived is set to null",
+    () =>
+      Effect.gen(function* () {
+        const session = yield* withSession({ title: "restored-session" })
+
+        yield* SessionNs.Service.use((s) => s.setArchived({ sessionID: session.id, time: Date.now() }))
+        const archived = yield* SessionNs.Service.use((s) => s.listGlobal({ limit: 200 }))
+        expect(archived.map((item) => item.id)).not.toContain(session.id)
+
+        yield* SessionNs.Service.use((s) => s.setArchived({ sessionID: session.id, time: null }))
+        const restored = yield* SessionNs.Service.use((s) => s.listGlobal({ limit: 200 }))
+        expect(restored.map((item) => item.id)).toContain(session.id)
+
+        const info = yield* SessionNs.Service.use((s) => s.get(session.id))
+        expect(info.time.archived).toBeUndefined()
+      }),
+    { git: true },
+  )
+
+  it.instance(
     "supports cursor pagination",
     () =>
       Effect.gen(function* () {

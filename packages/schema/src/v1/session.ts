@@ -561,7 +561,8 @@ export const SessionInfo = Schema.Struct({
     created: NonNegativeInt,
     updated: NonNegativeInt,
     compacting: optional(NonNegativeInt),
-    archived: optional(Schema.Finite),
+    // null 表示清除归档（恢复会话），由 projector 将 time_archived 置 NULL。
+    archived: optional(Schema.NullOr(Schema.Finite)),
   }),
   permission: optional(PermissionV1.Ruleset),
   revert: optional(SessionRevert),

@@ -290,7 +290,8 @@ const layer = Layer.effect(
       )
 
       yield* sync(sessionID, [
-        { type: "session", data: info },
+        // SDK.Session 不表示 null：将内部的 archived: null（清除归档）归一化为 undefined。
+        { type: "session", data: { ...info, time: { ...info.time, archived: info.time.archived ?? undefined } } },
         ...messages.map((item) => ({ type: "message" as const, data: item.info })),
         ...messages.flatMap((item) => item.parts.map((part) => ({ type: "part" as const, data: part }))),
         { type: "session_diff", data: diffs },

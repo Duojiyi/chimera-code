@@ -203,7 +203,8 @@ const Time = Schema.Struct({
   created: NonNegativeInt,
   updated: NonNegativeInt,
   compacting: optional(NonNegativeInt),
-  archived: optional(ArchivedTimestamp),
+  // null 表示清除归档（time_archived 置 NULL）；undefined 表示不变更。
+  archived: optional(Schema.NullOr(ArchivedTimestamp)),
 })
 
 const Revert = Schema.Struct({
@@ -428,7 +429,7 @@ export interface Interface {
   readonly touch: (sessionID: SessionID) => Effect.Effect<void>
   readonly get: (id: SessionID) => Effect.Effect<Info, NotFound>
   readonly setTitle: (input: { sessionID: SessionID; title: string }) => Effect.Effect<void>
-  readonly setArchived: (input: { sessionID: SessionID; time?: number }) => Effect.Effect<void>
+  readonly setArchived: (input: { sessionID: SessionID; time?: number | null }) => Effect.Effect<void>
   readonly setMetadata: (input: typeof SetMetadataInput.Type) => Effect.Effect<void>
   readonly setAgentModel: (input: {
     sessionID: SessionID
@@ -756,7 +757,7 @@ const layer: Layer.Layer<
       yield* patch(input.sessionID, { title: input.title }).pipe(Effect.orDie)
     })
 
-    const setArchived = Effect.fn("Session.setArchived")(function* (input: { sessionID: SessionID; time?: number }) {
+    const setArchived = Effect.fn("Session.setArchived")(function* (input: { sessionID: SessionID; time?: number | null }) {
       yield* patch(input.sessionID, { time: { archived: input.time } }).pipe(Effect.orDie)
     })
 
