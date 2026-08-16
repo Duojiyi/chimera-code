@@ -140,7 +140,13 @@ export function parseHomeSessionIndex(sessions: SessionV2Info[]): Session[] {
 
 export function retainHomeSessions(sessions: Session[], limit: number, now: number) {
   const grouped = Map.groupBy(sessions, (session) => pathKey(session.directory))
-  return [...grouped.values()].flatMap((items) => trimSessions(items, { limit, permission: {}, now }))
+  return [...grouped.values()].flatMap((items) => {
+    // Chimera：归档会话独立保留供首页"已归档"分组管理，不参与活跃会话裁剪；
+    // trimSessions 语义（剔除归档）保持不变，供 V1 store / event reducer 使用。
+    const active = items.filter((session) => !session.time?.archived)
+    const archived = items.filter((session) => !!session.time?.archived)
+    return [...trimSessions(active, { limit, permission: {}, now }), ...archived]
+  })
 }
 
 export function applyHomeSessionEvent(sessions: Session[], event: HomeSessionEvent) {

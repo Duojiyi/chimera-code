@@ -94,7 +94,13 @@ export function createHomeSessionsController(home: HomeController) {
       projectByID,
     }),
   )
-  const records = createMemo(() => allRecords().slice(0, HOME_SESSION_LIMIT))
+  // Chimera：活跃会话受 HOME_SESSION_LIMIT 裁剪；归档会话独立保留（"已归档"分组管理入口）。
+  const records = createMemo(() => {
+    const all = allRecords()
+    const active = all.filter((record) => typeof record.session.time.archived !== "number").slice(0, HOME_SESSION_LIMIT)
+    const archived = all.filter((record) => typeof record.session.time.archived === "number").slice(0, HOME_SESSION_LIMIT)
+    return [...active, ...archived]
+  })
   const groups = createMemo(() => groupSessions(records(), language))
   const prefetched = new Set<string>()
 

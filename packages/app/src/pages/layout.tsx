@@ -1491,7 +1491,7 @@ export default function LegacyLayout(props: ParentProps) {
     if ((await serverSDK().protocol) === "v1")
       await Promise.all(
         sessions
-          .filter((session) => session.time.archived === undefined)
+          .filter((session) => !session.time.archived)
           .map((session) =>
             serverSDK()
               .client.session.update({
@@ -1597,7 +1597,7 @@ export default function LegacyLayout(props: ParentProps) {
         directory: props.directory,
         order: "desc",
       }).catch(() => [])
-      const active = sessions.filter((session) => session.time.archived === undefined)
+      const active = sessions.filter((session) => !session.time.archived)
       setState({ sessions: active })
     }
 
