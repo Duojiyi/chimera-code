@@ -10,7 +10,7 @@ import { usePlatform } from "@/context/platform"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
-import { registerChimeraKey, writeChimeraKeys } from "./chimera-keys"
+import { readChimeraKeys, registerChimeraKey, writeChimeraKeys } from "./chimera-keys"
 
 // 图标前缀输入框（设计稿 S5 的表单行语法）
 const FieldInput: Component<{
@@ -227,13 +227,16 @@ export const ChimeraConnectDialog: Component<{
   /** 保存同步到的密钥并将首个设为当前（服务端 auth 生效）。 */
   const adoptKeys = async (keys: Awaited<ReturnType<typeof fetchAllKeys>>) => {
     if (!keys.length) throw new Error("no keys")
-    writeChimeraKeys({
-      keys: keys.map((item) => ({ name: item.name, key: item.key })),
-      active: keys[0].key,
-    })
+    for (const item of keys) {
+      await registerChimeraKey(item.key, item.name)
+    }
+    const state = readChimeraKeys()
+    const first = state.keys[0]
+    if (!first) throw new Error("no keys")
+    const secret = first.key || (window.api?.keyVault ? await window.api.keyVault.secret(first.id) : undefined)
     await serverSDK().api.integration.connect.key({
       integrationID: BRAND.nameLower,
-      key: keys[0].key,
+      key: secret ?? first.key,
       location: location(),
     })
   }
@@ -297,7 +300,7 @@ export const ChimeraConnectDialog: Component<{
         key: apiKey().trim(),
         location: location(),
       })
-      registerChimeraKey(apiKey().trim(), (index) =>
+      await registerChimeraKey(apiKey().trim(), (index) =>
         language.t("chimera.keys.defaultName", { index: `${index}` }),
       )
       finish()

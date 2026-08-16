@@ -13,6 +13,14 @@ const updaterHandler = (_: unknown, state: UpdaterState) => {
 const api: ElectronAPI = {
   killSidecar: () => ipcRenderer.invoke("kill-sidecar"),
   installCli: () => ipcRenderer.invoke("install-cli"),
+  keyVault: {
+    list: () => ipcRenderer.invoke("chimera-key-vault-list"),
+    create: (name, secret) => ipcRenderer.invoke("chimera-key-vault-create", name, secret),
+    rename: (id, name) => ipcRenderer.invoke("chimera-key-vault-rename", id, name),
+    remove: (id) => ipcRenderer.invoke("chimera-key-vault-remove", id),
+    copySecret: (id) => ipcRenderer.invoke("chimera-key-vault-copy", id),
+    secret: (id) => ipcRenderer.invoke("chimera-key-vault-secret", id),
+  },
   awaitInitialization: () => ipcRenderer.invoke("await-initialization"),
   wslServers: {
     getState: () => ipcRenderer.invoke("wsl-servers-get-state"),

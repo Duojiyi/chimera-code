@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process"
 import { stat } from "node:fs/promises"
 import { basename, join } from "node:path"
-import { app, BrowserWindow, clipboard, dialog, ipcMain, shell } from "electron"
+import { app, BrowserWindow, clipboard, dialog, ipcMain, safeStorage, shell } from "electron"
 import type { IpcMainEvent, IpcMainInvokeEvent } from "electron"
 import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
 import { parseDesktopNativeBundle, type DesktopNativeBundle } from "@opencode-ai/app/i18n/desktop-native"
@@ -25,6 +25,7 @@ import { createUpdaterSubscriptions } from "./updater-subscriptions"
 import { createDesktopDraftStore } from "./draft-store"
 import { nativeT } from "./native-translations"
 import { resolveChimeraGatewayRequest } from "./chimera-gateway"
+import { KeyVault } from "./key-vault"
 
 const pickerFilters = (ext?: string[]) => {
   if (!ext || ext.length === 0) return undefined
@@ -99,6 +100,48 @@ export function registerIpcHandlers(deps: Deps) {
       }
     },
   )
+  // chimera: 密钥保险库（Phase 4，安全阻断项）。秘密值仅存 Main（safeStorage 加密），
+  // renderer 只经 IPC 按 id 操作；复制在主进程写剪贴板，明文不过 renderer。
+  const vault = new KeyVault({
+    dir: join(app.getPath("userData"), "vault"),
+    crypto: {
+      encrypt: (secret: string) => safeStorage.encryptString(secret).toString("base64"),
+      decrypt: (blob: string) => safeStorage.decryptString(Buffer.from(blob, "base64")),
+    },
+    available: safeStorage.isEncryptionAvailable(),
+  })
+  const vaultSender = (event: IpcMainInvokeEvent) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    return !!win && !win.isDestroyed() && win.webContents === event.sender && event.senderFrame === event.sender.mainFrame
+  }
+  ipcMain.handle("chimera-key-vault-list", (event) => {
+    if (!vaultSender(event)) return []
+    return vault.list()
+  })
+  ipcMain.handle("chimera-key-vault-create", async (event, name: unknown, secret: unknown) => {
+    if (!vaultSender(event) || typeof name !== "string" || typeof secret !== "string" || !secret) return
+    return vault.create(name, secret)
+  })
+  ipcMain.handle("chimera-key-vault-rename", async (event, id: unknown, name: unknown) => {
+    if (!vaultSender(event) || typeof id !== "string" || typeof name !== "string") return
+    await vault.rename(id, name)
+  })
+  ipcMain.handle("chimera-key-vault-remove", async (event, id: unknown) => {
+    if (!vaultSender(event) || typeof id !== "string") return
+    await vault.remove(id)
+  })
+  ipcMain.handle("chimera-key-vault-copy", async (event, id: unknown) => {
+    if (!vaultSender(event) || typeof id !== "string") return false
+    const secret = await vault.getSecret(id)
+    if (!secret) return false
+    clipboard.writeText(secret)
+    return true
+  })
+  // 仅切换/连接时解密一次：调用方用后即弃，不落存储。
+  ipcMain.handle("chimera-key-vault-secret", async (event, id: unknown) => {
+    if (!vaultSender(event) || typeof id !== "string") return undefined
+    return vault.getSecret(id)
+  })
   ipcMain.handle("await-initialization", () => deps.awaitInitialization())
   ipcMain.handle("consume-initial-deep-links", () => deps.consumeInitialDeepLinks())
   ipcMain.handle("get-default-server-url", () => deps.getDefaultServerUrl())

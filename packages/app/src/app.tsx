@@ -273,6 +273,15 @@ declare global {
     api?: {
       setTitlebar?: (theme: { mode: "light" | "dark"; scheme?: "system" | "light" | "dark" }) => Promise<void>
       exportDebugLogs?: () => Promise<string>
+      /** Chimera 密钥保险库（Phase 4）：仅桌面端注入。秘密值永不出 Main。 */
+      keyVault?: {
+        list: () => Promise<Array<{ id: string; name: string; fingerprint: string; createdAt: number }>>
+        create: (name: string, secret: string) => Promise<{ id: string; name: string; fingerprint: string; createdAt: number } | undefined>
+        rename: (id: string, name: string) => Promise<void>
+        remove: (id: string) => Promise<void>
+        copySecret: (id: string) => Promise<boolean>
+        secret: (id: string) => Promise<string | undefined>
+      }
     }
   }
 }

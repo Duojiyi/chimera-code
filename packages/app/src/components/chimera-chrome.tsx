@@ -240,7 +240,7 @@ export const ChimeraStatusBar: Component = () => {
   const [keysState, setKeysState] = createSignal(readChimeraKeys())
   const [pickerOpen, setPickerOpen] = createSignal(false)
   const [pending, setPending] = createSignal("")
-  const keyName = () => keysState().keys.find((item) => item.key === keysState().active)?.name
+  const keyName = () => keysState().keys.find((item) => item.id === keysState().active)?.name
   const onKeysChanged = () => setKeysState(readChimeraKeys())
   const onKeysPicker = () => {
     if (readChimeraKeys().keys.length === 0) return
@@ -254,8 +254,8 @@ export const ChimeraStatusBar: Component = () => {
   })
 
   const activate = async (entry: ChimeraKeyEntry) => {
-    if (pending() || entry.key === keysState().active) return
-    setPending(entry.key)
+    if (pending() || entry.id === keysState().active) return
+    setPending(entry.id)
     try {
       await switchChimeraKey({
         entry,
@@ -339,8 +339,8 @@ export const ChimeraStatusBar: Component = () => {
                       <For each={keysState().keys}>
                         {(entry) => (
                           <MenuV2.RadioItem
-                            value={entry.key}
-                            disabled={pending() !== "" && pending() !== entry.key}
+                            value={entry.id}
+                            disabled={pending() !== "" && pending() !== entry.id}
                             onSelect={() => void activate(entry)}
                           >
                             {entry.name}

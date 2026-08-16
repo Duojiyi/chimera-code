@@ -8,6 +8,7 @@ import {
   ChimeraKeyRow,
   nextActiveKey,
   readChimeraKeys,
+  registerChimeraKey,
   showChimeraKeyDeleteConfirm,
   switchChimeraKey,
   writeChimeraKeys,
@@ -62,14 +63,14 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
 
   const activate = async (entry: ChimeraKeyEntry, opts?: { quiet?: boolean }) => {
     if (pending()) return false
-    setPending(entry.key)
+    setPending(entry.id)
     try {
       await switchChimeraKey({
         entry,
         sdk: serverSDK(),
         directory: props.directory?.(),
       })
-      setStore("active", entry.key)
+      setStore("active", entry.id)
       void serverSync().refreshProviders()
       if (!opts?.quiet) showToast({ title: language.t("chimera.keys.switched", { name: entry.name }), variant: "default" })
       return true
@@ -82,28 +83,33 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
   }
 
   const copy = async (entry: ChimeraKeyEntry) => {
-    await navigator.clipboard.writeText(entry.key)
+    if (typeof window !== "undefined" && window.api?.keyVault) {
+      await window.api.keyVault.copySecret(entry.id)
+    } else {
+      await navigator.clipboard.writeText(entry.id)
+    }
     showToast({ title: language.t("chimera.keys.copied"), variant: "default" })
   }
 
   const rename = (entry: ChimeraKeyEntry, name: string) => {
     const trimmed = name.trim()
     if (!trimmed || trimmed === entry.name) return
-    const index = store.keys.findIndex((item) => item.key === entry.key)
+    const index = store.keys.findIndex((item) => item.id === entry.id)
     if (index < 0) return
     setStore("keys", index, "name", trimmed)
     persist()
+    if (typeof window !== "undefined" && window.api?.keyVault) void window.api.keyVault.rename(entry.id, trimmed)
     showToast({ title: language.t("chimera.keys.renamed", { name: trimmed }), variant: "default" })
   }
 
   const remove = async (entry: ChimeraKeyEntry) => {
-    const nextKey = nextActiveKey(store.keys, store.active, entry.key)
-    const next = store.keys.find((item) => item.key === nextKey)
-    if (store.active === entry.key && next) {
+    const nextKey = nextActiveKey(store.keys, store.active, entry.id)
+    const next = store.keys.find((item) => item.id === nextKey)
+    if (store.active === entry.id && next) {
       const ok = await activate(next, { quiet: true })
       if (!ok) return
     }
-    if (store.active === entry.key && !next) {
+    if (store.active === entry.id && !next) {
       try {
         await fetch(`${serverSDK().url}/auth/${BRAND.nameLower}`, { method: "DELETE" })
       } catch {
@@ -114,21 +120,22 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     }
     setStore(
       "keys",
-      store.keys.filter((item) => item.key !== entry.key),
+      store.keys.filter((item) => item.id !== entry.id),
     )
     persist()
+    if (typeof window !== "undefined" && window.api?.keyVault) void window.api.keyVault.remove(entry.id)
     showToast({ title: language.t("chimera.keys.deleted"), variant: "default" })
   }
 
   const confirmRemove = (entry: ChimeraKeyEntry) => {
-    const nextKey = nextActiveKey(store.keys, store.active, entry.key)
+    const nextKey = nextActiveKey(store.keys, store.active, entry.id)
     showChimeraKeyDeleteConfirm({
       dialog,
       language,
       entry,
       last: store.keys.length === 1,
-      inUse: store.active === entry.key,
-      nextName: store.keys.find((item) => item.key === nextKey)?.name,
+      inUse: store.active === entry.id,
+      nextName: store.keys.find((item) => item.id === nextKey)?.name,
       onConfirm: () => void remove(entry),
     })
   }
@@ -151,16 +158,19 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
     e.preventDefault()
     const key = newKey().trim()
     if (!key) return
-    const entry: ChimeraKeyEntry = {
-      name: newName().trim() || language.t("chimera.keys.defaultName", { index: `${store.keys.length + 1}` }),
+    const before = readChimeraKeys()
+    await registerChimeraKey(
       key,
-    }
-    if (!store.keys.some((item) => item.key === key)) setStore("keys", store.keys.length, entry)
-    persist()
+      newName().trim() || language.t("chimera.keys.defaultName", { index: `${before.keys.length + 1}` }),
+    )
+    const after = readChimeraKeys()
+    setStore("keys", after.keys)
+    setStore("active", after.active)
     setNewName("")
     setNewKey("")
     setAdding(false)
-    await activate(entry)
+    const entry = after.keys.find((item) => item.id === after.active)
+    if (entry) void activate(entry)
   }
 
   return (
@@ -281,8 +291,8 @@ export const SettingsKeysV2: Component<{ directory?: Accessor<string | undefined
             {(entry, index) => (
               <ChimeraKeyRow
                 entry={entry}
-                active={store.active === entry.key}
-                pending={pending() === entry.key}
+                active={store.active === entry.id}
+                pending={pending() === entry.id}
                 bordered={index() > 0}
                 onActivate={() => void activate(entry)}
                 onRename={(name) => rename(entry, name)}

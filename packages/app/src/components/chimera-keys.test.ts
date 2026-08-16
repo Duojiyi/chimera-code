@@ -9,9 +9,9 @@ import {
 } from "./chimera-keys"
 
 const keys: ChimeraKeyEntry[] = [
-  { name: "Personal", key: "sk-aaa" },
-  { name: "Work", key: "sk-bbb" },
-  { name: "Temp", key: "sk-ccc" },
+  { id: "k1", name: "Personal", key: "sk-aaa" },
+  { id: "k2", name: "Work", key: "sk-bbb" },
+  { id: "k3", name: "Temp", key: "sk-ccc" },
 ]
 
 afterEach(() => {
@@ -20,15 +20,15 @@ afterEach(() => {
 })
 
 test("nextActiveKey keeps a non-active selection", () => {
-  expect(nextActiveKey(keys, "sk-aaa", "sk-bbb")).toBe("sk-aaa")
+  expect(nextActiveKey(keys, "k1", "k2")).toBe("k1")
 })
 
 test("nextActiveKey moves to the next remaining key", () => {
-  expect(nextActiveKey(keys, "sk-aaa", "sk-aaa")).toBe("sk-bbb")
+  expect(nextActiveKey(keys, "k1", "k1")).toBe("k2")
 })
 
 test("nextActiveKey clears when the last key is removed", () => {
-  expect(nextActiveKey([keys[0]!], "sk-aaa", "sk-aaa")).toBe("")
+  expect(nextActiveKey([keys[0]!], "k1", "k1")).toBe("")
 })
 
 test("ignores malformed persisted key state", () => {
@@ -39,7 +39,8 @@ test("ignores malformed persisted key state", () => {
     "chimera-keys",
     JSON.stringify({ keys: [{ name: "Valid", key: "sk-valid" }, { name: 3, key: null }], active: "missing" }),
   )
-  expect(readChimeraKeys()).toEqual({ keys: [{ name: "Valid", key: "sk-valid" }], active: "" })
+  // 旧明文格式（无 id）视为无效数据：新格式只认元数据（id/name）
+  expect(readChimeraKeys()).toEqual({ keys: [], active: "" })
 })
 
 test("reacts to local Chimera credential changes", () => {
@@ -50,7 +51,7 @@ test("reacts to local Chimera credential changes", () => {
     const signedIn = createChimeraAuth()
     expect(signedIn()).toBe(false)
 
-    writeChimeraKeys({ keys: [{ name: "Primary", key: "sk-test" }], active: "sk-test" })
+    writeChimeraKeys({ keys: [{ id: "k1", name: "Primary", key: "sk-test" }], active: "k1" })
     expect(signedIn()).toBe(true)
 
     writeChimeraKeys({ keys: [], active: "" })

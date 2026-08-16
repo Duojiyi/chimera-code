@@ -15,12 +15,65 @@ import { useServerSync } from "@/context/server-sync"
 import { showToast } from "@/utils/toast"
 
 // Chimera 密钥管理（设计稿 S6）：同一中转站保存多条密钥，一键切换当前密钥。
-// 列表存于本地（chimera-keys），当前密钥经服务端 auth 保存生效。
+// Phase 4 安全迁移：秘密值存 Electron Main 保险库（key-vault，safeStorage 加密），
+// localStorage 只存元数据（id/name/fingerprint）。Web 形态（无 window.api.keyVault）
+// 回退到本地存储（明文），桌面端优先。
+// 当前密钥经服务端 auth 保存生效。
 
-export type ChimeraKeyEntry = { name: string; key: string }
+export type ChimeraKeyEntry = { id: string; name: string; key: string }
 type KeysState = { keys: ChimeraKeyEntry[]; active: string }
 
 const STORAGE_KEY = "chimera-keys"
+
+type VaultMeta = { id: string; name: string; fingerprint: string }
+type PersistedKeys = { keys: VaultMeta[]; active: string }
+
+const vaultAvailable = () => typeof window !== "undefined" && !!window.api?.keyVault
+
+/** 迁移旧格式（含明文 key）到保险库：幂等，失败不破坏旧数据。 */
+async function migrateLegacyKeys(): Promise<void> {
+  if (!vaultAvailable()) return
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) return
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return
+  const value = parsed as Record<string, unknown>
+  const legacyKeys = Array.isArray(value.keys)
+    ? value.keys.filter(
+        (entry): entry is ChimeraKeyEntry =>
+          !!entry &&
+          typeof entry === "object" &&
+          typeof (entry as Record<string, unknown>).name === "string" &&
+          typeof (entry as Record<string, unknown>).key === "string" &&
+          !!(entry as Record<string, unknown>).key,
+      )
+    : []
+  // 新格式（无明文）无需迁移
+  if (legacyKeys.length === 0 && value.active !== undefined) {
+    const hasPlain = legacyKeys.some((e) => e.key.length > 0)
+    if (!hasPlain) return
+  }
+  if (legacyKeys.length === 0) return
+  const meta: VaultMeta[] = []
+  for (const entry of legacyKeys) {
+    const created = await window.api?.keyVault?.create(entry.name, entry.key)
+    if (created) meta.push({ id: created.id, name: created.name, fingerprint: created.fingerprint })
+  }
+  if (meta.length > 0) {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        keys: meta,
+        active: meta.find((item) => item.name === legacyKeys.find((e) => e.key === (value.active as string))?.name)?.id ?? meta[0]?.id ?? "",
+      } satisfies PersistedKeys),
+    )
+  }
+}
 
 const iconBtn =
   "flex size-6 shrink-0 items-center justify-center rounded-[6px] text-v2-icon-icon-faint transition-colors hover:bg-v2-overlay-simple-overlay-hover hover:text-v2-icon-icon-base"
@@ -33,17 +86,18 @@ export function readChimeraKeys(): KeysState {
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { keys: [], active: "" }
     const value = parsed as Record<string, unknown>
     const keys = Array.isArray(value.keys)
-      ? value.keys.filter(
-          (entry): entry is ChimeraKeyEntry =>
-            !!entry &&
-            typeof entry === "object" &&
-            !Array.isArray(entry) &&
-            typeof (entry as Record<string, unknown>).name === "string" &&
-            typeof (entry as Record<string, unknown>).key === "string" &&
-            !!(entry as Record<string, unknown>).key,
-        )
+      ? value.keys
+          .filter(
+            (entry): entry is VaultMeta =>
+              !!entry &&
+              typeof entry === "object" &&
+              !Array.isArray(entry) &&
+              typeof (entry as Record<string, unknown>).id === "string" &&
+              typeof (entry as Record<string, unknown>).name === "string",
+          )
+          .map((entry) => ({ id: entry.id, name: entry.name, key: "" }))
       : []
-    const active = typeof value.active === "string" && keys.some((entry) => entry.key === value.active) ? value.active : ""
+    const active = typeof value.active === "string" && keys.some((entry) => entry.id === value.active) ? value.active : ""
     return { keys, active }
   } catch {
     return { keys: [], active: "" }
@@ -51,7 +105,15 @@ export function readChimeraKeys(): KeysState {
 }
 
 export function writeChimeraKeys(state: KeysState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  const persisted: PersistedKeys = {
+    keys: state.keys.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      fingerprint: entry.key ? entry.key.slice(0, 12) : "",
+    })),
+    active: state.active,
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted))
   window.dispatchEvent(new CustomEvent("chimera:keys-changed"))
 }
 
@@ -60,13 +122,16 @@ export function requestChimeraKeyPicker() {
 }
 
 export async function switchChimeraKey(input: { entry: ChimeraKeyEntry; sdk: ServerSDK; directory?: string }) {
+  // 明文只在切换瞬间从保险库解密（renderer 用后即弃，不落存储）
+  const secret = input.entry.key || (vaultAvailable() ? await window.api?.keyVault?.secret(input.entry.id) : undefined)
+  if (!secret) throw new Error("secret unavailable")
   await input.sdk.api.integration.connect.key({
     integrationID: BRAND.nameLower,
-    key: input.entry.key,
+    key: secret,
     location: input.directory ? { directory: input.directory } : undefined,
   })
   const state = readChimeraKeys()
-  writeChimeraKeys({ keys: state.keys, active: input.entry.key })
+  writeChimeraKeys({ keys: state.keys, active: input.entry.id })
 }
 
 export function hasChimeraAuth() {
@@ -85,21 +150,27 @@ export function createChimeraAuth() {
   return signedIn
 }
 
-export function registerChimeraKey(key: string, name?: string | ((index: number) => string)) {
+export async function registerChimeraKey(key: string, name?: string | ((index: number) => string)) {
   const state = readChimeraKeys()
-  if (!state.keys.some((item) => item.key === key)) {
-    const index = state.keys.length + 1
-    const resolved = typeof name === "function" ? name(index) : name
-    state.keys.push({ name: resolved ?? `Key ${index}`, key })
+  const index = state.keys.length + 1
+  const resolved = typeof name === "function" ? name(index) : name
+  const entry: ChimeraKeyEntry = { id: "", name: resolved ?? `Key ${index}`, key }
+  if (vaultAvailable()) {
+    const created = await window.api?.keyVault?.create(entry.name, key)
+    if (!created) return
+    entry.id = created.id
+  } else {
+    entry.id = `local-${index}`
   }
-  state.active = key
+  if (!state.keys.some((item) => item.id === entry.id)) state.keys.push(entry)
+  state.active = entry.id
   writeChimeraKeys(state)
 }
 
 /** If the removed key is active, fall through to the next remaining key (or empty). */
 export function nextActiveKey(keys: ChimeraKeyEntry[], active: string, removing: string) {
   if (active !== removing) return active
-  return keys.find((item) => item.key !== removing)?.key ?? ""
+  return keys.find((item) => item.id !== removing)?.id ?? ""
 }
 
 export function showChimeraKeyDeleteConfirm(input: {
@@ -145,9 +216,10 @@ export function showChimeraKeyDeleteConfirm(input: {
   ))
 }
 
-const mask = (key: string) => {
-  if (key.length <= 10) return "••••••"
-  return `${key.slice(0, 8)}••••••${key.slice(-2)}`
+// Phase 4：密钥明文不再进入 renderer 存储，掩码基于保险库 id 尾部（指纹语义）。
+const mask = (id: string) => {
+  const tail = id.slice(-4)
+  return `••••••${tail}`
 }
 
 function KeyMenuItems(props: {
@@ -279,7 +351,7 @@ export const ChimeraKeyRow: Component<{
         </Show>
       </span>
       <span class="flex min-w-0 items-center gap-1.5" classList={{ "w-[260px] shrink-0": !props.compact }}>
-        <span class="truncate font-mono text-[11.5px] text-v2-text-text-muted">{mask(props.entry.key)}</span>
+        <span class="truncate font-mono text-[11.5px] text-v2-text-text-muted">{mask(props.entry.id)}</span>
         <button
           type="button"
           aria-label={language.t("chimera.keys.copy")}
@@ -387,6 +459,16 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
   const serverSDK = useServerSDK()
   const serverSync = useServerSync()
   const [store, setStore] = createStore(readChimeraKeys())
+  // Phase 4 迁移：旧明文格式 → 保险库（幂等）
+  createEffect(() => {
+    void migrateLegacyKeys().then(() => {
+      const migrated = readChimeraKeys()
+      if (migrated.keys.length !== store.keys.length || migrated.active !== store.active) {
+        setStore("keys", migrated.keys)
+        setStore("active", migrated.active)
+      }
+    })
+  })
   const [adding, setAdding] = createSignal(false)
   const [newName, setNewName] = createSignal("")
   const [newKey, setNewKey] = createSignal("")
@@ -398,14 +480,14 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
   const activate = async (entry: ChimeraKeyEntry, opts?: { quiet?: boolean }) => {
     if (pending()) return false
     setError(undefined)
-    setPending(entry.key)
+    setPending(entry.id)
     try {
       await switchChimeraKey({
         entry,
         sdk: serverSDK(),
         directory: props.directory?.(),
       })
-      setStore("active", entry.key)
+      setStore("active", entry.id)
       void serverSync().refreshProviders()
       if (!opts?.quiet) showToast({ title: language.t("chimera.keys.switched", { name: entry.name }), variant: "default" })
       return true
@@ -424,41 +506,49 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
       setError(language.t("chimera.keys.enterKey"))
       return
     }
-    const entry: ChimeraKeyEntry = {
-      name: newName().trim() || language.t("chimera.keys.defaultName", { index: `${store.keys.length + 1}` }),
+    const before = readChimeraKeys()
+    await registerChimeraKey(
       key,
-    }
-    if (!store.keys.some((item) => item.key === key)) setStore("keys", store.keys.length, entry)
-    persist()
+      newName().trim() || language.t("chimera.keys.defaultName", { index: `${before.keys.length + 1}` }),
+    )
+    const after = readChimeraKeys()
+    setStore("keys", after.keys)
+    setStore("active", after.active)
     setNewName("")
     setNewKey("")
     setAdding(false)
-    await activate(entry)
+    const entry = after.keys.find((item) => item.id === after.active)
+    if (entry) void activate(entry)
   }
 
   const rename = (entry: ChimeraKeyEntry, name: string) => {
     const trimmed = name.trim()
     if (!trimmed || trimmed === entry.name) return
-    const index = store.keys.findIndex((item) => item.key === entry.key)
+    const index = store.keys.findIndex((item) => item.id === entry.id)
     if (index < 0) return
     setStore("keys", index, "name", trimmed)
     persist()
+    if (vaultAvailable()) void window.api?.keyVault?.rename(entry.id, trimmed)
     showToast({ title: language.t("chimera.keys.renamed", { name: trimmed }), variant: "default" })
   }
 
   const copy = async (entry: ChimeraKeyEntry) => {
-    await navigator.clipboard.writeText(entry.key)
+    if (vaultAvailable()) {
+      await window.api?.keyVault?.copySecret(entry.id)
+    } else {
+      await navigator.clipboard.writeText(entry.key)
+    }
     showToast({ title: language.t("chimera.keys.copied"), variant: "default" })
   }
 
   const remove = async (entry: ChimeraKeyEntry) => {
-    const nextKey = nextActiveKey(store.keys, store.active, entry.key)
-    const next = store.keys.find((item) => item.key === nextKey)
-    if (store.active === entry.key && next) {
+    const nextKey = nextActiveKey(store.keys, store.active, entry.id)
+    const next = store.keys.find((item) => item.id === nextKey)
+    if (store.active === entry.id && next) {
       const ok = await activate(next, { quiet: true })
       if (!ok) return
     }
-    if (store.active === entry.key && !next) {
+    if (store.active === entry.id && !next) {
       try {
         await fetch(`${serverSDK().url}/auth/${BRAND.nameLower}`, { method: "DELETE" })
       } catch {
@@ -469,21 +559,22 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
     }
     setStore(
       "keys",
-      store.keys.filter((item) => item.key !== entry.key),
+      store.keys.filter((item) => item.id !== entry.id),
     )
     persist()
+    if (vaultAvailable()) void window.api?.keyVault?.remove(entry.id)
     showToast({ title: language.t("chimera.keys.deleted"), variant: "default" })
   }
 
   const confirmRemove = (entry: ChimeraKeyEntry) => {
-    const nextKey = nextActiveKey(store.keys, store.active, entry.key)
+    const nextKey = nextActiveKey(store.keys, store.active, entry.id)
     showChimeraKeyDeleteConfirm({
       dialog,
       language,
       entry,
       last: store.keys.length === 1,
-      inUse: store.active === entry.key,
-      nextName: store.keys.find((item) => item.key === nextKey)?.name,
+      inUse: store.active === entry.id,
+      nextName: store.keys.find((item) => item.id === nextKey)?.name,
       onConfirm: () => void remove(entry),
     })
   }
@@ -516,8 +607,8 @@ export const ChimeraKeysDialog: Component<{ directory?: Accessor<string | undefi
                 {(entry, index) => (
                   <ChimeraKeyRow
                     entry={entry}
-                    active={store.active === entry.key}
-                    pending={pending() === entry.key}
+                    active={store.active === entry.id}
+                    pending={pending() === entry.id}
                     bordered={index() > 0}
                     compact
                     onActivate={() => void activate(entry)}

@@ -42,10 +42,31 @@ export type FatalRendererError = {
   os?: string
 }
 
+/** 密钥保险库元数据（Phase 4）：秘密值永不出 Main 进程。 */
+export type VaultKeyMeta = {
+  id: string
+  name: string
+  fingerprint: string
+  createdAt: number
+}
+
+export type KeyVaultAPI = {
+  list: () => Promise<VaultKeyMeta[]>
+  create: (name: string, secret: string) => Promise<VaultKeyMeta | undefined>
+  rename: (id: string, name: string) => Promise<void>
+  remove: (id: string) => Promise<void>
+  /** 复制密钥：主进程写剪贴板，明文不返回 renderer。 */
+  copySecret: (id: string) => Promise<boolean>
+  /** 仅切换/连接时解密一次：调用方用后即弃，不落存储。 */
+  secret: (id: string) => Promise<string | undefined>
+}
+
 export type ElectronAPI = {
   killSidecar: () => Promise<void>
   installCli: () => Promise<string>
   awaitInitialization: () => Promise<ServerReadyData>
+  /** Chimera 密钥保险库（秘密值仅存 Main，renderer 按 id 操作）。 */
+  keyVault: KeyVaultAPI
   wslServers: WslServersAPI
   updater: UpdaterAPI
   consumeInitialDeepLinks: () => Promise<string[]>
