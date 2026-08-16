@@ -61,14 +61,20 @@ function toolActivity(parts: LedgerPart[] | undefined) {
   return { toolCount, error }
 }
 
-/** 把消息流投影为回合列表（最后一个回合标记 active）。 */
-export function projectTurns(messages: readonly LedgerMessage[]): TurnView[] {
+/** 把消息流投影为回合列表（最后一个回合标记 active）。
+ * parts 通过 partsOf 查找（timeline 的消息与 parts 分仓存储：sync.data.part[messageID]）；
+ * 也兼容消息自带 parts 的结构。 */
+export function projectTurns(
+  messages: readonly LedgerMessage[],
+  partsOf: (messageID: string) => LedgerPart[] = () => [],
+): TurnView[] {
   const turns: TurnView[] = []
   for (const message of messages) {
     if (message.role === "user") {
+      const parts = partsOf(message.id)
       turns.push({
         id: message.id,
-        intent: summarize(textOf(message.parts)),
+        intent: summarize(textOf(parts.length ? parts : message.parts)),
         toolCount: 0,
         error: false,
         assistantCount: 0,
@@ -78,7 +84,8 @@ export function projectTurns(messages: readonly LedgerMessage[]): TurnView[] {
     }
     const turn = turns.at(-1)
     if (!turn) continue
-    const activity = toolActivity(message.parts)
+    const parts = partsOf(message.id)
+    const activity = toolActivity(parts.length ? parts : message.parts)
     turn.toolCount += activity.toolCount
     turn.error = turn.error || activity.error
     turn.assistantCount += 1

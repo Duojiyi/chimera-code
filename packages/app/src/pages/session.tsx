@@ -2101,7 +2101,7 @@ export default function Page() {
                     <div class="flex shrink-0 items-stretch">
                       <div class="min-w-0 flex-1">
                         <ChimeraTurnLedger
-                          turns={projectTurns(messages())}
+                          turns={projectTurns(messages(), (messageID) => sync().data.part[messageID] ?? [])}
                           onJump={(id) => {
                             const message = visibleUserMessages().find((item) => item.id === id)
                             if (!message) return
