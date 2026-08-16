@@ -34,7 +34,10 @@ const require = __cjs_mod__.createRequire(import.meta.url);
 `,
         },
       },
-      externalizeDeps: { include: [nodePtyPkg] },
+      // @chimera/brand 是 TS 源码包（exports 指向 ./src/index.ts），external 后主进程
+      // 会从 node_modules 加载 .ts，触发 Node 的 ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING
+      // （0.1.7 启动崩溃）。把它交给 Rollup 编译进主进程 bundle。
+      externalizeDeps: { include: [nodePtyPkg], exclude: ["@chimera/brand"] },
     },
     plugins: [
       {
