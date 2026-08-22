@@ -28,6 +28,11 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
+      - name: Configure Apple API key path
+        if: runner.os == 'macOS'
+        shell: bash
+        run: echo "APPLE_API_KEY=$RUNNER_TEMP/apple-api-key.p8" >> "$GITHUB_ENV"
+
       - name: Resolve and validate version
         id: meta
         env:
@@ -179,7 +184,6 @@ jobs:
       RUST_TARGET: ${{ matrix.target }}
       CSC_KEYCHAIN: build.keychain
       CHIMERA_REQUIRE_SIGNING: "true"
-      APPLE_API_KEY: ${{ runner.temp }}/apple-api-key.p8
       APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY }}
       APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
