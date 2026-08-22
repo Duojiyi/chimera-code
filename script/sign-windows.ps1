@@ -21,6 +21,9 @@ $vars = @{
 }
 
 if ($vars.Values | Where-Object { -not $_ }) {
+  if ($env:CHIMERA_REQUIRE_SIGNING -eq "true") {
+    throw "Windows signing is required for a production release but Azure Trusted Signing is not configured"
+  }
   Write-Host "Skipping Windows signing because Azure Artifact Signing is not configured"
   exit 0
 }

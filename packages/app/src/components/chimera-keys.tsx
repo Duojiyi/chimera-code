@@ -105,11 +105,20 @@ export function readChimeraKeys(): KeysState {
 }
 
 export function writeChimeraKeys(state: KeysState) {
+  let previous = new Map<string, string>()
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as PersistedKeys | null
+    if (Array.isArray(raw?.keys)) previous = new Map(raw.keys.map((entry) => [entry.id, entry.fingerprint]))
+  } catch {
+    // Invalid legacy data is replaced by the normalized state below.
+  }
   const persisted: PersistedKeys = {
     keys: state.keys.map((entry) => ({
       id: entry.id,
       name: entry.name,
-      fingerprint: entry.key ? entry.key.slice(0, 12) : "",
+      // Renderer state intentionally does not contain vault secrets after startup;
+      // preserve the existing fingerprint when a key is only being switched.
+      fingerprint: entry.key ? entry.key.slice(0, 12) : (previous.get(entry.id) ?? ""),
     })),
     active: state.active,
   }

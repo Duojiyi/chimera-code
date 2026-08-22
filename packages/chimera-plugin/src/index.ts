@@ -20,7 +20,8 @@ function displayName(id: string) {
 }
 
 /** 官方模型目录（models.opencode.ai 镜像的 models.dev 数据）中的模型元数据（仅取本插件需要的字段）。 */
-type OfficialModel = {
+export type OfficialModel = {
+  id?: string
   name?: string
   limit?: { context?: number; output?: number }
   cost?: { input?: number; output?: number; cache_read?: number; cache_write?: number }
@@ -59,9 +60,12 @@ async function officialModels(): Promise<Map<string, OfficialModel>> {
       return index === -1 ? firstParty.length : index
     }
     const providers = Object.entries(data).sort(([a], [b]) => rank(a) - rank(b))
-    for (const [, provider] of providers) {
+    for (const [providerID, provider] of providers) {
       for (const [id, model] of Object.entries(provider.models ?? {})) {
-        if (!map.has(id)) map.set(id, model)
+        const value = { id, ...model }
+        if (!map.has(id)) map.set(id, value)
+        const qualified = providerID + "/" + id
+        if (!map.has(qualified)) map.set(qualified, value)
       }
     }
     officialCatalog = map
@@ -74,6 +78,31 @@ async function officialModels(): Promise<Map<string, OfficialModel>> {
 
 /** 网关模型元数据：官方目录（models.opencode.ai）自动识别，缺失字段用保守默认；
  *  用户可在 chimera.json 的 provider.chimera.models.<id> 手动覆盖。 */
+function modelIDCandidates(id: string) {
+  const value = id.trim()
+  const result = new Set([value, value.toLowerCase()])
+  const slash = value.indexOf("/")
+  if (slash >= 0) {
+    const modelID = value.slice(slash + 1)
+    result.add(modelID)
+    result.add(modelID.toLowerCase())
+  }
+  return result
+}
+
+/** Match gateway IDs against both exact and provider-qualified catalog IDs. */
+export function findOfficialModel(catalog: Map<string, OfficialModel>, id: string) {
+  for (const candidate of modelIDCandidates(id)) {
+    const exact = catalog.get(candidate)
+    if (exact) return exact
+  }
+  const candidates = modelIDCandidates(id)
+  for (const [key, model] of catalog) {
+    if (candidates.has(key.toLowerCase()) || (model.id && candidates.has(model.id.toLowerCase()))) return model
+  }
+  return undefined
+}
+
 function gatewayModel(id: string, official?: OfficialModel) {
   const modality = (values: string[] | undefined, key: string, fallback: boolean) =>
     values ? values.includes(key) : fallback
@@ -100,7 +129,8 @@ function gatewayModel(id: string, official?: OfficialModel) {
     },
     capabilities: {
       temperature: official?.temperature ?? true,
-      reasoning: official?.reasoning ?? false,
+      // Prefer metadata returned by the gateway when the optional catalog is unavailable.
+      reasoning: official?.reasoning ?? Boolean(official?.reasoning_options?.length),
       attachment: official?.attachment ?? false,
       toolcall: official?.tool_call ?? true,
       input: {
@@ -121,16 +151,27 @@ function gatewayModel(id: string, official?: OfficialModel) {
   }
 }
 
-/** 从官方 reasoning_options 生成 effort 变体（low/medium/high/xhigh/max）。 */
-function gatewayVariants(official?: OfficialModel): Record<string, Record<string, unknown>> {
-  const effort = official?.reasoning_options?.find((option) => option["type"] === "effort")
-  const values = effort?.["values"]
-  if (!Array.isArray(values)) return {}
-  return Object.fromEntries(
-    values
-      .filter((value): value is string => typeof value === "string" && value !== "none")
-      .map((value) => [value, { reasoningEffort: value }]),
-  )
+/**
+ * Convert gateway capability metadata to OpenAI-compatible variants.
+ * The gateway protocol uses reasoning_effort; levels remain provider-defined.
+ */
+export function gatewayVariants(official?: OfficialModel): Record<string, Record<string, unknown>> {
+  const options = official?.reasoning_options ?? []
+  const effort = options.find((option) => option.type === "effort")
+  const values = effort?.values
+  if (Array.isArray(values)) {
+    return Object.fromEntries(
+      values.flatMap((value) => {
+        if (value === null) return [["none", { reasoningEffort: "none" }]]
+        if (typeof value !== "string") return []
+        return [[value, { reasoningEffort: value }]]
+      }),
+    )
+  }
+  const toggle = options.some((option) => option.type === "toggle")
+  const budget = options.some((option) => option.type === "budget_tokens")
+  if (toggle || budget) return { none: { reasoningEffort: "none" }, high: { reasoningEffort: "high" } }
+  return {}
 }
 
 /**
@@ -202,12 +243,14 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
             signal: AbortSignal.timeout(10_000),
           })
           if (!res.ok) return {}
-          const data = (await res.json()) as { data?: Array<{ id?: string }> }
+          const data = (await res.json()) as { data?: Array<OfficialModel> }
           const official = await officialModels()
           const models: Record<string, unknown> = {}
           for (const item of data.data ?? []) {
             if (!item.id) continue
-            models[item.id] = gatewayModel(item.id, official.get(item.id))
+            const catalog = findOfficialModel(official, item.id)
+            const metadata = catalog ? { ...catalog, ...item } : item
+            models[item.id] = gatewayModel(item.id, metadata)
           }
           return models as GatewayModels
         } catch {

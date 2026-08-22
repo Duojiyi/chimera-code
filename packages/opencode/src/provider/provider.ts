@@ -34,6 +34,14 @@ import { ProviderError } from "./error"
 
 const OPENAI_HEADER_TIMEOUT_DEFAULT = 300_000
 
+function authFingerprint(auths: Record<string, Auth.Info>) {
+  return Hash.fast(
+    JSON.stringify(
+      Object.entries(auths).sort(([left], [right]) => left.localeCompare(right)),
+    ),
+  )
+}
+
 function wrapSSE(res: Response, ms: number, ctl: AbortController) {
   if (typeof ms !== "number" || ms <= 0) return res
   if (!res.body) return res
@@ -104,17 +112,46 @@ function googleVertexEndpoint(location: string) {
   return `${location}-aiplatform.googleapis.com`
 }
 
+function googleVertexBaseURL(project: string, location: string) {
+  return `https://${googleVertexEndpoint(location)}/v1beta1/projects/${project}/locations/${location}/publishers/google`
+}
+
 type BundledSDK = {
   languageModel(modelId: string): LanguageModelV3
   chat?: (modelId: string) => LanguageModelV3
   responses?: (modelId: string) => LanguageModelV3
 }
 
-// Chimera: 网关同时支持 OpenAI 兼容与 Anthropic 协议，仅保留这两个 SDK。
-// 其余内置 provider loader 已随品牌化裁剪（见 PLAN.md commit-B）。
+// Keep the upstream bundled loaders available so native third-party providers remain
+// first-class. OpenAI-compatible and Anthropic are still the common Chimera paths,
+// but provider-specific SDKs must not fall back to runtime npm installation.
 const BUNDLED_PROVIDERS: Record<string, () => Promise<(opts: any) => BundledSDK>> = {
+  "@ai-sdk/amazon-bedrock": () => import("@ai-sdk/amazon-bedrock").then((m) => m.createAmazonBedrock),
+  "@ai-sdk/amazon-bedrock/mantle": () => import("@ai-sdk/amazon-bedrock/mantle").then((m) => m.createBedrockMantle),
   "@ai-sdk/anthropic": () => import("@ai-sdk/anthropic").then((m) => m.createAnthropic),
+  "@ai-sdk/azure": () => import("@ai-sdk/azure").then((m) => m.createAzure),
+  "@ai-sdk/google": () => import("@ai-sdk/google").then((m) => m.createGoogleGenerativeAI),
+  "@ai-sdk/google-vertex": () => import("@ai-sdk/google-vertex").then((m) => m.createVertex),
+  "@ai-sdk/google-vertex/anthropic": () =>
+    import("@ai-sdk/google-vertex/anthropic").then((m) => m.createVertexAnthropic),
+  "@ai-sdk/openai": () => import("@ai-sdk/openai").then((m) => m.createOpenAI),
   "@ai-sdk/openai-compatible": () => import("@ai-sdk/openai-compatible").then((m) => m.createOpenAICompatible),
+  "@openrouter/ai-sdk-provider": () => import("@openrouter/ai-sdk-provider").then((m) => m.createOpenRouter),
+  "@ai-sdk/xai": () => import("@ai-sdk/xai").then((m) => m.createXai),
+  "@ai-sdk/mistral": () => import("@ai-sdk/mistral").then((m) => m.createMistral),
+  "@ai-sdk/groq": () => import("@ai-sdk/groq").then((m) => m.createGroq),
+  "@ai-sdk/deepinfra": () => import("@ai-sdk/deepinfra").then((m) => m.createDeepInfra),
+  "@ai-sdk/cerebras": () => import("@ai-sdk/cerebras").then((m) => m.createCerebras),
+  "@ai-sdk/cohere": () => import("@ai-sdk/cohere").then((m) => m.createCohere),
+  "@ai-sdk/gateway": () => import("@ai-sdk/gateway").then((m) => m.createGateway),
+  "@ai-sdk/togetherai": () => import("@ai-sdk/togetherai").then((m) => m.createTogetherAI),
+  "@ai-sdk/perplexity": () => import("@ai-sdk/perplexity").then((m) => m.createPerplexity),
+  "@ai-sdk/vercel": () => import("@ai-sdk/vercel").then((m) => m.createVercel),
+  "@ai-sdk/alibaba": () => import("@ai-sdk/alibaba").then((m) => m.createAlibaba),
+  "gitlab-ai-provider": () => import("gitlab-ai-provider").then((m) => m.createGitLab),
+  "@ai-sdk/github-copilot": () =>
+    import("@opencode-ai/core/github-copilot/copilot-provider").then((m) => m.createOpenaiCompatible),
+  "venice-ai-sdk-provider": () => import("venice-ai-sdk-provider").then((m) => m.createVenice),
 }
 
 type CustomModelLoader = (sdk: any, modelID: string, options?: Record<string, any>, model?: Model) => Promise<any>
@@ -477,6 +514,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
 
       const autoload = Boolean(project)
       if (!autoload) return { autoload: false }
+      const configuredBaseURL = typeof provider.options?.baseURL === "string" ? provider.options.baseURL : undefined
       return {
         autoload: true,
         vars(_options: Record<string, any>) {
@@ -489,6 +527,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         options: {
           project,
           location,
+          ...(configuredBaseURL ? { baseURL: configuredBaseURL } : {}),
           fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
             const { GoogleAuth } = await import("google-auth-library")
             const auth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/cloud-platform"] })
@@ -1129,6 +1168,8 @@ export type Error = ModelNotFoundError | InitError | NoProvidersError | NoModels
 
 export interface Interface {
   readonly list: () => Effect.Effect<Record<ProviderV2.ID, Info>>
+  /** Rebuild provider/model discovery after credentials or configuration change. */
+  readonly refresh: () => Effect.Effect<void>
   readonly getProvider: (providerID: ProviderV2.ID) => Effect.Effect<Info>
   readonly getModel: (providerID: ProviderV2.ID, modelID: ModelV2.ID) => Effect.Effect<Model, ModelNotFoundError>
   readonly getLanguage: (model: Model) => Effect.Effect<LanguageModelV3, ModelNotFoundError>
@@ -1147,6 +1188,7 @@ interface State {
   sdk: Map<string, BundledSDK>
   modelLoaders: Record<string, CustomModelLoader>
   varsLoaders: Record<string, CustomVarsLoader>
+  authFingerprint: string
 }
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/Provider") {}
@@ -1549,6 +1591,7 @@ const layer = Layer.effect(
 
         // load apikeys
         const auths = yield* auth.all().pipe(Effect.orDie)
+        const currentAuthFingerprint = authFingerprint(auths)
         for (const [id, provider] of Object.entries(auths)) {
           const providerID = ProviderV2.ID.make(id)
           if (disabled.has(providerID)) continue
@@ -1680,26 +1723,37 @@ const layer = Layer.effect(
           sdk,
           modelLoaders,
           varsLoaders,
+          authFingerprint: currentAuthFingerprint,
         }
       }),
     )
 
-    const list = Effect.fn("Provider.list")(() => InstanceState.use(state, (s) => s.providers))
+    const list = Effect.fn("Provider.list")(function* () {
+      // Auth is stored globally while provider discovery is cached per instance.
+      // Compare a cheap fingerprint on every listing request so a key switch from
+      // the renderer invalidates the instance snapshot without requiring restart.
+      const current = yield* auth.all().pipe(Effect.orDie)
+      const currentFingerprint = authFingerprint(current)
+      const cached = yield* InstanceState.get(state)
+      if (cached.authFingerprint !== currentFingerprint) yield* InstanceState.invalidate(state)
+      return yield* InstanceState.use(state, (s) => s.providers)
+    })
+    const refresh = Effect.fn("Provider.refresh")(() => InstanceState.invalidate(state))
 
     async function resolveSDK(model: Model, s: State, envs: Record<string, string | undefined>) {
       try {
         const provider = s.providers[model.providerID]
         const options = { ...provider.options }
 
-        if (
-          model.providerID === "google-vertex" &&
-          model.api.npm === "@ai-sdk/google-vertex/anthropic" &&
-          !options.baseURL
-        ) {
-          const baseURL = googleVertexAnthropicBaseURL(
-            typeof options.project === "string" ? options.project : undefined,
-            typeof options.location === "string" ? options.location : undefined,
-          )
+        if (model.providerID === "google-vertex" && !options.baseURL) {
+          const project = typeof options.project === "string" ? options.project : undefined
+          const location = typeof options.location === "string" ? options.location : undefined
+          const baseURL =
+            model.api.npm === "@ai-sdk/google-vertex/anthropic"
+              ? googleVertexAnthropicBaseURL(project, location)
+              : model.api.npm === "@ai-sdk/google-vertex" && project && location
+                ? googleVertexBaseURL(project, location)
+                : undefined
           if (baseURL) options.baseURL = baseURL
         }
 
@@ -1995,7 +2049,7 @@ const layer = Layer.effect(
       }
     })
 
-    return Service.of({ list, getProvider, getModel, getLanguage, closest, getSmallModel, defaultModel })
+    return Service.of({ list, refresh, getProvider, getModel, getLanguage, closest, getSmallModel, defaultModel })
   }),
 )
 

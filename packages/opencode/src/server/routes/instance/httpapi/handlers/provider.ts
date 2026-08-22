@@ -110,6 +110,9 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       // result (e.g. no further redirect), serialize as JSON `null` instead
       // of an empty body so clients can `.json()` parse the response.
       const result = yield* authorize({ params: ctx.params, payload })
+      // API authorization persists credentials immediately; invalidate the provider
+      // snapshot so newly discovered models are visible without restarting.
+      if (result === undefined) yield* provider.refresh()
       return HttpServerResponse.jsonUnsafe(result ?? null)
     })
 
@@ -124,6 +127,7 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
           code: ctx.payload.code,
         }),
       )
+      yield* provider.refresh()
       return true
     })
 
