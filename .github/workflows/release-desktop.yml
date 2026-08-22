@@ -25,6 +25,7 @@ jobs:
       contents: write
     outputs:
       version: ${{ steps.meta.outputs.version }}
+      tag_sha: ${{ steps.meta.outputs.tag_sha }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
@@ -39,6 +40,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           RELEASE_REF: ${{ github.ref_name }}
           REQUESTED_VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Production releases must come from the protected dev branch or an
           # already-pushed version tag. This prevents a manual dispatch from
@@ -65,7 +67,13 @@ jobs:
           # A pushed tag is immutable for this workflow. On manual dispatch a
           # missing tag may be created by gh release create, but an existing
           # tag must point at this exact commit.
-          TAG_SHA="$(git ls-remote origin "refs/tags/$TAG^{commit}" | awk '{print $1}')"
+          TAG_REF="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" --jq .object.sha 2>/dev/null || true)"
+          TAG_TYPE="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" --jq .object.type 2>/dev/null || true)"
+          if [ "$TAG_TYPE" = "tag" ]; then
+            TAG_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_REF" --jq .object.sha)"
+          else
+            TAG_SHA="$TAG_REF"
+          fi
           if [ -n "$TAG_SHA" ]; then
             if [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
               echo "$TAG points to $TAG_SHA, expected $GITHUB_SHA"
@@ -93,6 +101,7 @@ jobs:
             fi
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_sha=$TAG_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Create draft GitHub Release
         env:
@@ -104,7 +113,7 @@ jobs:
               echo "Release $TAG is already published; refusing to mutate it"
               exit 1
             fi
-            TAG_SHA="$(git rev-list -n 1 "refs/tags/$TAG" 2>/dev/null || true)"
+            TAG_SHA="${{ needs.prepare.outputs.tag_sha }}"
             if [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
               echo "Draft release $TAG is bound to tag commit $TAG_SHA, expected $GITHUB_SHA"
               exit 1
