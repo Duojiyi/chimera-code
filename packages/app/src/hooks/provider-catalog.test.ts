@@ -1,57 +1,74 @@
 import { expect, test } from "bun:test"
 import type { NormalizedProviderListResponse } from "@opencode-ai/session-ui/context"
-import { resolveDefaultModel, selectProviderCatalog } from "./provider-catalog"
+import type { Provider } from "@opencode-ai/sdk/v2"
+import { mergeProviderCatalog, resolveDefaultModel, selectProviderCatalog } from "./provider-catalog"
 
-const catalog = (id: string): NormalizedProviderListResponse => ({
-  all: new Map([[id, { id, name: id, source: "api", env: [], options: {}, models: {} }]]),
-  connected: [id],
-  default: { [id]: `${id}-model` },
+const catalog = (id: string, model = `${id}-model`): NormalizedProviderListResponse => {
+  const provider = {
+    id,
+    name: id,
+    source: "api",
+    env: [],
+    options: {},
+    models: { [model]: { id: model } },
+  } as unknown as Provider
+  return {
+    all: new Map<string, Provider>([[id, provider]]),
+    connected: [id],
+    default: { [id]: model },
+  }
+}
+
+test("merges global and directory providers instead of replacing either source", () => {
+  const result = mergeProviderCatalog(catalog("global"), catalog("directory"))
+
+  expect([...result.all.keys()]).toEqual(["global", "directory"])
+  expect(result.connected).toEqual(["global", "directory"])
+  expect(result.default).toEqual({ global: "global-model", directory: "directory-model" })
 })
 
-test("selects the ready catalog for an explicit directory", () => {
-  const directory = catalog("directory")
+test("directory metadata and models override global metadata without erasing global models", () => {
+  const global = catalog("shared", "global-model")
+  const directory = catalog("shared", "directory-model")
+  directory.all.get("shared")!.name = "Project provider"
+  directory.all.get("shared")!.models.extra = { id: "extra" } as never
 
-  expect(
-    selectProviderCatalog({
-      explicit: true,
-      directory: "/repo",
-      catalog: { ready: true, providers: directory },
-    }),
-  ).toBe(directory)
+  const result = mergeProviderCatalog(global, directory)
+  const provider = result.all.get("shared")!
+
+  expect(provider.name).toBe("Project provider")
+  expect(Object.keys(provider.models)).toEqual(["global-model", "directory-model", "extra"])
+  expect(result.default.shared).toBe("directory-model")
 })
 
-test("returns an empty catalog while an explicit directory is unresolved", () => {
-  expect(selectProviderCatalog({ explicit: true })).toEqual({ all: new Map(), connected: [], default: {} })
-  expect(
-    selectProviderCatalog({
-      explicit: true,
-      directory: "/repo",
-      catalog: { ready: false, providers: catalog("directory") },
-    }),
-  ).toEqual({ all: new Map(), connected: [], default: {} })
+test("directory default model takes precedence when provided", () => {
+  const global = { ...catalog("global"), defaultModel: { providerID: "global", modelID: "global-model" } }
+  const directory = { ...catalog("directory"), defaultModel: { providerID: "directory", modelID: "directory-model" } }
+
+  expect(mergeProviderCatalog(global, directory).defaultModel).toEqual({
+    providerID: "directory",
+    modelID: "directory-model",
+  })
 })
 
-test("uses the route catalog when it is ready", () => {
-  const directory = catalog("directory")
-
-  expect(
-    selectProviderCatalog({
-      explicit: false,
-      directory: "/repo",
-      catalog: { ready: true, providers: directory },
-      global: catalog("global"),
-    }),
-  ).toBe(directory)
-})
-
-test("falls back to the global catalog for route consumers", () => {
+test("uses the ready catalog as a global overlay for a directory", () => {
   const global = catalog("global")
+  const directory = catalog("directory")
+  const result = selectProviderCatalog({
+    directory: "/repo",
+    catalog: { ready: true, providers: directory },
+    global,
+  })
 
-  expect(selectProviderCatalog({ explicit: false, global })).toBe(global)
+  expect([...result.all.keys()]).toEqual(["global", "directory"])
+})
+
+test("falls back to global while a directory catalog is unresolved", () => {
+  const global = catalog("global")
+  expect(selectProviderCatalog({ global })).toBe(global)
   expect(
     selectProviderCatalog({
-      explicit: false,
-      directory: "/repo",
+        directory: "/repo",
       catalog: { ready: false, providers: catalog("directory") },
       global,
     }),

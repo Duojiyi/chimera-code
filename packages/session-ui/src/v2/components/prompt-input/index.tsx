@@ -535,7 +535,7 @@ export function PromptInputV2AddMenu(props: {
 function ChimeraEffortControl(props: { control: PromptInputV2SelectControl }) {
   const i18n = useI18n()
   const options = () =>
-    props.control.options().filter((option) => option.id !== "default" && option.id !== "none")
+    props.control.options().filter((option) => option.id !== "default")
   const current = () => {
     const id = props.control.current()
     if (options().some((option) => option.id === id)) return id
@@ -639,11 +639,14 @@ function effortFallback(ids: string[]) {
 }
 
 function effortLabel(t: (key: string) => string, id: string) {
+  if (id === "none") return t("ui.chimera.effort.none")
   if (id === "low") return t("ui.chimera.effort.low")
   if (id === "medium") return t("ui.chimera.effort.medium")
   if (id === "high") return t("ui.chimera.effort.high")
   if (id === "xhigh" || id === "extra") return t("ui.chimera.effort.extra")
   if (id === "max") return t("ui.chimera.effort.max")
+  const budget = /^budget-(\d+)$/.exec(id)
+  if (budget) return `${budget[1]} tokens`
   return id
 }
 

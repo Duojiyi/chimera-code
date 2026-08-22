@@ -93,6 +93,41 @@ const it = testEffect(
   ]),
 )
 const experimentalModels = testEffect(providerLayer({ enableExperimentalModels: true }))
+const authIt = testEffect(providerLayer({ disableDefaultPlugins: true }))
+
+authIt.instance(
+  "provider list rebuilds when auth fingerprint changes",
+  Effect.gen(function* () {
+    yield* setProcessEnv(
+      "OPENCODE_AUTH_CONTENT",
+      JSON.stringify({ "switchable-provider": { type: "api", key: "key-a" } }),
+    )
+
+    const first = yield* list
+    expect(first[ProviderV2.ID.make("switchable-provider")].key).toBe("key-a")
+
+    // The same instance must observe a renderer-side credential switch on the
+    // next listing request; a restart or explicit Ctrl+R must not be required.
+    process.env.OPENCODE_AUTH_CONTENT = JSON.stringify({
+      "switchable-provider": { type: "api", key: "key-b" },
+    })
+
+    const second = yield* list
+    expect(second[ProviderV2.ID.make("switchable-provider")].key).toBe("key-b")
+  }),
+  {
+    config: {
+      provider: {
+        "switchable-provider": {
+          name: "Switchable Provider",
+          npm: "@ai-sdk/openai-compatible",
+          api: "https://api.example.test/v1",
+          models: { "switchable-model": { name: "Switchable Model" } },
+        },
+      },
+    },
+  },
+)
 
 const alphaProviderConfig = {
   provider: {

@@ -321,14 +321,16 @@ export function usePromptInputV2Controller(props: PromptInputV2ControllerProps):
     })),
   )
   const variants = createMemo(() =>
-    props.controls.model.selection.variant.list().filter((id) => id !== "default" && id !== "none"),
+    props.controls.model.selection.variant.list().filter((id) => id !== "default"),
   )
   createEffect(() => {
     const ids = variants()
-    if (!ids.includes("high")) return
     const selected = props.controls.model.selection.variant.current()
     if (selected && ids.includes(selected)) return
-    props.controls.model.selection.variant.set("high")
+    const fallback = ids.includes("medium")
+      ? "medium"
+      : ids[Math.floor((ids.length - 1) / 2)]
+    if (fallback) props.controls.model.selection.variant.set(fallback)
   })
   const controller = createPromptInputV2Controller({
     store: () => prompt.capture().store,
@@ -414,8 +416,8 @@ export function usePromptInputV2Controller(props: PromptInputV2ControllerProps):
         current: () => {
           const selected = props.controls.model.selection.variant.current()
           if (selected && variants().includes(selected)) return selected
-          if (variants().includes("high")) return "high"
-          return ""
+          if (variants().includes("medium")) return "medium"
+          return variants()[Math.floor((variants().length - 1) / 2)] ?? ""
         },
         onSelect: (value) => props.controls.model.selection.variant.set(value),
         keybind: () => command.keybindParts("model.variant.cycle"),

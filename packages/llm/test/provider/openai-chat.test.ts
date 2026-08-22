@@ -5,6 +5,7 @@ import { LLM, LLMError, LLMEvent, Message, Model, ToolCallPart, Usage } from "..
 import * as Azure from "../../src/providers/azure"
 import * as OpenAI from "../../src/providers/openai"
 import * as OpenAIChat from "../../src/protocols/openai-chat"
+import * as OpenAICompatibleChat from "../../src/protocols/openai-compatible-chat"
 import { ProviderShared } from "../../src/protocols/shared"
 import { Auth, LLMClient } from "../../src/route"
 import { it } from "../lib/effect"
@@ -105,6 +106,30 @@ describe("OpenAI Chat route", () => {
       expect(prepared.body.store).toBe(false)
       expect(prepared.body.reasoning_effort).toBe("low")
     }),
+  )
+
+  it.effect("forwards the compatible gateway thinking extension in the HTTP body", () =>
+    LLMClient.generate(
+      LLM.request({
+        model: OpenAICompatibleChat.route
+          .with({ endpoint: { baseURL: "https://gateway.test/v1/" }, auth: Auth.bearer("test") })
+          .model({ provider: "chimera", id: "gateway-model" }),
+        prompt: "think",
+        http: { body: { thinking: { type: "enabled", budget_tokens: 4096 } } },
+      }),
+    ).pipe(
+      Effect.provide(
+        dynamicResponse((input) =>
+          Effect.gen(function* () {
+            const body = JSON.parse(input.text) as Record<string, unknown>
+            expect(body.thinking).toEqual({ type: "enabled", budget_tokens: 4096 })
+            return input.respond(sseEvents(deltaChunk({}, "stop")), {
+              headers: { "content-type": "text/event-stream" },
+            })
+          }),
+        ),
+      ),
+    ),
   )
 
   it.effect("adds native query params to the Chat Completions URL", () =>

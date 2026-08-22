@@ -67,13 +67,18 @@ const PROTOCOL_BODY_OVERLAY_DENYLIST = new Set([
   "top_p",
 ])
 
-const forbiddenBodyOverlayKeys = (body: Record<string, unknown>) =>
-  Object.keys(body).filter((key) => PROTOCOL_BODY_OVERLAY_DENYLIST.has(key))
+const forbiddenBodyOverlayKeys = (body: Record<string, unknown>, allowed: ReadonlySet<string>) =>
+  Object.keys(body).filter((key) => PROTOCOL_BODY_OVERLAY_DENYLIST.has(key) && !allowed.has(key))
 
-const bodyWithOverlay = <Body>(body: Body, request: LLMRequest, encodeBody: (body: Body) => string) =>
+const bodyWithOverlay = <Body>(
+  body: Body,
+  request: LLMRequest,
+  encodeBody: (body: Body) => string,
+  allowedBodyOverlayKeys: ReadonlySet<string>,
+) =>
   Effect.gen(function* () {
     if (request.http?.body === undefined) return { jsonBody: body, bodyText: encodeBody(body) }
-    const forbiddenKeys = forbiddenBodyOverlayKeys(request.http.body)
+    const forbiddenKeys = forbiddenBodyOverlayKeys(request.http.body, allowedBodyOverlayKeys)
     if (forbiddenKeys.length > 0)
       return yield* ProviderShared.invalidRequest(
         `http.body cannot overlay protocol-owned field(s): ${forbiddenKeys.join(", ")}`,
@@ -85,13 +90,20 @@ const bodyWithOverlay = <Body>(body: Body, request: LLMRequest, encodeBody: (bod
     return yield* ProviderShared.invalidRequest("http.body can only overlay JSON object request bodies")
   })
 
-export const jsonRequestParts = <Body>(input: JsonRequestInput<Body>) =>
+export const jsonRequestParts = <Body>(
+  input: JsonRequestInput<Body> & { readonly allowedBodyOverlayKeys?: ReadonlySet<string> },
+) =>
   Effect.gen(function* () {
     const url = applyQuery(
       renderEndpoint(input.endpoint, { request: input.request, body: input.body }).toString(),
       input.request.http?.query,
     )
-    const body = yield* bodyWithOverlay(input.body, input.request, input.encodeBody)
+    const body = yield* bodyWithOverlay(
+      input.body,
+      input.request,
+      input.encodeBody,
+      input.allowedBodyOverlayKeys ?? new Set(),
+    )
     const headers = yield* Auth.toEffect(input.auth)({
       request: input.request,
       method: "POST",
@@ -107,6 +119,8 @@ export const jsonRequestParts = <Body>(input: JsonRequestInput<Body>) =>
 
 export interface HttpJsonInput<_Body, Frame> {
   readonly framing: FramingDef<Frame>
+  /** Provider-native keys that variants may overlay onto a protocol body. */
+  readonly allowedBodyOverlayKeys?: ReadonlySet<string>
 }
 
 export type HttpJsonPatch<Body, Frame> = Partial<HttpJsonInput<Body, Frame>>
@@ -121,6 +135,7 @@ export const httpJson = <Body, Frame>(input: HttpJsonInput<Body, Frame>): HttpJs
   prepare: (prepareInput) =>
     jsonRequestParts({
       ...prepareInput,
+      allowedBodyOverlayKeys: input.allowedBodyOverlayKeys,
     }).pipe(
       Effect.map((parts) => ({
         request: ProviderShared.jsonPost({ url: parts.url, body: parts.bodyText, headers: parts.headers }),

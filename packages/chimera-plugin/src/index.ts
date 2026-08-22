@@ -145,15 +145,16 @@ function gatewayModel(id: string, official?: OfficialModel) {
     },
     release_date: official?.release_date ?? "",
     // 思考强度变体：插件模型不经过上游 reasoningVariants 管道（provider.ts
-    // 对 plugin models 原样入库），按 openai-compatible 的 effort 映射
-    // （{ reasoningEffort }，网关透传 reasoning_effort）在此直接生成。
+    // 对 plugin models 原样入库），按网关元数据生成请求变体：
+    // effort/toggle 使用 reasoning_effort，budget_tokens 使用 thinking.budget_tokens。
     variants: gatewayVariants(official),
   }
 }
 
 /**
  * Convert gateway capability metadata to OpenAI-compatible variants.
- * The gateway protocol uses reasoning_effort; levels remain provider-defined.
+ * Effort/toggle options use reasoning_effort; token budgets use the gateway's
+ * `thinking.budget_tokens` extension and remain provider-defined.
  */
 export function gatewayVariants(official?: OfficialModel): Record<string, Record<string, unknown>> {
   const options = official?.reasoning_options ?? []
@@ -178,9 +179,12 @@ export function gatewayVariants(official?: OfficialModel): Record<string, Record
     return Object.fromEntries(
       values.map((tokens) => [
         `budget-${tokens}`,
-        // OpenAI-compatible gateways commonly expose budget_tokens through
-        // reasoning_effort. Keep the exact server-advertised budget dynamic.
-        { reasoningEffort: String(tokens) },
+        // `budget_tokens` is a token budget, not an effort enum. The
+        // OpenAI-compatible SDK forwards unknown provider options verbatim,
+        // so use the gateway's native extension instead of coercing a token
+        // count into `reasoning_effort` (which would silently change the
+        // request semantics on strict gateways).
+        { thinking: { type: "enabled", budget_tokens: tokens } },
       ]),
     )
   }
@@ -252,25 +256,30 @@ export async function ChimeraPlugin(_input: PluginInput): Promise<Hooks> {
       async models(_provider, ctx) {
         const auth = ctx.auth
         if (!auth || auth.type !== "api" || !auth.key) return {}
-        try {
-          const res = await fetch(gateway("v1/models"), {
-            headers: { authorization: `Bearer ${auth.key}` },
-            signal: AbortSignal.timeout(10_000),
-          })
-          if (!res.ok) return {}
-          const data = (await res.json()) as { data?: Array<OfficialModel> }
-          const official = await officialModels()
-          const models: Record<string, unknown> = {}
-          for (const item of data.data ?? []) {
-            if (!item.id) continue
-            const catalog = findOfficialModel(official, item.id)
-            const metadata = catalog ? { ...catalog, ...item } : item
-            models[item.id] = gatewayModel(item.id, metadata)
-          }
-          return models as GatewayModels
-        } catch {
-          return {}
+
+        // A discovery failure is not the same as a provider with zero models.
+        // Propagate it so the server keeps the error observable and does not
+        // silently delete the provider from the model list during a transient
+        // network outage or after a key switch.
+        const res = await fetch(gateway("v1/models"), {
+          headers: { authorization: `Bearer ${auth.key}` },
+          signal: AbortSignal.timeout(10_000),
+        })
+        if (!res.ok) {
+          throw new Error(`Chimera model discovery failed (${res.status} ${res.statusText})`)
         }
+
+        const data = (await res.json()) as { data?: Array<OfficialModel> }
+        if (!Array.isArray(data.data)) throw new Error("Chimera model discovery returned an invalid payload")
+        const official = await officialModels()
+        const models: Record<string, unknown> = {}
+        for (const item of data.data) {
+          if (!item.id) continue
+          const catalog = findOfficialModel(official, item.id)
+          const metadata = catalog ? { ...catalog, ...item } : item
+          models[item.id] = gatewayModel(item.id, metadata)
+        }
+        return models as GatewayModels
       },
     },
 

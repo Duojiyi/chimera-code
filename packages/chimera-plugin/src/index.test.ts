@@ -75,9 +75,9 @@ test("gateway variants support toggle and budget metadata", () => {
     high: { reasoningEffort: "high" },
   })
   expect(gatewayVariants({ reasoning_options: [{ type: "budget_tokens", min: 512, max: 4096 }] })).toEqual({
-    "budget-512": { reasoningEffort: "512" },
-    "budget-1448": { reasoningEffort: "1448" },
-    "budget-4096": { reasoningEffort: "4096" },
+    "budget-512": { thinking: { type: "enabled", budget_tokens: 512 } },
+    "budget-1448": { thinking: { type: "enabled", budget_tokens: 1448 } },
+    "budget-4096": { thinking: { type: "enabled", budget_tokens: 4096 } },
   })
 })
 

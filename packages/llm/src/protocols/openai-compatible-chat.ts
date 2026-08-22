@@ -19,6 +19,10 @@ export const route = Route.make({
   protocol: OpenAIChat.protocol,
   endpoint: Endpoint.path("/chat/completions"),
   framing: Framing.sse,
+  // Chimera's OpenAI-compatible gateway exposes token-budget thinking as a
+  // provider-native extension. Keep the generic protocol denylist intact for
+  // all other routes, but permit this one explicit extension here.
+  allowBodyOverlayKeys: ["thinking"],
 })
 
 export * as OpenAICompatibleChat from "./openai-compatible-chat"

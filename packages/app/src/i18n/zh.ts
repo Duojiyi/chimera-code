@@ -1349,6 +1349,7 @@ export const dict = {
   "ui.chimera.effort.faster": "更快",
   "ui.chimera.effort.smarter": "更强",
   "ui.chimera.effort.default": "标准",
+  "ui.chimera.effort.none": "关闭",
   "ui.chimera.effort.low": "Low",
   "ui.chimera.effort.medium": "Medium",
   "ui.chimera.effort.high": "High",

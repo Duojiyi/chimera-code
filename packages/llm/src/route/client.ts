@@ -194,6 +194,8 @@ export interface MakeInput<Body, Frame, Event, State> {
   readonly framing: Framing<Frame>
   /** Static / per-request headers added before `auth` runs. */
   readonly headers?: (input: { readonly request: LLMRequest }) => Record<string, string>
+  /** Provider-native body keys allowed for model variant overlays. */
+  readonly allowBodyOverlayKeys?: ReadonlyArray<string>
   /** Route/request defaults used when compiling requests for this route. */
   readonly defaults?: RouteDefaultsInput
 }
@@ -333,7 +335,10 @@ export function make<Body, Prepared, Frame, Event, State>(
     endpoint: input.endpoint,
     auth: input.auth,
     headers: input.headers,
-    transport: HttpTransport.httpJson({ framing: input.framing }),
+    transport: HttpTransport.httpJson({
+      framing: input.framing,
+      allowedBodyOverlayKeys: new Set(input.allowBodyOverlayKeys ?? []),
+    }),
     defaults: input.defaults,
   })
 }

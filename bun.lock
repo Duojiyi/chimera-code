@@ -96,7 +96,7 @@
     },
     "packages/chimera-brand": {
       "name": "@chimera/brand",
-      "version": "0.1.10",
+      "version": "0.1.11",
       "devDependencies": {
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",

@@ -4,7 +4,6 @@ import { decode64 } from "@/utils/base64"
 import { useParams } from "@solidjs/router"
 import { Iterable, pipe } from "effect"
 import { type Accessor } from "solid-js"
-import { createChimeraAuth } from "@/components/chimera-keys"
 import { selectProviderCatalog } from "./provider-catalog"
 
 export const popularProviders = [
@@ -26,28 +25,23 @@ const popularProviderSet = new Set(popularProviders)
 export function useProviders(directory: Accessor<string | undefined>) {
   const serverSync = useServerSync()
   const params = useParams()
-  const signedIn = createChimeraAuth()
   const dir = () => (directory ? directory() : decode64(params.dir))
   const providers = () => {
     const value = dir()
     const projectStore = value ? serverSync().child(value)[0] : undefined
-    const catalog = value
-      ? selectProviderCatalog({
-          explicit: true,
-          directory: value,
-          catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-        })
-      : selectProviderCatalog({
-          explicit: false,
-          directory: value,
-          catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-          global: serverSync().data.provider,
-        })
+    const catalog = selectProviderCatalog({
+      directory: value,
+      catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
+      global: serverSync().data.provider,
+    })
     const all = new Map([...catalog.all].filter(([id]) => !isUpstreamZenProvider(id)))
     return {
       ...catalog,
       all,
-      connected: catalog.connected.filter((id) => !isUpstreamZenProvider(id) && (id !== BRAND.nameLower || signedIn())),
+      // `connected` is a server-derived capability. Do not use locally saved
+      // credentials as a proxy: a stale key must not hide/show providers or
+      // models until the server has rebuilt its authenticated snapshot.
+      connected: catalog.connected.filter((id) => !isUpstreamZenProvider(id)),
     }
   }
 

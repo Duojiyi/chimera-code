@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version without the v prefix"
         required: true
-        default: "0.1.10"
+        default: "0.1.11"
   push:
     tags:
       - "v*"
@@ -16,11 +16,13 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   prepare:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     outputs:
       version: ${{ steps.meta.outputs.version }}
     steps:
@@ -68,6 +70,23 @@ jobs:
             echo "Release tag $TAG could not be resolved from origin"
             exit 1
           fi
+
+          # Release versions must move forward. The only allowed equality is a
+          # retry of the exact tag/commit already being built.
+          LATEST_VERSION="$(git ls-remote --tags origin 'refs/tags/v[0-9]*' \
+            | sed -E 's#.*refs/tags/v([0-9]+\.[0-9]+\.[0-9]+)$#\1#' \
+            | sort -V | tail -1)"
+          if [ -n "$LATEST_VERSION" ]; then
+            MAX_VERSION="$(printf '%s\n' "$LATEST_VERSION" "$VERSION" | sort -V | tail -1)"
+            if [ "$MAX_VERSION" != "$VERSION" ]; then
+              echo "Release version $VERSION is older than the latest tag v$LATEST_VERSION"
+              exit 1
+            fi
+            if [ "$VERSION" = "$LATEST_VERSION" ] && [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
+              echo "Release version v$VERSION already exists and does not point to this commit"
+              exit 1
+            fi
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create draft GitHub Release
@@ -75,9 +94,29 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v${{ steps.meta.outputs.version }}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists; refusing to mutate an existing release"
-            exit 1
+          if gh release view "$TAG" --json isDraft,targetCommitish >/tmp/release.json 2>/dev/null; then
+            if [ "$(jq -r .isDraft /tmp/release.json)" != "true" ]; then
+              echo "Release $TAG is already published; refusing to mutate it"
+              exit 1
+            fi
+            TAG_SHA="$(git rev-list -n 1 "refs/tags/$TAG" 2>/dev/null || true)"
+            if [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
+              echo "Draft release $TAG is bound to tag commit $TAG_SHA, expected $GITHUB_SHA"
+              exit 1
+            fi
+            RELEASE_TARGET="$(jq -r .targetCommitish /tmp/release.json)"
+            if [ "$RELEASE_TARGET" != "$GITHUB_SHA" ]; then
+              TARGET_SHA="$(git rev-parse "$RELEASE_TARGET^{commit}" 2>/dev/null || true)"
+              if [ "$TARGET_SHA" != "$GITHUB_SHA" ]; then
+                TARGET_SHA="$(git rev-parse "origin/$RELEASE_TARGET^{commit}" 2>/dev/null || true)"
+              fi
+              if [ "$TARGET_SHA" != "$GITHUB_SHA" ]; then
+                echo "Draft release $TAG targets $RELEASE_TARGET, expected $GITHUB_SHA"
+                exit 1
+              fi
+            fi
+            echo "Reusing the existing draft release $TAG for the exact commit"
+            exit 0
           fi
           gh release create "$TAG" \
             --title "Chimera Desktop ${TAG}" \
@@ -105,6 +144,9 @@ jobs:
 
   build:
     needs: prepare
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -200,6 +242,37 @@ jobs:
         timeout-minutes: 60
         run: npx electron-builder ${{ matrix.platform_flag }} --publish never --config electron-builder.config.ts
 
+      - name: Verify Windows installer signature
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: packages/desktop/dist
+        run: |
+          $files = @(Get-ChildItem -File -Filter *.exe)
+          if ($files.Count -eq 0) { throw "No Windows installer was produced" }
+          foreach ($file in $files) {
+            $sig = Get-AuthenticodeSignature -LiteralPath $file.FullName
+            if ($sig.Status -ne "Valid") {
+              throw "Invalid Authenticode signature for $($file.Name): $($sig.Status)"
+            }
+          }
+
+      - name: Verify macOS signature and notarization
+        if: runner.os == 'macOS'
+        working-directory: packages/desktop/dist
+        shell: bash
+        run: |
+          shopt -s nullglob
+          apps=(mac/*.app mac-arm64/*.app)
+          if (( ${#apps[@]} == 0 )); then
+            echo "No macOS app bundle was produced"
+            exit 1
+          fi
+          for app in "${apps[@]}"; do
+            codesign --verify --deep --strict --verbose=2 "$app"
+            spctl --assess --type execute --verbose=4 "$app"
+            xcrun stapler validate "$app"
+          done
+
       - name: Create macOS .app.tar.gz
         if: runner.os == 'macOS'
         working-directory: packages/desktop/dist
@@ -239,13 +312,17 @@ jobs:
         with:
           name: latest-yml-${{ matrix.target }}
           path: packages/desktop/dist/latest*.yml
-          if-no-files-found: warn
+          if-no-files-found: error
 
   publish:
     needs:
       - prepare
       - build
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    environment:
+      name: production
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
@@ -268,12 +345,39 @@ jobs:
         run: |
           shopt -s nullglob
           files=(/tmp/desktop/*.{exe,blockmap,dmg,zip,AppImage,deb,rpm} /tmp/desktop/*.app.tar.gz)
+          required=(
+            chimera-desktop-win-x64.exe
+            chimera-desktop-win-x64.exe.blockmap
+            chimera-desktop-mac-arm64.dmg
+            chimera-desktop-mac-arm64.dmg.blockmap
+            chimera-desktop-mac-arm64.zip
+            chimera-desktop-mac-arm64.zip.blockmap
+            chimera-desktop-mac-arm64.app.tar.gz
+            chimera-desktop-mac-x64.dmg
+            chimera-desktop-mac-x64.dmg.blockmap
+            chimera-desktop-mac-x64.zip
+            chimera-desktop-mac-x64.zip.blockmap
+            chimera-desktop-mac-x64.app.tar.gz
+            chimera-desktop-linux-arm64.AppImage
+            chimera-desktop-linux-arm64.deb
+            chimera-desktop-linux-aarch64.rpm
+            chimera-desktop-linux-x86_64.AppImage
+            chimera-desktop-linux-amd64.deb
+            chimera-desktop-linux-x86_64.rpm
+          )
+          for name in "${required[@]}"; do
+            if [ ! -f "/tmp/desktop/$name" ]; then
+              echo "Missing required release asset: $name"
+              find /tmp/desktop -maxdepth 1 -type f -printf '%f\n' | sort
+              exit 1
+            fi
+          done
           if (( ${#files[@]} == 0 )); then
             echo "No desktop release assets found"
             ls -la /tmp/desktop || true
             exit 1
           fi
-          gh release upload "v${{ needs.prepare.outputs.version }}" "${files[@]}" --clobber --repo "${{ github.repository }}"
+          gh release upload "v${{ needs.prepare.outputs.version }}" "${files[@]}" --repo "${{ github.repository }}"
 
       - name: Upload updater metadata
         env:
