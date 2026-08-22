@@ -1,7 +1,7 @@
 {
   "name": "@chimera/brand",
   "private": true,
-  "version": "0.1.11",
+  "version": "0.1.12",
   "type": "module",
   "description": "Chimera brand constants, single source of truth for all branding",
   "exports": {
