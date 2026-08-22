@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version without the v prefix"
         required: true
-        default: "0.1.17"
+        default: "0.1.18"
   push:
     tags:
       - "v*"
@@ -165,11 +165,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - host: macos-latest
+          - host: macos-26
             target: aarch64-apple-darwin
             platform_flag: --mac --arm64
             bun_install_flags: --os=darwin --cpu=arm64
-          - host: macos-latest
+          - host: macos-26-intel
             target: x86_64-apple-darwin
             platform_flag: --mac --x64
             bun_install_flags: --os=darwin --cpu=x64
