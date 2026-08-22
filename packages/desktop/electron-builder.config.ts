@@ -38,10 +38,6 @@ const appleNotarize = Boolean(
   process.env.APPLE_API_KEY && process.env.APPLE_API_KEY_ID && process.env.APPLE_API_ISSUER,
 )
 
-if (process.platform === "darwin" && process.env.GITHUB_ACTIONS === "true" && channel === "prod" && !appleNotarize) {
-  throw new Error("Apple notarization credentials are required for a production release")
-}
-
 const APP_IDS = {
   dev: `${BRAND.appId}.dev`,
   beta: `${BRAND.appId}.beta`,

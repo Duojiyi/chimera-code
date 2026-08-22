@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version without the v prefix"
         required: true
-        default: "0.1.16"
+        default: "0.1.17"
   push:
     tags:
       - "v*"
@@ -146,13 +146,13 @@ jobs:
           - **macOS:** \`chimera-desktop-mac-arm64.dmg\` (Apple Silicon), \`chimera-desktop-mac-x64.dmg\` (Intel)
           - **Linux:** \`.AppImage\` / \`.deb\` / \`.rpm\` (x64 and arm64)
 
-          macOS artifacts are signed and notarized for public release.
+          macOS artifacts are signed and notarized when the corresponding Apple credentials are configured.
 
           ---
 
           密钥可重命名 / 删除，状态栏可切换；会话左侧有回合轨道；默认字体为 Noto Sans SC 与 JetBrains Mono；输入框流光仅在会话忙碌时出现。系统提示覆盖为 Chimera 身份与办公技能示例。内置表格 / Word / PPT / PDF 工具仍在；精美 PPT 走打包进安装包的 ppt-master（MIT）。上游 OpenCode 1.18.21。
 
-          macOS 安装包已签名并完成公证。
+          macOS 安装包在配置 Apple 凭据时会自动签名并完成公证；未配置时保持与历史版本一致，发布未签名安装包。
           EOF
           )"
 
@@ -192,8 +192,20 @@ jobs:
       OPENCODE_CHANNEL: prod
       RUST_TARGET: ${{ matrix.target }}
       CSC_KEYCHAIN: build.keychain
-      CHIMERA_REQUIRE_SIGNING: "true"
       APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY }}
+      APPLE_SIGNING_ENABLED: ${{ secrets.APPLE_CERTIFICATE != '' && secrets.APPLE_CERTIFICATE_PASSWORD != '' && secrets.APPLE_API_KEY != '' && secrets.APPLE_API_ISSUER != '' && secrets.APPLE_API_KEY_PATH != '' }}
+      APPLE_CERTIFICATE_CONFIGURED: ${{ secrets.APPLE_CERTIFICATE != '' }}
+      APPLE_CERTIFICATE_PASSWORD_CONFIGURED: ${{ secrets.APPLE_CERTIFICATE_PASSWORD != '' }}
+      APPLE_API_KEY_CONFIGURED: ${{ secrets.APPLE_API_KEY != '' }}
+      APPLE_API_ISSUER_CONFIGURED: ${{ secrets.APPLE_API_ISSUER != '' }}
+      APPLE_API_KEY_PATH_CONFIGURED: ${{ secrets.APPLE_API_KEY_PATH != '' }}
+      AZURE_SIGNING_ENABLED: ${{ secrets.AZURE_CLIENT_ID != '' && secrets.AZURE_TENANT_ID != '' && secrets.AZURE_SUBSCRIPTION_ID != '' && secrets.AZURE_TRUSTED_SIGNING_ENDPOINT != '' && secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME != '' && secrets.AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE != '' }}
+      AZURE_CLIENT_ID_CONFIGURED: ${{ secrets.AZURE_CLIENT_ID != '' }}
+      AZURE_TENANT_ID_CONFIGURED: ${{ secrets.AZURE_TENANT_ID != '' }}
+      AZURE_SUBSCRIPTION_ID_CONFIGURED: ${{ secrets.AZURE_SUBSCRIPTION_ID != '' }}
+      AZURE_ENDPOINT_CONFIGURED: ${{ secrets.AZURE_TRUSTED_SIGNING_ENDPOINT != '' }}
+      AZURE_ACCOUNT_CONFIGURED: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME != '' }}
+      AZURE_PROFILE_CONFIGURED: ${{ secrets.AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE != '' }}
       APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -205,21 +217,66 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - uses: apple-actions/import-codesign-certs@8f3fb608891dd2244cdab3d69cd68c0d37a7fe93 # v2.0.0
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.APPLE_SIGNING_ENABLED == 'true'
         with:
           keychain: build
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATE }}
           p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
-      - name: Setup Apple API Key
+      - name: Validate optional Apple signing configuration
         if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          configured=(
+            "$APPLE_CERTIFICATE_CONFIGURED"
+            "$APPLE_CERTIFICATE_PASSWORD_CONFIGURED"
+            "$APPLE_API_KEY_CONFIGURED"
+            "$APPLE_API_ISSUER_CONFIGURED"
+            "$APPLE_API_KEY_PATH_CONFIGURED"
+          )
+          enabled_count=0
+          for value in "${configured[@]}"; do
+            if [ "$value" = "true" ]; then enabled_count=$((enabled_count + 1)); fi
+          done
+          if [ "$enabled_count" -gt 0 ] && [ "$enabled_count" -lt "${#configured[@]}" ]; then
+            echo "Apple signing configuration is incomplete; provide all Apple secrets or none of them."
+            exit 1
+          fi
+          if [ "$APPLE_SIGNING_ENABLED" != "true" ]; then
+            echo "Apple signing is not configured; continuing with an unsigned macOS artifact."
+          fi
+
+      - name: Setup Apple API Key
+        if: runner.os == 'macOS' && env.APPLE_SIGNING_ENABLED == 'true'
         shell: bash
         env:
           APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_PATH }}
-        run: printf '%s' "$APPLE_API_KEY_CONTENT" > "$RUNNER_TEMP/apple-api-key.p8"
+        run: |
+          printf '%s' "$APPLE_API_KEY_CONTENT" > "$RUNNER_TEMP/apple-api-key.p8"
+          echo "APPLE_API_KEY=$RUNNER_TEMP/apple-api-key.p8" >> "$GITHUB_ENV"
+
+      - name: Validate optional Azure signing configuration
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $configured = @(
+            $env:AZURE_CLIENT_ID_CONFIGURED,
+            $env:AZURE_TENANT_ID_CONFIGURED,
+            $env:AZURE_SUBSCRIPTION_ID_CONFIGURED,
+            $env:AZURE_ENDPOINT_CONFIGURED,
+            $env:AZURE_ACCOUNT_CONFIGURED,
+            $env:AZURE_PROFILE_CONFIGURED
+          )
+          $enabledCount = @($configured | Where-Object { $_ -eq 'true' }).Count
+          if ($enabledCount -gt 0 -and $enabledCount -lt $configured.Count) {
+            throw "Azure Trusted Signing configuration is incomplete; provide all Azure secrets or none of them."
+          }
+          if ($env:AZURE_SIGNING_ENABLED -ne 'true') {
+            Write-Host "Azure Trusted Signing is not configured; continuing with an unsigned Windows artifact."
+          }
 
       - name: Azure login
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.AZURE_SIGNING_ENABLED == 'true'
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
@@ -256,7 +313,7 @@ jobs:
         run: npx electron-builder ${{ matrix.platform_flag }} --publish never --config electron-builder.config.ts
 
       - name: Verify Windows installer signature
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.AZURE_SIGNING_ENABLED == 'true'
         shell: pwsh
         working-directory: packages/desktop/dist
         run: |
@@ -270,7 +327,7 @@ jobs:
           }
 
       - name: Verify macOS signature and notarization
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.APPLE_SIGNING_ENABLED == 'true'
         working-directory: packages/desktop/dist
         shell: bash
         run: |
