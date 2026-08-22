@@ -170,7 +170,22 @@ export function gatewayVariants(official?: OfficialModel): Record<string, Record
   }
   const toggle = options.some((option) => option.type === "toggle")
   const budget = options.some((option) => option.type === "budget_tokens")
-  if (toggle || budget) return { none: { reasoningEffort: "none" }, high: { reasoningEffort: "high" } }
+  if (budget) {
+    const range = options.find((option) => option.type === "budget_tokens")
+    const min = typeof range?.min === "number" && Number.isFinite(range.min) ? Math.max(1, Math.floor(range.min)) : 512
+    const max = typeof range?.max === "number" && Number.isFinite(range.max) ? Math.max(min, Math.floor(range.max)) : min * 8
+    const values = [...new Set([min, Math.round(Math.sqrt(min * max)), max])]
+    return Object.fromEntries(
+      values.map((tokens) => [
+        `budget-${tokens}`,
+        // OpenAI-compatible gateways commonly expose budget_tokens through
+        // reasoning_effort. Keep the exact server-advertised budget dynamic.
+        { reasoningEffort: String(tokens) },
+      ]),
+    )
+  }
+  if (toggle) return { none: { reasoningEffort: "none" }, high: { reasoningEffort: "high" } }
+  if (official?.reasoning) return { none: { reasoningEffort: "none" }, high: { reasoningEffort: "high" } }
   return {}
 }
 

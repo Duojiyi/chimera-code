@@ -74,7 +74,18 @@ test("gateway variants support toggle and budget metadata", () => {
     none: { reasoningEffort: "none" },
     high: { reasoningEffort: "high" },
   })
-  expect(gatewayVariants({ reasoning_options: [{ type: "budget_tokens", min: 512, max: 4096 }] })).toHaveProperty("high")
+  expect(gatewayVariants({ reasoning_options: [{ type: "budget_tokens", min: 512, max: 4096 }] })).toEqual({
+    "budget-512": { reasoningEffort: "512" },
+    "budget-1448": { reasoningEffort: "1448" },
+    "budget-4096": { reasoningEffort: "4096" },
+  })
+})
+
+test("reasoning capability retains a fallback variant when catalog options are unavailable", () => {
+  expect(gatewayVariants({ reasoning: true })).toEqual({
+    none: { reasoningEffort: "none" },
+    high: { reasoningEffort: "high" },
+  })
 })
 
 test("official model lookup matches qualified gateway IDs", () => {
