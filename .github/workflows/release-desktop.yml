@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version without the v prefix"
         required: true
-        default: "0.1.15"
+        default: "0.1.16"
   push:
     tags:
       - "v*"
@@ -86,8 +86,8 @@ jobs:
 
           # Release versions must move forward. The only allowed equality is a
           # retry of the exact tag/commit already being built.
-          LATEST_VERSION="$(git ls-remote --tags origin 'refs/tags/v[0-9]*' \
-            | sed -E 's#.*refs/tags/v([0-9]+\.[0-9]+\.[0-9]+)$#\1#' \
+          LATEST_VERSION="$(git ls-remote --tags origin 'refs/tags/v*' \
+            | awk '$2 ~ /^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$/ { sub(/^refs\/tags\/v/, "", $2); print $2 }' \
             | sort -V | tail -1)"
           if [ -n "$LATEST_VERSION" ]; then
             MAX_VERSION="$(printf '%s\n' "$LATEST_VERSION" "$VERSION" | sort -V | tail -1)"
